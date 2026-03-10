@@ -1,139 +1,165 @@
 <?php
+/**
+ * Zaman Kitchens - Homepage
+ * BD-Style layout: Featured Row, Sink Row, Accessories Row
+ */
 require_once __DIR__ . '/includes/db.php';
 include_once __DIR__ . '/includes/header.php';
 
-// Fetch all categories for the category section
+// Fetch all categories for dropdown (already used in header)
+// Fetch Featured Products
+$featured = [];
 try {
-    $catStmt = $pdo->query("SELECT * FROM categories ORDER BY name ASC");
-    $categoriesList = $catStmt->fetchAll();
-} catch (Exception $e) {
-    $categoriesList = [];
-}
+    $stmt = $pdo->query("SELECT p.*, c.name AS cat_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_featured = 1 ORDER BY p.created_at DESC LIMIT 8");
+    $featured = $stmt->fetchAll();
+} catch(Exception $e) {}
 
-// Handle Category Filtering
-$categorySlug = isset($_GET['category']) ? $_GET['category'] : null;
-$categoryName = "Recommended for You";
-
-try {
-    if ($categorySlug) {
-        // Fetch category details
-        $stmt = $pdo->prepare("SELECT * FROM categories WHERE slug = ?");
-        $stmt->execute([$categorySlug]);
-        $currentCategory = $stmt->fetch();
-        
-        if ($currentCategory) {
-            $categoryName = $currentCategory['name'];
-            $stmt = $pdo->prepare("SELECT * FROM products WHERE category_id = ? ORDER BY created_at DESC");
-            $stmt->execute([$currentCategory['id']]);
-        } else {
-            $stmt = $pdo->query("SELECT * FROM products ORDER BY created_at DESC LIMIT 8");
+// Fetch products by specific categories for "BD Style" rows
+$categoryRows = [];
+$rowCategories = ['sink', 'kitchen-accessories', 'kitchen-hood', 'gas-stove'];
+foreach ($rowCategories as $slug) {
+    try {
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.hero_image AS cat_banner FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE c.slug = ? ORDER BY p.created_at DESC LIMIT 4");
+        $stmt->execute([$slug]);
+        $rows = $stmt->fetchAll();
+        if (!empty($rows)) {
+            $categoryRows[$slug] = [
+                'name' => $rows[0]['cat_name'],
+                'banner' => $rows[0]['cat_banner'],
+                'products' => $rows
+            ];
         }
-    } else {
-        $stmt = $pdo->query("SELECT * FROM products ORDER BY created_at DESC LIMIT 8");
-    }
-    $products = $stmt->fetchAll();
-} catch (Exception $e) {
-    $products = [];
+    } catch(Exception $e) {}
 }
 ?>
 
-<!-- Hero Section -->
-<header class="relative bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto">
-        <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                <div class="sm:text-center lg:text-left">
-                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl text-balance">
-                        <span class="block xl:inline">Refining Your</span>
-                        <span class="block text-amber-600 xl:inline">Kitchen Experience</span>
-                    </h1>
-                    <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                        Discover our collection of premium kitchen sinks and high-performance accessories designed to bring elegance and efficiency to your culinary sanctuary.
-                    </p>
-                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                        <div class="rounded-md shadow">
-                            <a href="#products" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 md:py-4 md:text-lg md:px-10 transition">
-                                Shop Collection
-                            </a>
-                        </div>
-                        <div class="mt-3 sm:mt-0 sm:ml-3">
-                            <a href="#" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200 md:py-4 md:text-lg md:px-10 transition">
-                                View Catalog
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </main>
+<!-- ===========================
+     HERO SLIDER SECTION
+=========================== -->
+<section class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white overflow-hidden" style="min-height: 520px;">
+    <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=1600'); background-size: cover; background-position: center;"></div>
+    <div class="relative z-10 container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12">
+        <div class="flex-1">
+            <span class="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">Premium Kitchen Solutions</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+                Transform Your<br>
+                <span class="text-amber-400">Kitchen Space</span>
+            </h1>
+            <p class="text-gray-300 text-lg mb-8 max-w-xl">Bangladesh's finest collection of kitchen sinks, cabinets, hoods and accessories. Trusted by 5,000+ homes.</p>
+            <div class="flex flex-wrap gap-4">
+                <a href="#featured" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg shadow-amber-500/30">Shop Now</a>
+                <a href="tel:01700000000" class="border border-white/30 hover:bg-white/10 text-white font-bold px-8 py-4 rounded-xl transition">📞 Call Us</a>
+            </div>
+            <div class="mt-8 flex gap-8 text-center">
+                <div><div class="text-2xl font-extrabold text-amber-400">5K+</div><div class="text-xs text-gray-400">Happy Customers</div></div>
+                <div><div class="text-2xl font-extrabold text-amber-400">200+</div><div class="text-xs text-gray-400">Products</div></div>
+                <div><div class="text-2xl font-extrabold text-amber-400">11</div><div class="text-xs text-gray-400">Categories</div></div>
+            </div>
         </div>
-    </div>
-    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="<?php echo ASSETS_PATH; ?>/images/hero.png" alt="Modern Kitchen">
-    </div>
-</header>
-
-<!-- Categories Section -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Browse by Category</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <?php foreach($categoriesList as $cat): ?>
-            <a href="category/<?php echo $cat['slug']; ?>" class="group block p-6 bg-white rounded-2xl shadow-sm border border-transparent hover:border-amber-500 hover:shadow-md transition text-center">
-                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-amber-600 transition duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                </div>
-                <h3 class="text-sm font-bold text-gray-800"><?php echo $cat['name']; ?></h3>
-            </a>
-            <?php endforeach; ?>
+        <div class="flex-1 hidden md:block">
+            <img src="<?php echo ASSETS_PATH; ?>/images/hero.png" alt="Premium Kitchen" class="rounded-2xl shadow-2xl w-full max-w-md ml-auto object-cover" style="height:380px;">
         </div>
     </div>
 </section>
 
-<!-- Featured Products -->
-<section id="products" class="py-16">
+<!-- ===========================
+     CATEGORY QUICK NAV
+=========================== -->
+<section class="bg-white border-b py-6 sticky top-0 z-30 shadow-sm">
     <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-12">
-            <h2 class="text-3xl font-bold"><?php echo $categoryName; ?></h2>
-            <?php if($categorySlug): ?>
-                <a href="<?php echo SITE_URL; ?>" class="text-amber-600 font-semibold hover:underline border-b-2 border-amber-600 pb-1">Show All</a>
-            <?php else: ?>
-                <a href="#" class="text-amber-600 font-semibold hover:underline border-b-2 border-amber-600 pb-1">See All Products</a>
-            <?php endif; ?>
+        <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide snap-x">
+            <?php
+            try {
+                $cats = $pdo->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll();
+                foreach ($cats as $cat):
+            ?>
+            <a href="category/<?php echo $cat['slug']; ?>" class="snap-start flex-shrink-0 bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-400 text-gray-700 hover:text-amber-700 text-sm font-semibold px-5 py-2.5 rounded-full transition whitespace-nowrap">
+                <?php echo $cat['name']; ?>
+            </a>
+            <?php endforeach; } catch(Exception $e) {} ?>
         </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php if (empty($products)): ?>
-                <!-- No Products Found Message -->
-                <div class="col-span-full py-20 text-center">
-                    <div class="mb-4 text-gray-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-3.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800">No products found in this category</h3>
-                    <p class="text-gray-500 mt-2">Check back soon for new arrivals!</p>
+    </div>
+</section>
+
+<!-- ===========================
+     FEATURED PRODUCTS ROW
+=========================== -->
+<?php if (!empty($featured)): ?>
+<section id="featured" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">⭐ Featured Products</h2>
+                <p class="text-gray-500 mt-1">Handpicked bestsellers from our collection</p>
+            </div>
+            <a href="#" class="text-amber-600 font-semibold hover:underline hidden md:block">View All &rarr;</a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <?php foreach($featured as $p): ?>
+            <?php include __DIR__ . '/includes/product-card.php'; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ===========================
+     CATEGORY-WISE ROWS
+=========================== -->
+<?php foreach($categoryRows as $slug => $row): ?>
+<?php if (!empty($row['products'])): ?>
+<section class="py-12 <?php echo $slug === 'sink' ? 'bg-white' : 'bg-gray-50'; ?>" id="cat-<?php echo $slug; ?>">
+    <div class="container mx-auto px-4">
+        <!-- Category Banner -->
+        <?php if ($row['banner']): ?>
+        <div class="relative mb-8 rounded-2xl overflow-hidden h-40" style="background: url('<?php echo $row['banner']; ?>') center/cover">
+            <div class="absolute inset-0 bg-black/50 flex items-center px-8">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white"><?php echo $row['name']; ?></h2>
+                    <a href="category/<?php echo $slug; ?>" class="text-amber-400 text-sm mt-1 inline-block">View all &rarr;</a>
                 </div>
-            <?php else: ?>
-                <?php foreach($products as $product): ?>
-                    <!-- Dynamic Product Card -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition group">
-                        <div class="relative overflow-hidden">
-                            <img src="<?php echo $product['image_url']; ?>" class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" alt="<?php echo $product['name']; ?>">
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-800 mb-2 truncate"><?php echo $product['name']; ?></h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
-                                <button class="bg-amber-600 text-white p-2 rounded-lg hover:bg-amber-700 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            </div>
+        </div>
+        <?php else: ?>
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-extrabold text-gray-900"><?php echo $row['name']; ?></h2>
+            </div>
+            <a href="category/<?php echo $slug; ?>" class="text-amber-600 font-semibold hover:underline">View All &rarr;</a>
+        </div>
+        <?php endif; ?>
+
+        <!-- Product Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <?php foreach($row['products'] as $p): ?>
+            <?php include __DIR__ . '/includes/product-card.php'; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+<?php endforeach; ?>
+
+<!-- Why Choose Us -->
+<section class="py-16 bg-gray-900 text-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-extrabold text-center mb-12">Why <span class="text-amber-400">Zaman Kitchens?</span></h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <?php
+            $features = [
+                ['🚚', 'Fast Delivery', 'Dhaka same-day, nationwide 2-3 days'],
+                ['🛡️', 'Warranty', 'All products carry manufacturer warranty'],
+                ['💬', 'Expert Support', 'WhatsApp & phone support 10am-8pm'],
+                ['💳', 'Easy Payment', 'Cash on delivery + bKash/Nagad'],
+            ];
+            foreach($features as $f):
+            ?>
+            <div class="p-6 rounded-xl bg-white/5 hover:bg-white/10 transition">
+                <div class="text-4xl mb-3"><?php echo $f[0]; ?></div>
+                <h3 class="font-bold text-lg mb-2"><?php echo $f[1]; ?></h3>
+                <p class="text-gray-400 text-sm"><?php echo $f[2]; ?></p>
+            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
