@@ -133,30 +133,6 @@ try {
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-    </div>
-</section>
-                <?php foreach($products as $product): ?>
-                    <!-- Dynamic Product Card -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition group">
-                        <div class="relative overflow-hidden">
-                            <img src="<?php echo $product['image_url']; ?>" class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" alt="<?php echo $product['name']; ?>">
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-gray-800 mb-2 truncate"><?php echo $product['name']; ?></h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-lg font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
-                                <button class="bg-amber-600 text-white p-2 rounded-lg hover:bg-amber-700 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
