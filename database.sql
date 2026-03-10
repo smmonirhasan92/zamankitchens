@@ -57,8 +57,16 @@ CREATE TABLE IF NOT EXISTS admins (
 -- Insert default admin (password: admin123 - hashed using PASSWORD_DEFAULT)
 INSERT INTO admins (username, password) VALUES ('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
 
--- Insert initial categories
+-- Insert initial categories from the document
 INSERT INTO categories (name, slug) VALUES 
-('Kitchen Sinks', 'kitchen-sinks'),
-('Kitchen Faucets', 'kitchen-faucets'),
-('Accessories', 'accessories');
+('Kitchen Cabinet', 'kitchen-cabinet'),
+('Kitchen Accessories', 'kitchen-accessories'),
+('Kitchen Hood', 'kitchen-hood'),
+('Gas Stove', 'gas-stove'),
+('Kitchen Sink', 'sink'),
+('Dish Rack', 'dish-rack'),
+('Geyser', 'geyser'),
+('Water Purifier', 'water-purifier'),
+('Bath Appliances', 'bath-appliances'),
+('Kitchen Appliances', 'kitchen-appliances'),
+('Home Appliance', 'home-appliance');
