@@ -41,7 +41,7 @@ try {
         </div>
     </div>
     <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&q=80&w=1000" alt="Modern Kitchen">
+        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="<?php echo ASSETS_PATH; ?>/images/hero.png" alt="Modern Kitchen">
     </div>
 </header>
 
@@ -72,7 +72,7 @@ try {
             </div>
             <!-- Category Card 3 -->
             <div class="group relative overflow-hidden rounded-2xl shadow-lg transition-transform hover:scale-[1.02]">
-                <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800" class="w-full h-64 object-cover" alt="Accessories">
+                <img src="<?php echo ASSETS_PATH; ?>/images/category-accessories.png" class="w-full h-64 object-cover" alt="Accessories">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
                     <div>
                         <h3 class="text-white text-xl font-bold">Must-have Accessories</h3>
