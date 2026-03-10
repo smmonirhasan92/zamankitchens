@@ -132,7 +132,7 @@ try {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                <?php endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
