@@ -5,7 +5,7 @@
 
 // Site Information
 define('SITE_NAME', 'Zaman Kitchens');
-define('SITE_URL', 'http://103.65.138.50/~zamankitchens'); // Update to your domain later
+define('SITE_URL', 'https://www.zamankitchens.com');
 
 // Database Credentials
 define('DB_HOST', 'localhost');
