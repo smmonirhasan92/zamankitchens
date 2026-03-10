@@ -1,15 +1,17 @@
-# Zaman Kitchens SEO-friendly URLs
+Options -Indexes
 RewriteEngine On
+RewriteBase /
 
-# Redirect to index.php for product and category pages
+# Prevent direct access to includes folder
+RewriteRule ^includes/ - [F,L]
+
+# Skip real files and directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Example: /product/luxury-sink -> index.php?product=$1
-RewriteRule ^product/([a-zA-Z0-9-]+)$ index.php?product=$1 [QSA,L]
-
-# Example: /category/kitchen-sinks -> index.php?category=$1
-RewriteRule ^category/([a-zA-Z0-9-]+)$ index.php?category=$1 [QSA,L]
-
-# For Admin
-RewriteRule ^admin/$ admin/index.php [L]
+# Clean URL Routes
+RewriteRule ^product/([a-zA-Z0-9_-]+)/?$ product.php?slug=$1 [QSA,L]
+RewriteRule ^category/([a-zA-Z0-9_-]+)/?$ category.php?slug=$1 [QSA,L]
+RewriteRule ^search/?$ index.php [QSA,L]
+RewriteRule ^admin/?$ admin/index.php [L]
+RewriteRule ^order-success/?$ order-success.php [QSA,L]
