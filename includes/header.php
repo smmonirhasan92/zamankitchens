@@ -36,7 +36,7 @@ try {
         .wa-pulse::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: #25d366; animation: pulse-ring 1.5s infinite; z-index: -1; }
     </style>
 
-    <?php if (isset($extraHead)) echo $extraHead; ?>
+    <?php if (!empty($extraHead)) echo $extraHead; ?>
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
