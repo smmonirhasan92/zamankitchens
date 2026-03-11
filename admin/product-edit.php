@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slug = trim($_POST['slug'] ?? '') ?: strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
     $category_id = $_POST['category_id'] ?? null;
     $price = $_POST['price'] ?? 0;
+    $purchase_price = $_POST['purchase_price'] ?? 0;
     $stock_status = $_POST['stock_status'] ?? 'In Stock';
     $description = $_POST['description'] ?? '';
     $meta_title = $_POST['meta_title'] ?? '';
@@ -73,12 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ? WHERE id = ?");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $id]);
+                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ? WHERE id = ?");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $id]);
                 $message = "Product updated successfully!";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, stock_status, main_image, meta_title, meta_description, variations, specifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications)]);
+                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, main_image, meta_title, meta_description, variations, specifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications)]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -207,8 +208,12 @@ $msg = $_GET['msg'] ?? '';
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Price (৳)</label>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Sale Price (৳)</label>
                         <input type="number" name="price" value="<?php echo $product['price'] ?? 0; ?>" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-amber-600">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Purchase Price / Cost (৳)</label>
+                        <input type="number" step="0.01" name="purchase_price" value="<?php echo $product['purchase_price'] ?? 0; ?>" class="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl outline-none font-bold text-indigo-600">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Inventory Status</label>
