@@ -22,7 +22,7 @@ try {
     $recentOrders  = $pdo->query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 10")->fetchAll();
     $lastOrderId   = $pdo->query("SELECT COALESCE(MAX(id),0) FROM orders")->fetchColumn();
 } catch(Exception $e) {
-    $totalOrders = $pendingOrders = $totalSales = $totalProducts = 0;
+    $totalOrders = $pendingOrders = $totalSales = $totalProfit = $totalProducts = 0;
     $recentOrders = [];
     $lastOrderId = 0;
 }
@@ -56,22 +56,23 @@ include_once __DIR__ . '/includes/header.php';
     </div>
 
     <!-- Premium KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <?php
         $kpis = [
-            ['Total Orders', $totalOrders, '📦', 'bg-blue-600', 'orders.php'],
-            ['Pending Status', $pendingOrders, '⏳', 'bg-amber-500', 'orders.php?status=Pending'],
-            ['Total Sales', '৳ ' . number_format($totalSales), '💰', 'bg-emerald-600', 'orders.php'],
-            ['Net Profit', '৳ ' . number_format($totalProfit), '📈', 'bg-indigo-600', 'reports.php'],
+            ['Total Orders', $totalOrders, '📦', 'text-blue-600', 'bg-blue-50', 'orders.php'],
+            ['Pending Status', $pendingOrders, '⏳', 'text-amber-600', 'bg-amber-50', 'orders.php?status=Pending'],
+            ['Total Sales', '৳ ' . number_format($totalSales), '💰', 'text-emerald-600', 'bg-emerald-50', 'orders.php'],
+            ['Net Profit', '৳ ' . number_format($totalProfit), '📈', 'text-indigo-600', 'bg-indigo-50', 'reports.php'],
         ];
-        foreach ($kpis as [$label, $value, $icon, $color, $link]): ?>
-        <a href="<?php echo $link; ?>" class="group bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 relative overflow-hidden">
-            <div class="absolute -right-6 -bottom-6 text-7xl opacity-[0.03] group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-500"><?php echo $icon; ?></div>
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-12 h-12 <?php echo $color; ?> rounded-2xl flex items-center justify-center text-xl shadow-lg shadow-<?php echo str_replace('bg-','',$color); ?>/20 text-white"><?php echo $icon; ?></div>
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest"><?php echo $label; ?></div>
+        foreach ($kpis as [$label, $value, $icon, $textColor, $bgColor, $link]): ?>
+        <a href="<?php echo $link; ?>" class="group bg-white p-8 rounded-[2rem] border border-slate-200/60 shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 relative overflow-hidden">
+            <div class="flex flex-col gap-4">
+                <div class="w-12 h-12 <?php echo $bgColor; ?> <?php echo $textColor; ?> rounded-2xl flex items-center justify-center text-xl transition-transform group-hover:scale-110 duration-500"><?php echo $icon; ?></div>
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-1"><?php echo $label; ?></div>
+                    <div class="text-3xl font-bold text-slate-900 tracking-tight group-hover:text-amber-600 transition-colors"><?php echo $value; ?></div>
+                </div>
             </div>
-            <div class="text-3xl font-black text-slate-900 group-hover:text-amber-600 transition-colors"><?php echo $value; ?></div>
         </a>
         <?php endforeach; ?>
     </div>
