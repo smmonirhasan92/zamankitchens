@@ -5,11 +5,10 @@
 require_once __DIR__ . '/includes/db.php';
 
 $newPassword = 'admin123';
-$hash = password_hash($newPassword, PASSWORD_DEFAULT);
 
 try {
     $stmt = $pdo->prepare("UPDATE admins SET password = ? WHERE username = 'admin'");
-    $stmt->execute([$hash]);
+    $stmt->execute([$newPassword]);
     
     if ($stmt->rowCount() > 0) {
         echo "<div style='font-family:sans-serif;padding:40px;text-align:center;'>";
@@ -21,7 +20,7 @@ try {
         echo "</div>";
     } else {
         // Admin user might not exist, insert it
-        $pdo->prepare("INSERT INTO admins (username, password) VALUES ('admin', ?)")->execute([$hash]);
+        $pdo->prepare("INSERT INTO admins (username, password) VALUES ('admin', ?)")->execute([$newPassword]);
         echo "<div style='font-family:sans-serif;padding:40px;text-align:center;'>";
         echo "<h2 style='color:green;'>✅ Admin account created!</h2>";
         echo "<p>Username: <strong>admin</strong> | Password: <strong>$newPassword</strong></p>";

@@ -14,10 +14,11 @@ $error = "";
 
 // ==== ONE-TIME BYPASS TOKEN (Delete after first use) ====
 // Visit: /admin/?zk_reset=zamankitchens_reset_2024
+// Visit: /admin/?zk_reset=zamankitchens_reset_2024
 if (isset($_GET['zk_reset']) && $_GET['zk_reset'] === 'zamankitchens_reset_2024') {
     try {
-        $newHash = password_hash('admin123', PASSWORD_DEFAULT);
-        $pdo->prepare("UPDATE admins SET password=? WHERE username='admin'")->execute([$newHash]);
+        $newPass = 'admin123';
+        $pdo->prepare("UPDATE admins SET password=? WHERE username='admin'")->execute([$newPass]);
         $_SESSION['admin_id'] = 1;
         $_SESSION['admin_user'] = 'admin';
         header("Location: dashboard.php");
@@ -36,7 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$username]);
             $admin = $stmt->fetch();
 
-            if ($admin && password_verify($password, $admin['password'])) {
+            // Robust check: supports both plain-text (new requested style) and hashed (original style)
+            $is_authenticated = false;
+            if ($admin) {
+                if ($password === $admin['password']) {
+                    $is_authenticated = true;
+                } elseif (password_verify($password, $admin['password'])) {
+                    $is_authenticated = true;
+                }
+            }
+
+            if ($is_authenticated) {
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_user'] = $admin['username'];
                 header("Location: dashboard.php");

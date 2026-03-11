@@ -30,27 +30,10 @@ $orders = $pdo->prepare($sql);
 $orders->execute($params);
 $orders = $orders->fetchAll();
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Orders | Admin - Zaman Kitchens</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Inter', sans-serif; } </style>
-</head>
-<body class="bg-gray-50">
-
-<!-- Top Nav -->
-<div class="bg-gray-900 text-white px-6 py-3 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-amber-600 rounded-lg flex items-center justify-center font-bold text-sm">ZK</div>
-        <a href="dashboard.php" class="font-bold hover:text-amber-400">Zaman Kitchens Admin</a>
-        <span class="text-gray-600">/</span>
-        <span class="text-amber-400 font-semibold">Orders</span>
-    </div>
-    <a href="logout.php" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-sm transition">Logout</a>
-</div>
+<?php 
+$adminTitle = 'Orders Management';
+include_once __DIR__ . '/includes/header.php'; 
+?>
 
 <div class="max-w-7xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-6">

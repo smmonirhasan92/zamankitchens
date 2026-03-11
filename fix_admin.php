@@ -13,16 +13,15 @@ try {
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     $newPass = 'admin123';
-    $hash = password_hash($newPass, PASSWORD_DEFAULT);
     
     // Check if admin exists
     $count = $db->query("SELECT COUNT(*) FROM admins WHERE username='admin'")->fetchColumn();
     
     if ($count > 0) {
-        $db->prepare("UPDATE admins SET password=? WHERE username='admin'")->execute([$hash]);
+        $db->prepare("UPDATE admins SET password=? WHERE username='admin'")->execute([$newPass]);
         $msg = "✅ Password updated!";
     } else {
-        $db->prepare("INSERT INTO admins (username,password) VALUES ('admin',?)")->execute([$hash]);
+        $db->prepare("INSERT INTO admins (username,password) VALUES ('admin',?)")->execute([$newPass]);
         $msg = "✅ Admin account created!";
     }
     

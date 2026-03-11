@@ -6,12 +6,16 @@
 require_once __DIR__ . '/includes/db.php';
 include_once __DIR__ . '/includes/header.php';
 
-// Fetch all categories for dropdown (already used in header)
-// Fetch Featured Products
-$featured = [];
+// Fetch Hero Slides
+$slides = [];
 try {
-    $stmt = $pdo->query("SELECT p.*, c.name AS cat_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_featured = 1 ORDER BY p.created_at DESC LIMIT 8");
-    $featured = $stmt->fetchAll();
+    $slides = $pdo->query("SELECT * FROM hero_slides WHERE is_active = 1 ORDER BY order_index ASC")->fetchAll();
+} catch(Exception $e) {}
+
+// Fetch 8-12 Categories for Grid
+$gridCats = [];
+try {
+    $gridCats = $pdo->query("SELECT * FROM categories ORDER BY id ASC LIMIT 11")->fetchAll();
 } catch(Exception $e) {}
 
 // Fetch products by specific categories for "BD Style" rows
@@ -34,52 +38,91 @@ foreach ($rowCategories as $slug) {
 ?>
 
 <!-- ===========================
-     HERO SLIDER SECTION
+     HERO SLIDER SECTION (Dynamic)
 =========================== -->
-<section class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white overflow-hidden" style="min-height: 520px;">
-    <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=1600'); background-size: cover; background-position: center;"></div>
-    <div class="relative z-10 container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12">
-        <div class="flex-1">
-            <span class="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">Premium Kitchen Solutions</span>
-            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-                Transform Your<br>
-                <span class="text-amber-400">Kitchen Space</span>
-            </h1>
-            <p class="text-gray-300 text-lg mb-8 max-w-xl">Bangladesh's finest collection of kitchen sinks, cabinets, hoods and accessories. Trusted by 5,000+ homes.</p>
-            <div class="flex flex-wrap gap-4">
-                <a href="#featured" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg shadow-amber-500/30">Shop Now</a>
-                <a href="tel:01700000000" class="border border-white/30 hover:bg-white/10 text-white font-bold px-8 py-4 rounded-xl transition">📞 Call Us</a>
+<section class="relative bg-gray-900 overflow-hidden">
+    <div class="swiper heroSwiper">
+        <div class="swiper-wrapper">
+            <?php if (empty($slides)): ?>
+            <!-- Fallback Slide -->
+            <div class="swiper-slide relative flex items-center min-h-[520px] bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=1600'); background-size: cover; background-position: center;"></div>
+                <div class="relative z-10 container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12">
+                    <div class="flex-1">
+                        <span class="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">Premium Kitchen Solutions</span>
+                        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">Transform Your <span class="text-amber-400">Kitchen Space</span></h1>
+                        <p class="text-gray-300 text-lg mb-8 max-w-xl">Bangladesh's finest collection of kitchen sinks, cabinets, hoods and accessories.</p>
+                        <a href="#featured" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg inline-block">Shop Now</a>
+                    </div>
+                </div>
             </div>
-            <div class="mt-8 flex gap-8 text-center">
-                <div><div class="text-2xl font-extrabold text-amber-400">5K+</div><div class="text-xs text-gray-400">Happy Customers</div></div>
-                <div><div class="text-2xl font-extrabold text-amber-400">200+</div><div class="text-xs text-gray-400">Products</div></div>
-                <div><div class="text-2xl font-extrabold text-amber-400">11</div><div class="text-xs text-gray-400">Categories</div></div>
+            <?php else: ?>
+            <?php foreach($slides as $slide): ?>
+            <div class="swiper-slide relative flex items-center min-h-[520px] bg-gray-900 text-white">
+                <!-- Background Image -->
+                <div class="absolute inset-0">
+                    <img src="<?php echo htmlspecialchars($slide['image_path']); ?>" alt="" class="w-full h-full object-cover opacity-40">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/40 to-transparent"></div>
+                </div>
+                <!-- Content -->
+                <div class="relative z-10 container mx-auto px-4 py-24">
+                    <div class="max-w-2xl">
+                        <h2 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4"><?php echo htmlspecialchars($slide['title']); ?></h2>
+                        <p class="text-gray-300 text-lg mb-8"><?php echo htmlspecialchars($slide['subtitle']); ?></p>
+                        <a href="<?php echo htmlspecialchars($slide['button_link']); ?>" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg inline-block">
+                            <?php echo htmlspecialchars($slide['button_text']); ?>
+                        </a>
+                    </div>
+                </div>
             </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
-        <div class="flex-1 hidden md:block">
-            <img src="<?php echo ASSETS_PATH; ?>/images/hero.png" alt="Premium Kitchen" class="rounded-2xl shadow-2xl w-full max-w-md ml-auto object-cover" style="height:380px;">
-        </div>
+        <!-- Pagination/Navigation -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next !text-white/50 hover:!text-white"></div>
+        <div class="swiper-button-prev !text-white/50 hover:!text-white"></div>
     </div>
 </section>
 
 <!-- ===========================
-     CATEGORY QUICK NAV
+     SHOP BY CATEGORY GRID
 =========================== -->
-<section class="bg-white border-b py-6 sticky top-0 z-30 shadow-sm">
+<section class="py-16 bg-white">
     <div class="container mx-auto px-4">
-        <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide snap-x">
-            <?php
-            try {
-                $cats = $pdo->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll();
-                foreach ($cats as $cat):
-            ?>
-            <a href="category/<?php echo $cat['slug']; ?>" class="snap-start flex-shrink-0 bg-gray-50 hover:bg-amber-50 border border-gray-100 hover:border-amber-400 text-gray-700 hover:text-amber-700 text-sm font-semibold px-5 py-2.5 rounded-full transition whitespace-nowrap">
-                <?php echo $cat['name']; ?>
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Shop by Category</h2>
+            <p class="text-gray-500">Explore our wide range of premium products</p>
+        </div>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            <?php foreach($gridCats as $cat): ?>
+            <a href="category/<?php echo $cat['slug']; ?>" class="group flex flex-col items-center text-center">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100 group-hover:border-amber-500 transition-all duration-300 mb-4 shadow-sm group-hover:shadow-md">
+                    <img src="<?php echo htmlspecialchars($cat['image'] ?? 'https://placehold.co/400x400/f5f5f5/aaa?text='.$cat['name']); ?>" 
+                         alt="<?php echo htmlspecialchars($cat['name']); ?>"
+                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <h3 class="text-sm md:text-base font-bold text-gray-800 group-hover:text-amber-600 transition tracking-tight">
+                    <?php echo htmlspecialchars($cat['name']); ?>
+                </h3>
             </a>
-            <?php endforeach; } catch(Exception $e) {} ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+
+<!-- Initialize Swiper -->
+<script>
+    const swiper = new Swiper('.heroSwiper', {
+        loop: true,
+        autoplay: { delay: 5000, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        effect: 'fade',
+        fadeEffect: { crossFade: true }
+    });
+</script>
 
 <!-- ===========================
      FEATURED PRODUCTS ROW
