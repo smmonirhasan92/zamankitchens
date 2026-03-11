@@ -1,8 +1,3 @@
-<?php
-/**
- * DEBUG: IF YOU SEE THIS, THE FILE IS ACCESSIBLE!
- */
-// die("DEBUG: Products Page is hit!");
 require_once __DIR__ . '/../includes/db.php';
 
 $adminTitle = 'Manage Products';
@@ -10,6 +5,15 @@ include_once __DIR__ . '/includes/header.php';
 
 $message = "";
 $error = "";
+
+// Handle Delete
+if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
+    try {
+        $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
+        $stmt->execute([$_GET['delete']]);
+        $message = "Product deleted successfully!";
+    } catch(Exception $e) { $error = "Error: " . $e->getMessage(); }
+}
 
 // Fetch Products with category names
 try {
@@ -20,6 +24,9 @@ try {
 // Fetch Categories for dropdown
 $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->fetchAll();
 ?>
+
+<?php if($message): ?> <div class="max-w-7xl mx-auto px-6 mt-6"><div class="bg-green-50 text-green-700 p-4 rounded-2xl font-bold border border-green-100">✅ <?php echo $message; ?></div></div> <?php endif; ?>
+<?php if($error): ?> <div class="max-w-7xl mx-auto px-6 mt-6"><div class="bg-red-50 text-red-700 p-4 rounded-2xl font-bold border border-red-100">❌ <?php echo $error; ?></div></div> <?php endif; ?>
 
 <div class="max-w-7xl mx-auto px-6 py-10">
     <div class="flex items-center justify-between mb-8">

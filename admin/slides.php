@@ -1,8 +1,8 @@
 <?php
 /**
- * DEBUG: IF YOU SEE THIS, THE FILE IS ACCESSIBLE!
+ * Zaman Kitchens - Manage Hero Slides
+ * Features: List, Add, Edit, Delete slides with Image Upload
  */
-// die("DEBUG: Slides Page is hit!");
 session_start();
 require_once __DIR__ . '/../includes/db.php';
 

@@ -1,8 +1,8 @@
 <?php
 /**
- * DEBUG: IF YOU SEE THIS, THE FILE IS ACCESSIBLE!
+ * Zaman Kitchens - Manage Categories
+ * Features: List, Add, Edit, Delete categories with Image Upload
  */
-// die("DEBUG: Categories Page is hit!");
 session_start();
 require_once __DIR__ . '/../includes/db.php';
 
