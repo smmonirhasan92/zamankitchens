@@ -1,0 +1,4 @@
+---
+deployment:
+  tasks:
+    - /bin/echo "OCE: Core files updated in repository."
