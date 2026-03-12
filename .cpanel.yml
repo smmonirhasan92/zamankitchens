@@ -1,4 +1,6 @@
 ---
 deployment:
   tasks:
-    - /bin/echo "OCE: Core files updated in repository."
+    - export DEPLOYPATH=/home/smmonirhasan92/public_html
+    - /bin/rsync -avz --exclude '.git' --exclude '.cpanel.yml' --exclude '.gitignore' --exclude 'node_modules' --exclude 'vendor' ./ $DEPLOYPATH
+    - /bin/echo "OCE: Repository synchronized with public_html."
