@@ -38,83 +38,170 @@ foreach ($rowCategories as $slug) {
 ?>
 
 <!-- ===========================
-     HERO SLIDER SECTION (Dynamic)
+     HERO SLIDER SECTION — VIBRANT DARK EDITION
 =========================== -->
-<section class="relative bg-gray-900 overflow-hidden">
-    <div class="swiper heroSwiper">
-        <div class="swiper-wrapper">
-            <?php if (empty($slides)): ?>
-            <!-- Fallback Slide -->
-            <div class="swiper-slide relative flex items-center min-h-[520px] bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white">
-                <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=1600'); background-size: cover; background-position: center;"></div>
-                <div class="relative z-10 container mx-auto px-4 py-24 flex flex-col md:flex-row items-center gap-12">
-                    <div class="flex-1">
-                        <span class="inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 tracking-widest uppercase">Premium Kitchen Solutions</span>
-                        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">Transform Your <span class="text-amber-400">Kitchen Space</span></h1>
-                        <p class="text-gray-300 text-lg mb-8 max-w-xl">Bangladesh's finest collection of kitchen sinks, cabinets, hoods and accessories.</p>
-                        <a href="#featured" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg inline-block">Shop Now</a>
-                    </div>
-                </div>
+<style>
+    @keyframes hero-float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-18px); } }
+    @keyframes gradient-x { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
+    .hero-gradient-text {
+        background: linear-gradient(135deg, #FCD34D 0%, #F97316 40%, #EC4899 80%, #8B5CF6 100%);
+        background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-size: 200% 200%; animation: gradient-x 4s ease infinite;
+    }
+    .hero-badge-pulse::before {
+        content: ''; position: absolute; inset: -4px; border-radius: 50px;
+        background: rgba(251,191,36,0.4); animation: pulse-ring 2s ease-out infinite;
+    }
+    .hero-cta-main {
+        background: linear-gradient(135deg, #F97316, #FBBF24) !important;
+        box-shadow: 0 20px 40px -8px rgba(249,115,22,0.6) !important;
+    }
+    .hero-cta-main:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 28px 50px -8px rgba(249,115,22,0.8) !important; }
+    .floating-blob1 { animation: hero-float 6s ease-in-out infinite; }
+    .floating-blob2 { animation: hero-float 8s ease-in-out infinite reverse; }
+    .floating-blob3 { animation: hero-float 7s ease-in-out 1s infinite; }
+    .hero-grid-bg {
+        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+    .stat-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+</style>
+<section class="relative overflow-hidden" style="background: linear-gradient(145deg, #0A0A0F 0%, #0F0A1F 50%, #150818 100%); min-height: 620px;">
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 hero-grid-bg opacity-100"></div>
+
+    <!-- Multi-colored animated blobs -->
+    <div class="floating-blob1 absolute top-[-80px] left-[-80px] w-[500px] h-[500px] rounded-full opacity-20"
+         style="background: radial-gradient(circle, #F97316 0%, transparent 70%);"></div>
+    <div class="floating-blob2 absolute bottom-[-100px] right-[-80px] w-[600px] h-[600px] rounded-full opacity-15"
+         style="background: radial-gradient(circle, #A855F7 0%, transparent 70%);"></div>
+    <div class="floating-blob3 absolute top-[30%] right-[25%] w-[300px] h-[300px] rounded-full opacity-10"
+         style="background: radial-gradient(circle, #EC4899 0%, transparent 70%);"></div>
+
+    <div class="relative z-10 container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center gap-16">
+        <!-- Left Content -->
+        <div class="flex-1 text-center md:text-left">
+            <!-- Badge -->
+            <div class="relative inline-flex items-center gap-2 mb-8">
+                <span class="hero-badge-pulse relative inline-flex items-center gap-2 bg-white/5 border border-amber-500/30 px-5 py-2.5 rounded-full text-amber-300 text-xs font-black uppercase tracking-[0.2em] backdrop-blur">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    Premium Kitchen Solutions — Bangladesh
+                </span>
             </div>
-            <?php else: ?>
-            <?php foreach($slides as $slide): ?>
-            <div class="swiper-slide relative flex items-center min-h-[520px] bg-gray-900 text-white">
-                <!-- Background Image -->
-                <div class="absolute inset-0">
-                    <img src="<?php echo htmlspecialchars($slide['image_path']); ?>" alt="" class="w-full h-full object-cover opacity-40">
-                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/40 to-transparent"></div>
-                </div>
-                <!-- Content -->
-                <div class="relative z-10 container mx-auto px-4 py-24">
-                    <div class="max-w-2xl">
-                        <h2 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4"><?php echo htmlspecialchars($slide['title']); ?></h2>
-                        <p class="text-gray-300 text-lg mb-8"><?php echo htmlspecialchars($slide['subtitle']); ?></p>
-                        <a href="<?php echo htmlspecialchars($slide['button_link']); ?>" class="bg-amber-500 hover:bg-amber-400 text-white font-bold px-8 py-4 rounded-xl transition shadow-lg inline-block">
-                            <?php echo htmlspecialchars($slide['button_text']); ?>
-                        </a>
-                    </div>
-                </div>
+
+            <!-- Heading -->
+            <h1 class="text-5xl md:text-7xl font-black leading-[1.05] mb-8 tracking-tight text-white">
+                Dream Kitchens
+                <span class="block mt-2 hero-gradient-text">Built to Inspire</span>
+            </h1>
+
+            <p class="text-slate-400 text-lg md:text-xl mb-10 max-w-lg leading-relaxed font-medium">
+                Bangladesh's finest kitchen cabinets, sinks, hoods & accessories.<br>
+                <span style="color: #FBBF24; font-weight: 700;">৳ 3,200 থেকে শুরু</span> — Cash on Delivery available.
+            </p>
+
+            <!-- CTAs -->
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                <a href="#products" class="hero-cta-main inline-flex items-center gap-3 text-white font-black text-base px-10 py-4 rounded-2xl transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Shop Now
+                </a>
+                <a href="#inquiry" class="inline-flex items-center gap-3 text-white font-bold text-base px-10 py-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-all duration-300 backdrop-blur">
+                    Free Consultation
+                    <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </a>
             </div>
-            <?php endforeach; ?>
-            <?php endif; ?>
+
+            <!-- Stats Row -->
+            <div class="flex flex-wrap gap-6 mt-12 justify-center md:justify-start">
+                <?php
+                $stats = [
+                    ['500+', 'Products'],
+                    ['3,000+', 'Happy Customers'],
+                    ['5★', 'Rated Service'],
+                ];
+                foreach($stats as $s):
+                ?>
+                <div class="stat-card rounded-2xl px-6 py-4 flex flex-col items-center md:items-start">
+                    <span style="background: linear-gradient(135deg, #FBBF24, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem; font-weight: 900; line-height: 1;"><?php echo $s[0]; ?></span>
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1"><?php echo $s[1]; ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
         </div>
-        <!-- Pagination/Navigation -->
-        <div class="swiper-pagination"></div>
-        <div class="swiper-button-next !text-white/50 hover:!text-white"></div>
-        <div class="swiper-button-prev !text-white/50 hover:!text-white"></div>
+
+        <!-- Right Visual -->
+        <div class="flex-1 hidden md:flex items-center justify-center relative">
+            <div class="relative w-[480px] h-[480px]">
+                <!-- Outer glow ring -->
+                <div class="absolute inset-0 rounded-full opacity-25" style="background: conic-gradient(from 0deg, #F97316, #EC4899, #8B5CF6, #FBBF24, #F97316); filter: blur(32px);"></div>
+                <!-- Main Image Frame -->
+                <div class="absolute inset-6 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=800" alt="Premium Kitchen" class="w-full h-full object-cover opacity-80" style="filter: saturate(1.3) contrast(1.1);">
+                    <div class="absolute inset-0" style="background: linear-gradient(145deg, rgba(249,115,22,0.2) 0%, rgba(168,85,247,0.2) 100%);"></div>
+                </div>
+                <!-- Floating badge top -->
+                <div class="absolute -top-4 right-12 bg-white rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-3 border border-amber-100">
+                    <span class="text-2xl">⭐</span>
+                    <div><p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Rated</p><p class="font-black text-slate-900">5.0 / 5.0</p></div>
+                </div>
+                <!-- Floating badge bottom -->
+                <div class="absolute -bottom-4 left-8 bg-white rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-3 border border-emerald-100">
+                    <span class="text-2xl">🚀</span>
+                    <div><p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Fast</p><p class="font-black text-slate-900">24hr Delivery</p></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Bottom Fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-24" style="background: linear-gradient(to bottom, transparent, #f8fafc);"></div>
 </section>
 
 <!-- ===========================
-     UNIQUE CATEGORY NAVIGATION: CIRCULAR GLASSMORPHISM
+     CATEGORY NAV + PRODUCT GRID — VIBRANT
 =========================== -->
-<section id="products" class="py-20 bg-slate-50">
+<style>
+    #products { position: relative; }
+    .cat-pill-item.active .cat-pill-inner {
+        background: linear-gradient(135deg, #F97316, #FBBF24);
+        color: #0A0A0F;
+        box-shadow: 0 10px 30px -5px rgba(249,115,22,0.5);
+        transform: translateY(-3px);
+    }
+    .cat-pill-item.active .cat-pill-label { color: #F97316; font-weight: 900; }
+    .product-section-bg {
+        background: linear-gradient(180deg, #f8fafc 0%, #fff7ed 50%, #fef3c7 100%);
+    }
+    .section-heading-accent {
+        background: linear-gradient(135deg, #F97316 0%, #EC4899 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+</style>
+<section id="products" class="product-section-bg py-20">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-            <span class="inline-block bg-white/80 backdrop-blur-md border border-amber-200 text-amber-600 text-[10px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full mb-6 shadow-sm">Premium Selections</span>
-            <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">World-Class <span class="text-amber-500">Kitchens</span></h2>
-            <p class="text-slate-500 max-w-2xl mx-auto text-lg leading-relaxed">Select a collection to filter your dream kitchen components.</p>
+        <div class="text-center mb-14">
+            <span class="inline-block text-[10px] font-black uppercase tracking-[0.35em] px-6 py-2 rounded-full mb-6"
+                  style="background: linear-gradient(135deg, #FEF3C7, #FED7AA); color: #C2410C; border: 1px solid #FCD34D;">🔥 Premium Selections</span>
+            <h2 class="text-4xl md:text-6xl font-black text-slate-900 mb-5 tracking-tight">
+                Shop by <span class="section-heading-accent">Category</span>
+            </h2>
+            <p class="text-slate-500 max-w-xl mx-auto text-lg leading-relaxed">Tap any category to instantly filter our full collection.</p>
         </div>
 
-        <!-- CIRCULAR CATEGORY NAV -->
-        <div class="flex flex-wrap items-center justify-center gap-6 md:gap-12 mb-16">
-            <!-- Everything / All -->
-            <div onclick="filterCategory('all', this)" class="cat-circle-item active group cursor-pointer flex flex-col items-center">
-                <div class="w-20 h-20 md:w-32 md:h-32 rounded-full p-1 bg-gradient-to-tr from-amber-500 to-orange-400 group-hover:scale-110 transition-all duration-500 shadow-xl shadow-amber-200/50">
-                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white text-2xl font-black italic">ALL</div>
+        <!-- PILL CATEGORY NAV -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-14">
+            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer">
+                <div class="cat-pill-inner flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-300 bg-slate-900 text-white shadow-lg">
+                    <span>🏠</span> All Products
                 </div>
-                <span class="mt-4 font-black uppercase text-[11px] tracking-widest text-slate-900 group-hover:text-amber-600 transition">Everything</span>
             </div>
-
             <?php foreach($gridCats as $cat): ?>
-            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-circle-item group cursor-pointer flex flex-col items-center">
-                <div class="w-20 h-20 md:w-32 md:h-32 rounded-full p-1 bg-white border-2 border-slate-100 group-hover:border-amber-500 group-hover:scale-110 transition-all duration-500 shadow-lg group-hover:shadow-amber-100/50 overflow-hidden">
-                    <img src="<?php echo htmlspecialchars($cat['image'] ?? 'assets/images/placeholder.jpg'); ?>" 
-                         class="w-full h-full rounded-full object-cover grayscale-[40%] group-hover:grayscale-0 transition duration-500">
-                </div>
-                <span class="mt-4 font-bold text-[11px] uppercase tracking-wider text-slate-500 group-hover:text-amber-600 transition">
+            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer">
+                <div class="cat-pill-inner flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 bg-white border border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 hover:shadow-md shadow-sm">
                     <?php echo htmlspecialchars($cat['name']); ?>
-                </span>
+                </div>
             </div>
             <?php endforeach; ?>
         </div>
@@ -123,7 +210,7 @@ foreach ($rowCategories as $slug) {
         <?php
         $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
         ?>
-        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
+        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <?php foreach($allProducts as $p): ?>
             <div class="product-item transition-all duration-700 transform opacity-100 scale-100" data-category="<?php echo $p['cat_slug']; ?>">
                 <?php include __DIR__ . '/includes/product-card.php'; ?>
@@ -133,24 +220,9 @@ foreach ($rowCategories as $slug) {
     </div>
 </section>
 
-<style>
-    .cat-circle-item.active .rounded-full {
-        border-color: #f59e0b !important;
-        box-shadow: 0 15px 30px -5px rgba(245, 158, 11, 0.4) !important;
-        transform: translateY(-5px) scale(1.1);
-    }
-    .cat-circle-item.active span {
-        color: #f59e0b !important;
-        font-weight: 900;
-    }
-    .cat-circle-item:hover .rounded-full {
-        transform: translateY(-5px);
-    }
-</style>
-
 <script>
     function filterCategory(slug, el) {
-        document.querySelectorAll('.cat-circle-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.cat-pill-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
 
         const items = document.querySelectorAll('.product-item');
@@ -164,9 +236,7 @@ foreach ($rowCategories as $slug) {
             } else {
                 item.style.opacity = '0';
                 item.style.transform = 'translateY(20px) scale(0.95)';
-                setTimeout(() => {
-                    item.style.display = 'none';
-                }, 500);
+                setTimeout(() => { item.style.display = 'none'; }, 500);
             }
         });
     }
@@ -273,24 +343,39 @@ foreach ($rowCategories as $slug) {
     </div>
 </section>
 
-<!-- Why Choose Us -->
-<section class="py-16 bg-gray-900 text-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-extrabold text-center mb-12">Why <span class="text-amber-400">Zaman Kitchens?</span></h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+<!-- Why Choose Us — Vibrant Dark Section -->
+<section class="py-24 relative overflow-hidden" style="background: linear-gradient(145deg, #0A0A0F 0%, #0F0520 60%, #180A28 100%);">
+    <div class="absolute inset-0 hero-grid-bg"></div>
+    <div class="floating-blob1 absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full opacity-10"
+         style="background: radial-gradient(circle, #A855F7 0%, transparent 70%);"></div>
+    <div class="floating-blob2 absolute -bottom-40 -left-20 w-[500px] h-[500px] rounded-full opacity-10"
+         style="background: radial-gradient(circle, #F97316 0%, transparent 70%);"></div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-16">
+            <span class="inline-block text-[10px] font-black uppercase tracking-[0.35em] px-6 py-2 rounded-full mb-6"
+                  style="border: 1px solid rgba(168,85,247,0.4); color: #D8B4FE; background: rgba(168,85,247,0.1);">Why Us</span>
+            <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">
+                Why <span style="background: linear-gradient(135deg, #FBBF24, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Zaman Kitchens?</span>
+            </h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <?php
             $features = [
-                ['🚚', 'Fast Delivery', 'Dhaka same-day, nationwide 2-3 days'],
-                ['🛡️', 'Warranty', 'All products carry manufacturer warranty'],
-                ['💬', 'Expert Support', 'WhatsApp & phone support 10am-8pm'],
-                ['💳', 'Easy Payment', 'Cash on delivery + bKash/Nagad'],
+                ['🚚', 'Fast Delivery', 'Dhaka same-day, nationwide 2-3 days', 'rgba(251,191,36,0.15)', '#FBBF24'],
+                ['🛡️', 'Full Warranty', 'All products carry manufacturer warranty', 'rgba(249,115,22,0.15)', '#F97316'],
+                ['💬', 'Expert Support', 'WhatsApp & phone support 10am–8pm', 'rgba(236,72,153,0.15)', '#EC4899'],
+                ['💳', 'Easy Payment', 'Cash on delivery + bKash/Nagad', 'rgba(168,85,247,0.15)', '#A855F7'],
             ];
             foreach($features as $f):
             ?>
-            <div class="p-6 rounded-xl bg-white/5 hover:bg-white/10 transition">
-                <div class="text-4xl mb-3"><?php echo $f[0]; ?></div>
-                <h3 class="font-bold text-lg mb-2"><?php echo $f[1]; ?></h3>
-                <p class="text-gray-400 text-sm"><?php echo $f[2]; ?></p>
+            <div class="group p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 cursor-default"
+                 style="background: <?php echo $f[3]; ?>; border: 1px solid rgba(255,255,255,0.07);">
+                <div class="text-5xl mb-5"><?php echo $f[0]; ?></div>
+                <h3 class="font-black text-white text-lg mb-2"><?php echo $f[1]; ?></h3>
+                <p class="text-slate-500 text-sm leading-relaxed"><?php echo $f[2]; ?></p>
+                <div class="mt-5 w-8 h-1 rounded-full transition-all duration-300 group-hover:w-16"
+                     style="background: <?php echo $f[4]; ?>;"></div>
             </div>
             <?php endforeach; ?>
         </div>
