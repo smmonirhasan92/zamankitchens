@@ -298,6 +298,24 @@ foreach ($rowCategories as $slug) {
 </section>
 
 <!-- ===========================
+     COMPARE MODAL (Glassmorphism)
+=========================== -->
+<div id="compare-modal" class="fixed inset-0 z-[115] hidden items-center justify-center p-4 md:p-10">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeCompareModal()"></div>
+    <div class="relative bg-slate-50 w-full max-w-6xl h-full max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white/20">
+        <div class="p-6 md:p-8 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3"><span class="text-amber-500">⇄</span> Product Comparison</h2>
+            <button onclick="closeCompareModal()" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 text-slate-600 transition font-bold">✕</button>
+        </div>
+        <div class="flex-1 overflow-x-auto p-6 md:p-8">
+            <div id="compare-grid" class="flex gap-6 w-max min-w-full">
+                <!-- Comparison columns injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===========================
      QUICK VIEW MODAL (Glassmorphism)
 =========================== -->
 <div id="quick-view-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-10">
@@ -338,6 +356,108 @@ foreach ($rowCategories as $slug) {
     // Global State
     let cart = JSON.parse(localStorage.getItem('zk_cart')) || [];
     let wishlist = JSON.parse(localStorage.getItem('zk_wishlist')) || [];
+    let compareList = JSON.parse(localStorage.getItem('zk_compare')) || [];
+
+    // Compare Logic
+    function toggleCompare(product) {
+        event.stopPropagation();
+        const index = compareList.findIndex(item => item.id == product.id);
+        if (index > -1) {
+            compareList.splice(index, 1);
+        } else {
+            if (compareList.length >= 3) {
+                alert('You can only compare up to 3 products at a time.');
+                return;
+            }
+            compareList.push(product);
+        }
+        localStorage.setItem('zk_compare', JSON.stringify(compareList));
+        renderCompareBar();
+    }
+
+    function renderCompareBar() {
+        let bar = document.getElementById('compare-bar');
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'compare-bar';
+            bar.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] bg-slate-900/90 backdrop-blur-md text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 transform transition-all duration-300 translate-y-24';
+            bar.innerHTML = `
+                <div class="flex items-center gap-2 font-bold text-sm">
+                    <span><span id="compare-count" class="text-amber-400">0</span> Items to Compare</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openCompareModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-5 py-2 rounded-xl text-sm font-black transition">Compare Now</button>
+                    <button onclick="clearCompare()" class="text-slate-400 hover:text-white transition">✕</button>
+                </div>
+            `;
+            document.body.appendChild(bar);
+        }
+
+        const countEl = document.getElementById('compare-count');
+        if (countEl) countEl.innerText = compareList.length;
+
+        if (compareList.length > 0) {
+            bar.classList.remove('translate-y-24');
+        } else {
+            bar.classList.add('translate-y-24');
+        }
+    }
+
+    function clearCompare() {
+        compareList = [];
+        localStorage.setItem('zk_compare', JSON.stringify(compareList));
+        renderCompareBar();
+    }
+
+    function openCompareModal() {
+        if (compareList.length < 2) {
+            alert('Please select at least 2 products to compare.');
+            return;
+        }
+        const modal = document.getElementById('compare-modal');
+        const grid = document.getElementById('compare-grid');
+        
+        let html = '';
+        compareList.forEach(p => {
+            html += `
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 flex-1 relative min-w-[280px]">
+                    <button onclick="toggleCompare({id: ${p.id}}); openCompareModal();" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition">✕</button>
+                    <img src="${p.image}" class="w-full h-48 object-cover rounded-2xl mb-6 bg-slate-50">
+                    <h3 class="font-black text-slate-900 text-lg mb-2 leading-tight">${p.name}</h3>
+                    <div class="text-2xl font-black text-amber-600 mb-6">৳ ${parseInt(p.price).toLocaleString()}</div>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div class="border-t border-slate-100 pt-4">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Brand</span>
+                            <span class="font-bold text-slate-700">Zaman Premium</span>
+                        </div>
+                        <div class="border-t border-slate-100 pt-4">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Description</span>
+                            <span class="text-slate-600 line-clamp-3 leading-relaxed">${p.description}</span>
+                        </div>
+                        <div class="border-t border-slate-100 pt-4">
+                            <span class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Stock Status</span>
+                            <span class="font-bold text-emerald-600">In Stock</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="closeCompareModal(); buyNow(${JSON.stringify(p).replace(/"/g, '&quot;')})" class="w-full mt-8 bg-slate-900 hover:bg-slate-800 text-white font-black py-3.5 rounded-xl transition shadow-xl hover:-translate-y-0.5">Buy Now</button>
+                </div>
+            `;
+        });
+        
+        grid.innerHTML = html;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeCompareModal() {
+        let modal = document.getElementById('compare-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
 
     // Wishlist Logic
     function renderWishlistCount() {
@@ -525,11 +645,13 @@ foreach ($rowCategories as $slug) {
                         <span>Add to Bag</span>
                     </button>
                     
-                    <button onclick='buyNow(${JSON.stringify(p)}); closeQuickView();' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-sm py-4 rounded-2xl transition shadow-xl shadow-slate-200 text-center">
+                    <button onclick='buyNow(${JSON.stringify(p).replace(/"/g, '&quot;')}); closeQuickView();' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-sm py-4 rounded-2xl transition shadow-xl shadow-slate-200 text-center">
                         Buy Now
                     </button>
                     
-                    <button class="w-14 h-14 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl hover:bg-red-50 hover:border-red-100 transition flex-shrink-0">❤️</button>
+                    <button onclick='toggleWishlist(${JSON.stringify(p).replace(/"/g, '&quot;')})' class="w-14 h-14 rounded-2xl border border-slate-200 bg-white flex items-center justify-center text-xl hover:bg-rose-50 hover:border-rose-100 hover:text-rose-500 transition flex-shrink-0 wishlist-btn-${p.id}">
+                        ${wishlist.findIndex(item => item.id == p.id) > -1 ? '❤️' : '🤍'}
+                    </button>
                 </div>
             </div>
         `;
