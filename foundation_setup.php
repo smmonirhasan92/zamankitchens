@@ -69,29 +69,30 @@ try {
     echo "✅ User authentication tables ready.\n";
 
     // 6. Category Image column fix
-    try {
+    $cols = $pdo->query("SHOW COLUMNS FROM categories LIKE 'image'")->fetch();
+    if (!$cols) {
         $pdo->exec("ALTER TABLE categories ADD COLUMN image VARCHAR(255) DEFAULT NULL");
         echo "✅ Categories table updated with image column.\n";
-    } catch (Exception $e) {}
-
-    // 7. Comprehensive Seeding
-    $catCount = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
-    if ($catCount <= 4) {
-        $pdo->exec("TRUNCATE TABLE categories");
-        $stmt = $pdo->prepare("INSERT INTO categories (name, slug, image) VALUES (?, ?, ?)");
-        $cats = [
-            ['Kitchen Cabinet', 'kitchen-cabinet', 'assets/images/cat-cabinet.jpg'],
-            ['Kitchen Hood', 'kitchen-hood', 'assets/images/cat-hood.jpg'],
-            ['Gas Stove', 'gas-stove', 'assets/images/cat-stove.jpg'],
-            ['Premium Sinks', 'sinks', 'assets/images/cat-sink.jpg'],
-            ['Bath Appliances', 'bath', 'assets/images/cat-bath.jpg']
-        ];
-        foreach ($cats as $cat) $stmt->execute($cat);
-        echo "✅ Professional categories seeded.\n";
     }
 
+    // 7. Comprehensive Seeding
+    // Clear and re-populate categories to ensure images are present
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    $pdo->exec("TRUNCATE TABLE categories");
+    $stmt = $pdo->prepare("INSERT INTO categories (name, slug, image) VALUES (?, ?, ?)");
+    $cats = [
+        ['Kitchen Cabinet', 'kitchen-cabinet', 'assets/images/cat-cabinet.jpg'],
+        ['Kitchen Hood', 'kitchen-hood', 'assets/images/cat-hood.jpg'],
+        ['Gas Stove', 'gas-stove', 'assets/images/cat-stove.jpg'],
+        ['Premium Sinks', 'sinks', 'assets/images/cat-sink.jpg'],
+        ['Bath Appliances', 'bath', 'assets/images/cat-bath.jpg']
+    ];
+    foreach ($cats as $cat) $stmt->execute($cat);
+    echo "✅ Professional categories seeded.\n";
+
     $prodCount = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
-    if ($prodCount == 0) {
+    if ($prodCount < 10) {
+        $pdo->exec("TRUNCATE TABLE products");
         $categories = $pdo->query("SELECT id, name FROM categories")->fetchAll();
         $stmt = $pdo->prepare("INSERT INTO products (category_id, name, description, price, purchase_price, image, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
         
@@ -110,6 +111,7 @@ try {
         }
         echo "✅ 15 Professional products seeded.\n";
     }
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     echo "\n🚀 Master Setup Complete! Your store is now ready for professional use.\n";
 } catch (Exception $e) {
