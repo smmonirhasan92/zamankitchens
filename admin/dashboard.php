@@ -1,218 +1,281 @@
 <?php
-/**
- * Zaman Kitchens - Admin Dashboard
- * Features: KPIs, Latest Orders, AJAX new-order notification with sound
- */
-session_start();
-require_once __DIR__ . '/../includes/db.php';
+$adminTitle = 'Dashboard';
+include_once __DIR__ . '/includes/header.php';
 
-// Auth Guard
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: index.php");
-    exit();
-}
+// KPI Stats
+$totalRevenue = 0; $todayRevenue = 0; $totalOrders = 0; $pendingCount = 0;
+$totalProducts = 0; $totalLeads = 0;
 
-// Dashboard Stats
 try {
-    $totalOrders   = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
-    $pendingOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Pending'")->fetchColumn();
-    $totalSales    = $pdo->query("SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE status != 'Cancelled'")->fetchColumn();
-    $totalProfit   = $pdo->query("SELECT COALESCE(SUM(oi.quantity * (oi.price - COALESCE(p.purchase_price, 0))), 0) FROM order_items oi JOIN products p ON oi.product_id = p.id JOIN orders o ON oi.order_id = o.id WHERE o.status != 'Cancelled'")->fetchColumn();
-    $totalProducts = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
-    $recentOrders  = $pdo->query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 10")->fetchAll();
-    $lastOrderId   = $pdo->query("SELECT COALESCE(MAX(id),0) FROM orders")->fetchColumn();
-} catch(Exception $e) {
-    $totalOrders = $pendingOrders = $totalSales = $totalProfit = $totalProducts = 0;
-    $recentOrders = [];
-    $lastOrderId = 0;
+    $totalRevenue   = $pdo->query("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE status != 'Cancelled'")->fetchColumn();
+    $todayRevenue   = $pdo->query("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE DATE(created_at)=CURDATE() AND status != 'Cancelled'")->fetchColumn();
+    $totalOrders    = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
+    $pendingCount   = $pdo->query("SELECT COUNT(*) FROM orders WHERE status='Pending'")->fetchColumn();
+    $totalProducts  = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    $totalLeads     = $pdo->query("SELECT COUNT(*) FROM leads")->fetchColumn();
+} catch(Exception $e) {}
+
+// Last 7 days chart data
+$chartLabels = []; $chartData = [];
+for ($i = 6; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $label = date('D', strtotime("-$i days"));
+    $chartLabels[] = $label;
+    try {
+        $r = $pdo->prepare("SELECT COALESCE(SUM(total_amount),0) FROM orders WHERE DATE(created_at)=? AND status!='Cancelled'");
+        $r->execute([$date]);
+        $chartData[] = (int)$r->fetchColumn();
+    } catch(Exception $e) { $chartData[] = 0; }
 }
 
-$adminTitle = 'Overview';
-include_once __DIR__ . '/includes/header.php'; 
+// Orders by status for donut
+$statusData = ['Pending'=>0,'Processing'=>0,'Delivered'=>0,'Cancelled'=>0];
+try {
+    $rows = $pdo->query("SELECT status, COUNT(*) as cnt FROM orders GROUP BY status")->fetchAll();
+    foreach ($rows as $row) {
+        if (isset($statusData[$row['status']])) $statusData[$row['status']] = (int)$row['cnt'];
+    }
+} catch(Exception $e) {}
+
+// Recent orders
+$recentOrders = [];
+try {
+    $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 8")->fetchAll();
+} catch(Exception $e) {}
+
+// Top products by order count
+$topProducts = [];
+try {
+    $topProducts = $pdo->query("SELECT p.name, COUNT(oi.id) as order_count, SUM(oi.price * oi.quantity) as revenue FROM order_items oi JOIN products p ON oi.product_id=p.id GROUP BY oi.product_id ORDER BY order_count DESC LIMIT 5")->fetchAll();
+} catch(Exception $e) {}
 ?>
 
-<!-- Content Container -->
-<div class="px-12 py-10">
-    
-    <!-- Notification Alert Bar (hidden by default) -->
-    <div id="newOrderAlert" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl mb-8 text-center font-bold hidden cursor-pointer animate-pulse shadow-xl shadow-indigo-200">
-        🚀 New order received! Tap to view details.
+<div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1.25rem; margin-bottom:1.75rem;">
+    <!-- KPI 1 -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background: rgba(239,35,60,0.1);">🔥</div>
+        <div class="kpi-value">৳ <?php echo number_format($totalRevenue); ?></div>
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-trend neutral">All time, excl. cancelled</div>
+        <div class="kpi-bg-accent" style="background:#ef233c;"></div>
     </div>
+    <!-- KPI 2 -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background: rgba(16,185,129,0.1);">📈</div>
+        <div class="kpi-value">৳ <?php echo number_format($todayRevenue); ?></div>
+        <div class="kpi-label">Today's Revenue</div>
+        <div class="kpi-trend up">↑ Live today</div>
+        <div class="kpi-bg-accent" style="background:#10b981;"></div>
+    </div>
+    <!-- KPI 3 -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background: rgba(59,130,246,0.1);">📦</div>
+        <div class="kpi-value"><?php echo number_format($totalOrders); ?></div>
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-trend neutral"><?php echo $pendingCount; ?> pending action</div>
+        <div class="kpi-bg-accent" style="background:#3b82f6;"></div>
+    </div>
+    <!-- KPI 4 -->
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background: rgba(168,85,247,0.1);">🏷️</div>
+        <div class="kpi-value"><?php echo number_format($totalProducts); ?></div>
+        <div class="kpi-label">Products Listed</div>
+        <div class="kpi-trend neutral"><?php echo $totalLeads; ?> leads captured</div>
+        <div class="kpi-bg-accent" style="background:#a855f7;"></div>
+    </div>
+</div>
 
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div>
-            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Welcome back, Admin!</h1>
-            <p class="text-slate-500 font-medium">Here's what's happening today at <span class="text-amber-600">Zaman Kitchens</span>.</p>
+<!-- Charts Row -->
+<div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.25rem; margin-bottom:1.75rem;">
+    <!-- Revenue Chart -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <span class="admin-card-title">Revenue — Last 7 Days</span>
+            <span style="font-size:0.75rem; color:#9ca3af; font-weight:600;">৳ Chart</span>
         </div>
-        <div class="flex items-center gap-3">
-            <button class="px-5 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition flex items-center gap-2">
-                <i class="ph ph-export text-lg"></i>
-                Export Results
-            </button>
-            <a href="product-edit.php" class="px-6 py-3 bg-amber-600 text-white rounded-2xl text-sm font-bold hover:bg-amber-700 transition shadow-lg shadow-amber-200 flex items-center gap-2">
-                <i class="ph ph-plus-circle text-lg"></i>
-                Add Product
-            </a>
+        <div class="admin-card-body chart-wrap" style="height:260px;">
+            <canvas id="revenueChart" style="max-height:220px;"></canvas>
         </div>
     </div>
-
-    <!-- Premium KPI Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-        <?php
-        $kpis = [
-            ['Total Orders', $totalOrders, '📦', 'text-blue-600', 'bg-blue-50', 'orders.php'],
-            ['Pending Status', $pendingOrders, '⏳', 'text-amber-600', 'bg-amber-50', 'orders.php?status=Pending'],
-            ['Total Sales', '৳ ' . number_format($totalSales), '💰', 'text-emerald-600', 'bg-emerald-50', 'orders.php'],
-            ['Net Profit', '৳ ' . number_format($totalProfit), '📈', 'text-indigo-600', 'bg-indigo-50', 'reports.php'],
-        ];
-        foreach ($kpis as [$label, $value, $icon, $textColor, $bgColor, $link]): ?>
-        <a href="<?php echo $link; ?>" class="group glass-card p-8 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 relative overflow-hidden">
-            <div class="flex flex-col gap-4">
-                <div class="w-14 h-14 <?php echo $bgColor; ?> <?php echo $textColor; ?> rounded-2xl flex items-center justify-center text-2xl transition-transform group-hover:scale-110 duration-500"><?php echo $icon; ?></div>
-                <div>
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-1"><?php echo $label; ?></div>
-                    <div class="text-3xl font-bold text-slate-900 tracking-tight group-hover:text-amber-600 transition-colors"><?php echo $value; ?></div>
-                </div>
-            </div>
-        </a>
-        <?php endforeach; ?>
-    </div>
-
-    <!-- Recent Orders & Stats Grid -->
-    <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Recent Orders Table -->
-        <div class="lg:col-span-2 glass-card rounded-[2.5rem] shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between px-10 py-8 border-b border-slate-50">
-                <h2 class="font-black text-xl text-slate-900">Recent Transactions</h2>
-                <a href="orders.php" class="px-5 py-2 bg-slate-50 text-slate-500 text-xs font-bold rounded-full hover:bg-amber-50 hover:text-amber-600 transition">View All Orders</a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="bg-slate-50/30">
-                            <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Reference</th>
-                            <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Customer</th>
-                            <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Revenue</th>
-                            <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Status</th>
-                            <th class="px-10 py-5 text-right"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50">
-                        <?php if (empty($recentOrders)): ?>
-                        <tr><td colspan="5" class="px-10 py-20 text-center">
-                            <div class="text-5xl mb-4 opacity-10">📋</div>
-                            <div class="text-slate-400 font-bold uppercase tracking-widest text-xs">No transactions available</div>
-                        </td></tr>
-                        <?php else: ?>
-                        <?php foreach ($recentOrders as $order): ?>
-                        <tr class="hover:bg-amber-50/20 transition group">
-                            <td class="px-10 py-6">
-                                <div class="font-black text-slate-900 group-hover:text-amber-600 transition-colors">#<?php echo str_pad($order['id'], 5, '0', STR_PAD_LEFT); ?></div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase"><?php echo date('d M, Y', strtotime($order['created_at'])); ?></div>
-                            </td>
-                            <td class="px-10 py-6">
-                                <div class="font-bold text-slate-800"><?php echo htmlspecialchars($order['customer_name']); ?></div>
-                                <div class="text-[10px] text-slate-400 font-bold"><?php echo htmlspecialchars($order['phone']); ?></div>
-                            </td>
-                            <td class="px-10 py-6 font-black text-slate-900">৳ <?php echo number_format($order['total_amount']); ?></td>
-                            <td class="px-10 py-6">
-                                <?php
-                                $statusClasses = match($order['status']) {
-                                    'Pending' => 'bg-amber-100 text-amber-700',
-                                    'Delivered' => 'bg-emerald-100 text-emerald-700',
-                                    'Cancelled' => 'bg-rose-100 text-rose-700',
-                                    default => 'bg-slate-100 text-slate-600'
-                                };
-                                ?>
-                                <span class="<?php echo $statusClasses; ?> text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><?php echo $order['status']; ?></span>
-                            </td>
-                            <td class="px-10 py-6 text-right">
-                                <a href="orders.php?id=<?php echo $order['id']; ?>" class="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-white border border-slate-100 text-slate-400 hover:bg-amber-600 hover:text-white hover:border-amber-600 transition shadow-sm">
-                                    <i class="ph ph-caret-right font-bold"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Orders Donut -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <span class="admin-card-title">Order Status</span>
         </div>
-
-        <!-- Sidebar Stats -->
-        <div class="space-y-8">
-            <div class="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden">
-                <div class="relative z-10">
-                    <h3 class="font-black text-2xl mb-2">Performance High</h3>
-                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">Your shop is operating at peak efficiency. All systems are green.</p>
-                    <div class="flex items-center gap-3 px-5 py-3 bg-white/5 rounded-2xl w-fit border border-white/10">
-                        <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.5)]"></div>
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Live Network</span>
-                    </div>
+        <div class="admin-card-body chart-wrap" style="height:260px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <canvas id="statusChart" style="max-height:180px; max-width:180px;"></canvas>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; width:100%;">
+                <?php
+                $statusColors = ['Pending'=>'#f59e0b','Processing'=>'#3b82f6','Delivered'=>'#10b981','Cancelled'=>'#ef233c'];
+                foreach($statusData as $s => $c):
+                ?>
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <span style="width:8px; height:8px; border-radius:2px; background:<?php echo $statusColors[$s]; ?>; flex-shrink:0;"></span>
+                    <span style="font-size:0.6875rem; font-weight:600; color:#6b7280;"><?php echo $s; ?></span>
+                    <span style="font-size:0.6875rem; font-weight:800; color:#111827; margin-left:auto;"><?php echo $c; ?></span>
                 </div>
-                <div class="absolute -right-10 -bottom-10 text-[10rem] opacity-5 rotate-12">⚡</div>
-            </div>
-
-            <div class="glass-card rounded-[2.5rem] p-10 shadow-sm">
-                <h3 class="font-black text-slate-900 mb-8 border-b border-slate-50 pb-4">Inventory Health</h3>
-                <div class="space-y-8">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Catalog Size</div>
-                            <div class="text-2xl font-black text-slate-900"><?php echo $totalProducts; ?> <span class="text-xs text-slate-400 font-bold uppercase ml-1">Items</span></div>
-                        </div>
-                        <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-xl">📦</div>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            <span>Storage Usage</span>
-                            <span>75%</span>
-                        </div>
-                        <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-1">
-                            <div class="bg-gradient-to-r from-amber-400 to-amber-600 h-full rounded-full shadow-lg" style="width: 75%"></div>
-                        </div>
-                    </div>
-                    
-                    <p class="text-[10px] text-slate-400 leading-relaxed font-bold italic">* Stock health is calculated based on recent turnover rates.</p>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Bottom Row: Recent Orders + Top Products -->
+<div style="display:grid; grid-template-columns: 3fr 2fr; gap:1.25rem;">
+    <!-- Recent Orders -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <span class="admin-card-title">Recent Orders</span>
+            <a href="orders.php" class="btn btn-ghost" style="font-size:0.75rem; padding:0.375rem 0.875rem;">View All →</a>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($recentOrders)): ?>
+                    <tr><td colspan="5" style="text-align:center; padding:2rem; color:#9ca3af;">No orders yet.</td></tr>
+                    <?php endif; ?>
+                    <?php foreach($recentOrders as $o):
+                        $statusClass = strtolower($o['status']);
+                    ?>
+                    <tr>
+                        <td><span style="font-weight:800; color:#111827;">#<?php echo str_pad($o['id'],4,'0',STR_PAD_LEFT); ?></span></td>
+                        <td>
+                            <div style="font-weight:700; color:#111827;"><?php echo htmlspecialchars($o['customer_name']); ?></div>
+                            <div style="font-size:0.75rem; color:#9ca3af;"><?php echo htmlspecialchars($o['phone']); ?></div>
+                        </td>
+                        <td style="font-weight:800; color:#111827;">৳ <?php echo number_format($o['total_amount']); ?></td>
+                        <td><span class="status-badge status-<?php echo $statusClass; ?>"><?php echo $o['status']; ?></span></td>
+                        <td style="color:#9ca3af; font-size:0.8125rem;"><?php echo date('d M', strtotime($o['created_at'])); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <span class="admin-card-title">Top Products</span>
+            <a href="products.php" class="btn btn-ghost" style="font-size:0.75rem; padding:0.375rem 0.875rem;">Manage →</a>
+        </div>
+        <div class="admin-card-body" style="padding:0.75rem 1rem;">
+            <?php if (empty($topProducts)): ?>
+            <p style="color:#9ca3af; text-align:center; padding:2rem 0; font-size:0.875rem;">No order data yet.</p>
+            <?php endif; ?>
+            <?php foreach($topProducts as $i => $tp): ?>
+            <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid #f3f4f6;">
+                <span style="font-size:0.75rem; font-weight:900; color:#d1d5db; width:20px; flex-shrink:0;"><?php echo $i+1; ?></span>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:0.8125rem; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo htmlspecialchars($tp['name']); ?></div>
+                    <div style="font-size:0.6875rem; color:#9ca3af; margin-top:2px;"><?php echo $tp['order_count']; ?> orders</div>
+                </div>
+                <div style="font-size:0.8125rem; font-weight:800; color:#111827; white-space:nowrap;">৳ <?php echo number_format($tp['revenue']); ?></div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
 <script>
-let lastKnownOrderId = <?php echo (int)(str_replace(',', '', $lastOrderId)); ?>;
+const chartDefaults = {
+    font: { family: 'Inter', weight: '600' },
+    color: '#9ca3af'
+};
+Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#9ca3af';
 
-function playAlertSound() {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.3);
-}
+// Revenue Line Chart
+const rCtx = document.getElementById('revenueChart').getContext('2d');
+const gradient = rCtx.createLinearGradient(0, 0, 0, 220);
+gradient.addColorStop(0, 'rgba(239,35,60,0.2)');
+gradient.addColorStop(1, 'rgba(239,35,60,0)');
 
-function pollNewOrders() {
-    fetch('api/check_orders.php?last_id=' + lastKnownOrderId)
-        .then(r => r.json())
-        .then(data => {
-            if (data.new_count > 0) {
-                lastKnownOrderId = data.latest_id;
-                playAlertSound();
-                document.getElementById('newOrderAlert').classList.remove('hidden');
-                document.getElementById('newOrderAlert').textContent = '🔔 ' + data.new_count + ' new order(s) received!';
+new Chart(rCtx, {
+    type: 'line',
+    data: {
+        labels: <?php echo json_encode($chartLabels); ?>,
+        datasets: [{
+            label: 'Revenue (৳)',
+            data: <?php echo json_encode($chartData); ?>,
+            borderColor: '#ef233c',
+            backgroundColor: gradient,
+            borderWidth: 2.5,
+            pointBackgroundColor: '#ef233c',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#111827',
+                titleColor: '#f9fafb',
+                bodyColor: '#9ca3af',
+                padding: 12,
+                cornerRadius: 8,
+                callbacks: { label: ctx => ' ৳ ' + ctx.raw.toLocaleString() }
             }
-        })
-        .catch(() => {});
-}
+        },
+        scales: {
+            x: { grid: { display: false }, border:{ display:false }, ticks: { font:{weight:'700'} } },
+            y: {
+                grid: { color: '#f3f4f6', borderDash:[4,4] },
+                border: { display:false, dash:[4,4] },
+                ticks: { 
+                    font: {weight:'700'},
+                    callback: v => '৳' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v)
+                }
+            }
+        }
+    }
+});
 
-setInterval(pollNewOrders, 30000);
+// Status Donut Chart
+const sCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(sCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Pending','Processing','Delivered','Cancelled'],
+        datasets: [{
+            data: [
+                <?php echo $statusData['Pending']; ?>,
+                <?php echo $statusData['Processing']; ?>,
+                <?php echo $statusData['Delivered']; ?>,
+                <?php echo $statusData['Cancelled']; ?>
+            ],
+            backgroundColor: ['#f59e0b','#3b82f6','#10b981','#ef233c'],
+            borderWidth: 0,
+            hoverOffset: 6
+        }]
+    },
+    options: {
+        responsive: true, maintainAspectRatio: true,
+        cutout: '72%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#111827',
+                titleColor: '#f9fafb',
+                bodyColor: '#9ca3af',
+                padding: 10, cornerRadius: 8
+            }
+        }
+    }
+});
 </script>
 
-</main> <!-- Closing main from header.php -->
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
