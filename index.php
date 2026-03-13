@@ -366,6 +366,17 @@ foreach ($rowCategories as $slug) {
         if (window.innerWidth > 768) toggleCart();
     }
 
+    function buyNow(product) {
+        addToCart(product);
+        setTimeout(() => {
+            const sideCart = document.getElementById('side-cart');
+            if (sideCart && !sideCart.classList.contains('translate-x-full')) {
+                sideCart.classList.add('translate-x-full');
+            }
+            openCheckout();
+        }, 100);
+    }
+
     function renderCart() {
         const countEl = document.getElementById('cart-count');
         if (countEl) countEl.innerHTML = cart.reduce((a, b) => a + b.qty, 0);
@@ -432,11 +443,19 @@ foreach ($rowCategories as $slug) {
                 <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">${p.name}</h2>
                 <div class="text-4xl font-black text-amber-600 mb-8 italic">৳ ${parseInt(p.price).toLocaleString()}</div>
                 <p class="text-slate-500 mb-10 text-lg leading-relaxed">${p.description}</p>
-                <div class="flex gap-4">
-                    <button onclick='addToCart(${JSON.stringify(p)})' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black py-5 rounded-2xl transition shadow-2xl flex items-center justify-center gap-3">
+                <div class="flex gap-3">
+                    <button onclick='addToCart(${JSON.stringify(p)})' class="flex-1 bg-slate-100 hover:bg-amber-100 text-slate-800 font-bold py-4 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 group/btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover/btn:text-amber-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
                         <span>Add to Bag</span>
                     </button>
-                    <button class="w-16 h-16 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-2xl hover:bg-red-50 hover:border-red-100 transition">❤️</button>
+                    
+                    <button onclick='buyNow(${JSON.stringify(p)}); closeQuickView();' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-sm py-4 rounded-2xl transition shadow-xl shadow-slate-200 text-center">
+                        Buy Now
+                    </button>
+                    
+                    <button class="w-14 h-14 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl hover:bg-red-50 hover:border-red-100 transition flex-shrink-0">❤️</button>
                 </div>
             </div>
         `;
