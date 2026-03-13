@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'] ?? '';
     $meta_title = $_POST['meta_title'] ?? '';
     $meta_description = $_POST['meta_description'] ?? '';
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
     // Process Variations
     $var_names = $_POST['var_name'] ?? [];
@@ -70,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = __DIR__ . '/../assets/uploads/products/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-        $file_name = $slug . '-' . time() . '.' . pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $file_name = $slug . '-' . time() . '.' . $file_ext;
         if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
             $main_image = 'assets/uploads/products/' . $file_name;
         }
@@ -79,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ? WHERE id = ?");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $id]);
+                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ? WHERE id = ?");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $id]);
                 $message = "Product updated successfully!";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, image, meta_title, meta_description, variations, specifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications)]);
+                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, image, meta_title, meta_description, variations, specifications, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -113,143 +115,155 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
 $msg = $_GET['msg'] ?? '';
 ?>
 
-<div class="max-w-7xl mx-auto px-6 py-10">
+<div class="max-w-7xl mx-auto">
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h1 class="text-2xl font-extrabold"><?php echo $product ? 'Edit Product' : 'Add New Product'; ?></h1>
-            <p class="text-sm text-gray-500">Manage pro-grade listings with variations and meta tags.</p>
+            <h1 class="text-2xl font-black text-slate-900"><?php echo $product ? 'Edit Product' : 'Add New Product'; ?></h1>
+            <p class="text-sm text-slate-500">Professional management of your kitchen appliances and accessories.</p>
         </div>
-        <a href="products.php" class="text-gray-500 hover:text-amber-600 font-bold">&larr; Back to Products</a>
+        <a href="products.php" class="btn btn-ghost">
+            <i class="ph ph-arrow-left"></i>
+            Back to Products
+        </a>
     </div>
 
-    <?php if($msg): ?> <div class="bg-green-50 text-green-700 p-4 rounded-2xl mb-6 font-bold border border-green-100">✅ <?php echo htmlspecialchars($msg); ?></div> <?php endif; ?>
-    <?php if($error): ?> <div class="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 font-bold border border-red-100">❌ <?php echo $error; ?></div> <?php endif; ?>
+    <?php if($msg): ?> <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl mb-6 font-bold border border-emerald-100 flex items-center gap-3"><i class="ph ph-check-circle text-xl"></i> <?php echo htmlspecialchars($msg); ?></div> <?php endif; ?>
+    <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-4 rounded-2xl mb-6 font-bold border border-rose-100 flex items-center gap-3"><i class="ph ph-warning-circle text-xl"></i> <?php echo $error; ?></div> <?php endif; ?>
 
     <form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-3 gap-8">
         <!-- Main Column -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Basic Info -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <h3 class="font-bold text-lg mb-6 flex items-center gap-2 mt-0">
-                    <span class="w-2 h-6 bg-amber-500 rounded-full"></span> 
-                    Basic Information
-                </h3>
-                <div class="space-y-4">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title flex items-center gap-2">
+                        <i class="ph ph-info text-emerald-500 text-lg"></i>
+                        Basic Information
+                    </span>
+                </div>
+                <div class="admin-card-body space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Product Title</label>
+                        <label class="admin-label">Product Title</label>
                         <input type="text" name="name" required value="<?php echo htmlspecialchars($product['name'] ?? ''); ?>"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none transition text-lg font-semibold">
+                            class="admin-input text-lg font-bold" placeholder="e.g. Premium Stainless Sink">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Description</label>
-                        <textarea name="description" rows="6" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none transition"><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
+                        <label class="admin-label">Description</label>
+                        <textarea name="description" rows="8" class="admin-input" placeholder="Give a detailed description..."><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Advanced Options Toggle -->
-            <div onclick="document.getElementById('advanced-options').classList.toggle('hidden')" class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-center cursor-pointer hover:bg-gray-100 hover:border-indigo-300 transition group mt-8">
-                <h3 class="text-sm font-bold text-gray-600 group-hover:text-indigo-600 flex items-center justify-center gap-2">
-                    <span>⚙️</span> Show Advanced Options (Variations, Specs, Wholesale)
+            <div onclick="document.getElementById('advanced-options').classList.toggle('hidden')" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center cursor-pointer hover:bg-slate-50 hover:border-emerald-300 transition group">
+                <h3 class="text-sm font-black text-slate-600 group-hover:text-emerald-600 flex items-center justify-center gap-2">
+                    <i class="ph ph-gear-six text-lg"></i>
+                    Show Advanced Options (Variations, Specs, Wholesale)
                 </h3>
             </div>
 
-            <!-- Advanced Options Container (Hidden by default) -->
-            <div id="advanced-options" class="hidden space-y-6 mt-6">
-                <!-- Variations & specifications -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                    <div class="flex items-center justify-between mb-6 mt-0">
-                        <h3 class="font-bold text-lg flex items-center gap-2">
-                            <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> 
-                            Product Variations (Size, Color, etc.)
-                        </h3>
-                        <button type="button" onclick="addVariation()" class="text-indigo-600 font-bold text-xs hover:underline">+ ADD VARIATION</button>
+            <!-- Advanced Options Container -->
+            <div id="advanced-options" class="hidden space-y-6">
+                <!-- Variations & Specs -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title flex items-center gap-2">
+                            <i class="ph ph-stack text-indigo-500 text-lg"></i>
+                            Variations & Specifications
+                        </span>
                     </div>
-                    <div id="variation-container" class="space-y-3">
-                        <?php 
-                        $vars = (!empty($product['variations'])) ? $product['variations'] : [];
-                        foreach($vars as $v): ?>
-                        <div class="flex gap-3 variation-row">
-                            <input type="text" name="var_name[]" value="<?php echo htmlspecialchars($v['name']); ?>" placeholder="Name (e.g. Size)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            <input type="text" name="var_value[]" value="<?php echo htmlspecialchars($v['value']); ?>" placeholder="Value (e.g. Medium)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+                    <div class="admin-card-body">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Variations (Size, Color, etc.)</h4>
+                            <button type="button" onclick="addVariation()" class="text-indigo-600 font-bold text-xs flex items-center gap-1"><i class="ph ph-plus-circle"></i> ADD VARIATION</button>
                         </div>
-                        <?php endforeach; ?>
-                    </div>
+                        <div id="variation-container" class="space-y-3 mb-8">
+                            <?php 
+                            $vars = (!empty($product['variations'])) ? $product['variations'] : [];
+                            foreach($vars as $v): ?>
+                            <div class="flex gap-3 variation-row">
+                                <input type="text" name="var_name[]" value="<?php echo htmlspecialchars($v['name']); ?>" placeholder="e.g. Size" class="admin-input flex-1">
+                                <input type="text" name="var_value[]" value="<?php echo htmlspecialchars($v['value']); ?>" placeholder="e.g. Large" class="admin-input flex-1">
+                                <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
 
-                    <div class="flex items-center justify-between mb-6 mt-10">
-                        <h3 class="font-bold text-lg flex items-center gap-2">
-                            <span class="w-2 h-6 bg-blue-500 rounded-full"></span> 
-                            Technical Specifications
-                        </h3>
-                        <button type="button" onclick="addSpec()" class="text-blue-600 font-bold text-xs hover:underline">+ ADD SPEC</button>
-                    </div>
-                    <div id="spec-container" class="space-y-3">
-                        <?php 
-                        $specs = (!empty($product['specifications'])) ? $product['specifications'] : [];
-                        foreach($specs as $s): ?>
-                        <div class="flex gap-3 spec-row">
-                            <input type="text" name="spec_label[]" value="<?php echo htmlspecialchars($s['label']); ?>" placeholder="Label (e.g. Material)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            <input type="text" name="spec_value[]" value="<?php echo htmlspecialchars($s['value']); ?>" placeholder="Value (e.g. Stainless Steel)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+                        <div class="flex items-center justify-between mb-4 mt-8">
+                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Technical Specifications</h4>
+                            <button type="button" onclick="addSpec()" class="text-blue-600 font-bold text-xs flex items-center gap-1"><i class="ph ph-plus-circle"></i> ADD SPEC</button>
                         </div>
-                        <?php endforeach; ?>
+                        <div id="spec-container" class="space-y-3">
+                            <?php 
+                            $specs = (!empty($product['specifications'])) ? $product['specifications'] : [];
+                            foreach($specs as $s): ?>
+                            <div class="flex gap-3 spec-row">
+                                <input type="text" name="spec_label[]" value="<?php echo htmlspecialchars($s['label']); ?>" placeholder="e.g. Material" class="admin-input flex-1">
+                                <input type="text" name="spec_value[]" value="<?php echo htmlspecialchars($s['value']); ?>" placeholder="e.g. Chrome" class="admin-input flex-1">
+                                <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Wholesale Pricing Rules -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                    <div class="flex items-center justify-between mb-6 mt-0">
-                        <h3 class="font-bold text-lg flex items-center gap-2">
-                            <span class="w-2 h-6 bg-pink-500 rounded-full"></span> 
-                            Wholesale Price Rules (Tiered Pricing)
-                        </h3>
-                        <button type="button" onclick="addPriceRule()" class="text-pink-600 font-bold text-xs hover:underline">+ ADD RULE</button>
+                <!-- Wholesale Price Rules -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title flex items-center gap-2">
+                            <i class="ph ph-tag text-rose-500 text-lg"></i>
+                            Wholesale & Tiered Pricing
+                        </span>
+                        <button type="button" onclick="addPriceRule()" class="text-rose-600 font-bold text-xs flex items-center gap-1"><i class="ph ph-plus-circle"></i> ADD RULE</button>
                     </div>
-                    <div id="price-rule-container" class="space-y-3">
-                        <?php 
-                        $rules = $priceRules ?? [];
-                        foreach($rules as $r): ?>
-                        <div class="flex gap-3 rule-row">
-                            <div class="flex-1">
-                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Min Qty</label>
-                                <input type="number" name="rule_min_qty[]" value="<?php echo htmlspecialchars($r['min_qty']); ?>" placeholder="10" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                    <div class="admin-card-body">
+                        <div id="price-rule-container" class="space-y-4">
+                            <?php 
+                            $rules = $priceRules ?? [];
+                            foreach($rules as $r): ?>
+                            <div class="grid grid-cols-7 gap-3 rule-row items-end">
+                                <div class="col-span-2">
+                                    <label class="admin-label" style="font-size:10px;">Min Qty</label>
+                                    <input type="number" name="rule_min_qty[]" value="<?php echo htmlspecialchars($r['min_qty']); ?>" placeholder="10" class="admin-input">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="admin-label" style="font-size:10px;">Type</label>
+                                    <select name="rule_type[]" class="admin-input">
+                                        <option value="fixed" <?php echo $r['discount_type'] == 'fixed' ? 'selected' : ''; ?>>Fixed Price</option>
+                                        <option value="percentage" <?php echo $r['discount_type'] == 'percentage' ? 'selected' : ''; ?>>% Discount</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="admin-label" style="font-size:10px;">Value (৳/%)</label>
+                                    <input type="number" step="0.01" name="rule_value[]" value="<?php echo htmlspecialchars($r['value']); ?>" placeholder="150" class="admin-input">
+                                </div>
+                                <div class="col-span-1 text-right">
+                                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
+                                </div>
                             </div>
-                            <div class="flex-1">
-                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Type</label>
-                                <select name="rule_type[]" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                                    <option value="fixed" <?php echo $r['discount_type'] == 'fixed' ? 'selected' : ''; ?>>Fixed Price</option>
-                                    <option value="percentage" <?php echo $r['discount_type'] == 'percentage' ? 'selected' : ''; ?>>% Discount</option>
-                                </select>
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Value (৳ or %)</label>
-                                <input type="number" step="0.01" name="rule_value[]" value="<?php echo htmlspecialchars($r['value']); ?>" placeholder="150" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            </div>
-                            <div class="flex-none pt-6">
-                                <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php endforeach; ?>
+                        <p class="text-[10px] text-slate-400 mt-4 italic">* If "Fixed Price", it becomes the unit price. If "% Discount", it's deducted from the sale price.</p>
                     </div>
-                    <p class="text-[10px] text-gray-400 mt-4 italic">* If "Fixed Price", it becomes the unit price. If "% Discount", it's deducted from the sale price.</p>
                 </div>
             </div>
 
             <!-- SEO Settings -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <h3 class="font-bold text-lg mb-6 flex items-center gap-2 mt-0">
-                    <span class="w-2 h-6 bg-green-500 rounded-full"></span> 
-                    SEO & Meta Data
-                </h3>
-                <div class="space-y-4">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title flex items-center gap-2">
+                        <i class="ph ph-globe-hemisphere-east text-sky-500 text-lg"></i>
+                        SEO & Meta Data
+                    </span>
+                </div>
+                <div class="admin-card-body space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Meta Title</label>
-                        <input type="text" name="meta_title" value="<?php echo htmlspecialchars($product['meta_title'] ?? ''); ?>" placeholder="SEO Title" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                        <label class="admin-label">Meta Title</label>
+                        <input type="text" name="meta_title" value="<?php echo htmlspecialchars($product['meta_title'] ?? ''); ?>" placeholder="SEO Optimized Title" class="admin-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Meta Description</label>
-                        <textarea name="meta_description" rows="3" placeholder="SEO Description" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none"><?php echo htmlspecialchars($product['meta_description'] ?? ''); ?></textarea>
+                        <label class="admin-label">Meta Description</label>
+                        <textarea name="meta_description" rows="3" placeholder="SEO Description..." class="admin-input"><?php echo htmlspecialchars($product['meta_description'] ?? ''); ?></textarea>
                     </div>
                 </div>
             </div>
@@ -257,53 +271,71 @@ $msg = $_GET['msg'] ?? '';
 
         <!-- Sidebar Column -->
         <div class="space-y-6">
-            <!-- Publishing -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-2xl mb-4 transition shadow-lg shadow-amber-200">
-                    <?php echo $product ? 'Save Changes' : 'Publish Product'; ?>
-                </button>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Category</label>
-                        <select name="category_id" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                            <option value="">Select Category</option>
-                            <?php foreach($categories as $cat): ?>
-                            <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($cat['name']); ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Sale Price (৳)</label>
-                        <input type="number" name="price" value="<?php echo $product['price'] ?? 0; ?>" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-amber-600">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Purchase Price / Cost (৳)</label>
-                        <input type="number" step="0.01" name="purchase_price" value="<?php echo $product['purchase_price'] ?? 0; ?>" class="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl outline-none font-bold text-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Inventory Status</label>
-                        <select name="stock_status" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none font-semibold">
-                            <option value="In Stock" <?php echo ($product['stock_status'] ?? '') == 'In Stock' ? 'selected' : ''; ?>>In Stock</option>
-                            <option value="Out of Stock" <?php echo ($product['stock_status'] ?? '') == 'Out of Stock' ? 'selected' : ''; ?>>Out of Stock</option>
-                        </select>
+            <!-- Publishing & Visibility -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">Publishing</span>
+                </div>
+                <div class="admin-card-body">
+                    <button type="submit" class="w-full btn btn-primary py-4 text-sm justify-center mb-6">
+                        <i class="ph ph-check-circle"></i>
+                        <?php echo $product ? 'Save Changes' : 'Publish Product'; ?>
+                    </button>
+                    
+                    <div class="space-y-5">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <label class="text-xs font-black text-slate-600 cursor-pointer" for="is_featured">⭐ Feature on Homepage</label>
+                            <input type="checkbox" id="is_featured" name="is_featured" class="w-5 h-5 rounded accent-emerald-500" <?php echo ($product['is_featured'] ?? 0) ? 'checked' : ''; ?>>
+                        </div>
+
+                        <div>
+                            <label class="admin-label">Category</label>
+                            <select name="category_id" class="admin-input font-bold">
+                                <option value="">Select Category</option>
+                                <?php foreach($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="admin-label">Sale Price (৳)</label>
+                            <input type="number" name="price" value="<?php echo $product['price'] ?? 0; ?>" class="admin-input font-black text-emerald-600 bg-emerald-50/30">
+                        </div>
+                        <div>
+                            <label class="admin-label">Purchase Cost (৳)</label>
+                            <input type="number" step="0.01" name="purchase_price" value="<?php echo $product['purchase_price'] ?? 0; ?>" class="admin-input font-bold text-slate-500 bg-slate-50/50">
+                        </div>
+                        <div>
+                            <label class="admin-label">Availability</label>
+                            <select name="stock_status" class="admin-input font-bold">
+                                <option value="In Stock" <?php echo ($product['stock_status'] ?? '') == 'In Stock' ? 'selected' : ''; ?>>In Stock</option>
+                                <option value="Out of Stock" <?php echo ($product['stock_status'] ?? '') == 'Out of Stock' ? 'selected' : ''; ?>>Out of Stock</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Main Image -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Main Image</h4>
-                <div class="border-2 border-dashed border-gray-100 rounded-2xl p-4 text-center">
-                    <?php if(!empty($product['main_image'])): ?>
-                        <img src="../<?php echo $product['main_image']; ?>" class="w-full h-48 object-contain rounded-xl mb-4 bg-gray-50">
-                    <?php endif; ?>
-                    <label class="cursor-pointer block">
-                        <span class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-full inline-block transition">Change Image</span>
-                        <input type="file" name="image" accept="image/*" class="hidden">
-                    </label>
-                    <input type="hidden" name="existing_image" value="<?php echo $product['main_image'] ?? ''; ?>">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">Featured Image</span>
+                </div>
+                <div class="admin-card-body">
+                    <div class="border-2 border-dashed border-slate-100 rounded-2xl p-4 text-center">
+                        <?php 
+                        $previewImg = !empty($product['image']) ? '../' . $product['image'] : 'https://placehold.co/400x400/f8fafc/94a3b8?text=Upload+Image';
+                        ?>
+                        <img id="image-preview" src="<?php echo $previewImg; ?>" class="w-full h-48 object-contain rounded-xl mb-4 bg-slate-50">
+                        
+                        <label class="cursor-pointer block">
+                            <span class="btn btn-ghost text-[10px] py-2">Select New Image</span>
+                            <input type="file" name="image" accept="image/*" class="hidden" onchange="previewImage(this)">
+                        </label>
+                        <input type="hidden" name="existing_image" value="<?php echo $product['image'] ?? ''; ?>">
+                    </div>
                 </div>
             </div>
         </div>
@@ -311,14 +343,23 @@ $msg = $_GET['msg'] ?? '';
 </div>
 
 <script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('image-preview').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 function addVariation() {
     const container = document.getElementById('variation-container');
     const div = document.createElement('div');
     div.className = 'flex gap-3 variation-row';
     div.innerHTML = `
-        <input type="text" name="var_name[]" placeholder="Name" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-        <input type="text" name="var_value[]" placeholder="Value" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-        <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+        <input type="text" name="var_name[]" placeholder="e.g. Size" class="admin-input flex-1">
+        <input type="text" name="var_value[]" placeholder="e.g. Large" class="admin-input flex-1">
+        <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
     `;
     container.appendChild(div);
 }
@@ -327,39 +368,38 @@ function addSpec() {
     const div = document.createElement('div');
     div.className = 'flex gap-3 spec-row';
     div.innerHTML = `
-        <input type="text" name="spec_label[]" placeholder="Label" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-        <input type="text" name="spec_value[]" placeholder="Value" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-        <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+        <input type="text" name="spec_label[]" placeholder="e.g. Material" class="admin-input flex-1">
+        <input type="text" name="spec_value[]" placeholder="e.g. Chrome" class="admin-input flex-1">
+        <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
     `;
     container.appendChild(div);
 }
 function addPriceRule() {
     const container = document.getElementById('price-rule-container');
     const div = document.createElement('div');
-    div.className = 'flex gap-3 rule-row';
+    div.className = 'grid grid-cols-7 gap-3 rule-row items-end';
     div.innerHTML = `
-        <div class="flex-1">
-            <label class="block text-[10px] font-bold text-gray-400 mb-1">Min Qty</label>
-            <input type="number" name="rule_min_qty[]" placeholder="10" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+        <div class="col-span-2">
+            <label class="admin-label" style="font-size:10px;">Min Qty</label>
+            <input type="number" name="rule_min_qty[]" placeholder="10" class="admin-input">
         </div>
-        <div class="flex-1">
-            <label class="block text-[10px] font-bold text-gray-400 mb-1">Type</label>
-            <select name="rule_type[]" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+        <div class="col-span-2">
+            <label class="admin-label" style="font-size:10px;">Type</label>
+            <select name="rule_type[]" class="admin-input">
                 <option value="fixed">Fixed Price</option>
                 <option value="percentage">% Discount</option>
             </select>
         </div>
-        <div class="flex-1">
-            <label class="block text-[10px] font-bold text-gray-400 mb-1">Value</label>
-            <input type="number" step="0.01" name="rule_value[]" placeholder="150" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+        <div class="col-span-2">
+            <label class="admin-label" style="font-size:10px;">Value</label>
+            <input type="number" step="0.01" name="rule_value[]" placeholder="150" class="admin-input">
         </div>
-        <div class="flex-none pt-6">
-            <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+        <div class="col-span-1 text-right">
+            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 p-2 hover:text-rose-500 transition">✕</button>
         </div>
     `;
     container.appendChild(div);
 }
 </script>
 
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
