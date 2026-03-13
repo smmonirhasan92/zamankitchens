@@ -66,8 +66,12 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->
                     <?php foreach ($products as $p): ?>
                     <tr class="hover:bg-amber-50/20 transition group">
                         <td class="px-10 py-6">
+                            <?php 
+                            $img = !empty($p['image']) ? $p['image'] : (!empty($p['main_image']) ? $p['main_image'] : '../assets/images/placeholder.jpg');
+                            if (strpos($img, '../') === false && strpos($img, 'http') === false) $img = "../" . $img;
+                            ?>
                             <div class="flex items-center gap-5">
-                                <img src="../<?php echo $p['main_image']; ?>" class="w-16 h-16 rounded-2xl object-cover bg-white shadow-sm group-hover:scale-110 transition-transform duration-500">
+                                <img src="<?php echo $img; ?>" class="w-16 h-16 rounded-2xl object-cover bg-white shadow-sm group-hover:scale-110 transition-transform duration-500" onerror="this.src='../assets/images/placeholder.jpg'">
                                 <div>
                                     <div class="font-black text-slate-900 group-hover:text-amber-600 transition-colors"><?php echo htmlspecialchars($p['name']); ?></div>
                                     <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><?php echo $p['slug']; ?></div>

@@ -43,9 +43,21 @@ $imgSrc = !empty($p['image']) ? $p['image'] : (!empty($p['main_image']) ? $p['ma
                 <button onclick='openQuickView(<?php echo $jsData; ?>)' class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-amber-100 flex items-center justify-center transition" title="Quick View">
                     👁️
                 </button>
-                <button onclick='addToCart(<?php echo $jsData; ?>)' class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 flex items-center justify-center transition shadow-lg shadow-slate-200" title="Add to Bag">
-                    <span class="text-white">👜</span>
-                </button>
+                <div class="flex items-center gap-2">
+            <!-- Add to Bag Icon Only -->
+            <button onclick="addToCart(<?php echo htmlspecialchars(json_encode($p)); ?>); event.stopPropagation();"
+                class="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-600 transition group/btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </button>
+
+            <!-- Direct Buy Now -->
+            <button onclick="buyNow(<?php echo htmlspecialchars(json_encode($p)); ?>); event.stopPropagation();"
+                class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-black uppercase tracking-widest py-3 rounded-xl transition shadow-lg shadow-slate-200">
+                Buy Now
+            </button>
+        </div>
             </div>
         </div>
     </div>

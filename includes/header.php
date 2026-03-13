@@ -81,7 +81,9 @@ try {
                 <!-- Dropdown Menu -->
                 <div class="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 hidden group-hover:block min-w-56 z-50">
                     <?php foreach($categories as $cat): ?>
-                    <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 font-medium transition">
+                    <a href="<?php echo SITE_URL; ?>#products" 
+                       onclick="if(window.location.pathname === '/' || window.location.pathname === '/index.php') { event.preventDefault(); filterCategory('<?php echo $cat['slug']; ?>', document.querySelector('.cat-circle-item[onclick*=\\'<?php echo $cat['slug']; ?>\\']')); }"
+                       class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 font-medium transition">
                         <span class="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0"></span>
                         <?php echo htmlspecialchars($cat['name']); ?>
                     </a>
