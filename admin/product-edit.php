@@ -79,11 +79,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ? WHERE id = ?");
                 $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $id]);
                 $message = "Product updated successfully!";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, main_image, meta_title, meta_description, variations, specifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, image, meta_title, meta_description, variations, specifications) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications)]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
