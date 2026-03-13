@@ -232,7 +232,7 @@ try {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
     </style>
-    <?php if (!empty($adminExtraHead)) echo $adminExtraHead; ?>
+    <?php echo $adminExtraHead ?? ''; ?>
 </head>
 <body>
 
@@ -295,7 +295,7 @@ try {
             <div class="topbar-breadcrumb"><?php echo date('l, F j, Y'); ?></div>
         </div>
         <div class="topbar-actions">
-            <?php if (!empty($adminTopbarAction)) echo $adminTopbarAction; ?>
+            <?php echo $adminTopbarAction ?? ''; ?>
             <a href="../admin/orders.php" class="topbar-btn topbar-btn-ghost">
                 <i class="ph ph-bell"></i>
                 <?php if ($pendingOrders > 0): ?>
