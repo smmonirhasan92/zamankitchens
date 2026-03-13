@@ -35,66 +35,74 @@ $adminTitle = 'Orders Management';
 include_once __DIR__ . '/includes/header.php'; 
 ?>
 
-<div class="max-w-7xl mx-auto px-6 py-8">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-extrabold">All Orders (<?php echo count($orders); ?>)</h1>
+<div class="px-12 py-10">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Order Management</h1>
+            <p class="text-slate-500 font-medium">Track and fulfill <span class="text-amber-600"><?php echo count($orders); ?></span> active transactions.</p>
+        </div>
         <!-- Filter Buttons -->
-        <div class="flex gap-2 flex-wrap">
-            <a href="orders.php" class="<?php echo !$statusFilter ? 'bg-amber-600 text-white' : 'bg-white text-gray-700 border'; ?> px-4 py-2 rounded-xl text-sm font-semibold transition hover:bg-amber-600 hover:text-white">All</a>
+        <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+            <a href="orders.php" class="<?php echo !$statusFilter ? 'bg-amber-600 text-white shadow-lg shadow-amber-200' : 'text-slate-500 hover:bg-slate-50'; ?> px-6 py-2.5 rounded-xl text-xs font-black transition uppercase tracking-widest">All</a>
             <?php foreach(['Pending','Processing','Delivered','Cancelled'] as $s): ?>
-            <a href="orders.php?status=<?php echo $s; ?>" class="<?php echo $statusFilter === $s ? 'bg-amber-600 text-white' : 'bg-white text-gray-700 border'; ?> px-4 py-2 rounded-xl text-sm font-semibold transition hover:bg-amber-600 hover:text-white"><?php echo $s; ?></a>
+            <a href="orders.php?status=<?php echo $s; ?>" class="<?php echo $statusFilter === $s ? 'bg-amber-600 text-white shadow-lg shadow-amber-200' : 'text-slate-500 hover:bg-slate-50'; ?> px-6 py-2.5 rounded-xl text-xs font-black transition uppercase tracking-widest"><?php echo $s; ?></a>
             <?php endforeach; ?>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="glass-card rounded-[2.5rem] shadow-sm overflow-hidden border border-white/40">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">#ID</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Customer</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Phone</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Address</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Amount</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Status</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Date</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Action</th>
+                <thead>
+                    <tr class="bg-slate-50/30">
+                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Reference</th>
+                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Customer Information</th>
+                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Shipping Details</th>
+                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Amount</th>
+                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Status</th>
+                        <th class="px-10 py-5 text-right font-bold text-slate-400 uppercase tracking-widest text-[10px]">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-slate-50">
                     <?php if (empty($orders)): ?>
-                    <tr><td colspan="8" class="px-6 py-10 text-center text-gray-400">No orders found.</td></tr>
+                    <tr><td colspan="6" class="px-10 py-20 text-center">
+                        <div class="text-5xl mb-4 opacity-10">📦</div>
+                        <div class="text-slate-400 font-bold uppercase tracking-widest text-xs">No orders found matching criteria</div>
+                    </td></tr>
                     <?php endif; ?>
                     <?php foreach($orders as $order): ?>
                     <?php $statusColor = match($order['status']) {
-                        'Pending' => 'bg-yellow-100 text-yellow-700',
+                        'Pending' => 'bg-amber-100 text-amber-700',
                         'Processing' => 'bg-blue-100 text-blue-700',
-                        'Delivered' => 'bg-green-100 text-green-700',
-                        'Cancelled' => 'bg-red-100 text-red-700',
-                        default => 'bg-gray-100 text-gray-600'
+                        'Delivered' => 'bg-emerald-100 text-emerald-700',
+                        'Cancelled' => 'bg-rose-100 text-rose-700',
+                        default => 'bg-slate-100 text-slate-600'
                     }; ?>
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 font-bold text-amber-700">#<?php echo str_pad($order['id'], 5, '0', STR_PAD_LEFT); ?></td>
-                        <td class="px-6 py-4 font-semibold"><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                        <td class="px-6 py-4">
-                            <a href="tel:<?php echo $order['phone']; ?>" class="text-blue-600 hover:underline"><?php echo htmlspecialchars($order['phone']); ?></a>
+                    <tr class="hover:bg-amber-50/20 transition group">
+                        <td class="px-10 py-6">
+                            <div class="font-black text-slate-900 group-hover:text-amber-600 transition-colors">#<?php echo str_pad($order['id'], 5, '0', STR_PAD_LEFT); ?></div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1"><?php echo date('d M, Y', strtotime($order['created_at'])); ?></div>
                         </td>
-                        <td class="px-6 py-4 text-gray-500 max-w-xs truncate"><?php echo htmlspecialchars($order['address']); ?></td>
-                        <td class="px-6 py-4 font-bold text-amber-600">৳ <?php echo number_format($order['total_amount']); ?></td>
-                        <td class="px-6 py-4">
-                            <span class="<?php echo $statusColor; ?> text-xs font-bold px-2 py-1 rounded-full"><?php echo $order['status']; ?></span>
+                        <td class="px-10 py-6">
+                            <div class="font-black text-slate-900"><?php echo htmlspecialchars($order['customer_name']); ?></div>
+                            <a href="tel:<?php echo $order['phone']; ?>" class="text-[10px] font-bold text-amber-600 hover:underline uppercase tracking-widest"><?php echo htmlspecialchars($order['phone']); ?></a>
                         </td>
-                        <td class="px-6 py-4 text-gray-400 whitespace-nowrap"><?php echo date('d M, g:ia', strtotime($order['created_at'])); ?></td>
-                        <td class="px-6 py-4">
-                            <form method="POST" class="flex gap-1">
+                        <td class="px-10 py-6 text-slate-500 max-w-xs truncate font-medium text-xs"><?php echo htmlspecialchars($order['address']); ?></td>
+                        <td class="px-10 py-6 font-black text-slate-900 text-lg">৳ <?php echo number_format($order['total_amount']); ?></td>
+                        <td class="px-10 py-6">
+                            <span class="<?php echo $statusColor; ?> text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-wider"><?php echo $order['status']; ?></span>
+                        </td>
+                        <td class="px-10 py-6 text-right">
+                            <form method="POST" class="flex justify-end gap-2">
                                 <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                <select name="status" class="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-amber-400">
+                                <select name="status" class="bg-white border border-slate-100 rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-amber-500 outline-none transition shadow-sm">
                                     <?php foreach(['Pending','Processing','Delivered','Cancelled'] as $s): ?>
                                     <option value="<?php echo $s; ?>" <?php echo $order['status'] === $s ? 'selected' : ''; ?>><?php echo $s; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-3 py-1 rounded-lg transition">Update</button>
+                                <button type="submit" class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition shadow-lg shadow-slate-200">
+                                    <i class="ph ph-check-circle text-lg"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -104,5 +112,8 @@ include_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </div>
+</main>
+</body>
+</html>
 </body>
 </html>

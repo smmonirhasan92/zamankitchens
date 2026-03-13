@@ -84,97 +84,112 @@ $adminTitle = 'Manage Categories';
 include_once __DIR__ . '/includes/header.php'; 
 ?>
 
-<div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8">
-    
-    <!-- Form Section -->
-    <div class="md:col-span-1">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-            <h2 class="text-xl font-extrabold mb-6"><?php echo $editCat ? 'Edit Category' : 'Add New Category'; ?></h2>
-            
-            <?php if($message): ?> <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm font-medium border border-green-100">✅ <?php echo $message; ?></div> <?php endif; ?>
-            <?php if($error): ?> <div class="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm font-medium border border-red-100">❌ <?php echo $error; ?></div> <?php endif; ?>
+<div class="px-12 py-10">
+    <div class="flex items-center justify-between mb-12">
+        <div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Category Manager</h1>
+            <p class="text-slate-500 font-medium">Organize your shop collection by professional categories.</p>
+        </div>
+    </div>
 
-            <form method="POST" enctype="multipart/form-data" class="space-y-4">
-                <input type="hidden" name="id" value="<?php echo $editCat['id'] ?? ''; ?>">
-                <input type="hidden" name="existing_image" value="<?php echo $editCat['image'] ?? ''; ?>">
+    <div class="grid lg:grid-cols-3 gap-10">
+        <!-- Form Section -->
+        <div class="lg:col-span-1">
+            <div class="glass-card rounded-[2.5rem] shadow-sm p-10 border border-white/40 sticky top-32">
+                <h2 class="text-xl font-black text-slate-900 mb-8"><?php echo $editCat ? 'Edit Category' : 'Create New'; ?></h2>
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category Name</label>
-                    <input type="text" name="name" required value="<?php echo htmlspecialchars($editCat['name'] ?? ''); ?>"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
-                </div>
+                <?php if($message): ?> <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl mb-6 text-xs font-bold border border-emerald-100 uppercase tracking-widest">✅ <?php echo $message; ?></div> <?php endif; ?>
+                <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-4 rounded-2xl mb-6 text-xs font-bold border border-rose-100 uppercase tracking-widest">❌ <?php echo $error; ?></div> <?php endif; ?>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Slug (Optional)</label>
-                    <input type="text" name="slug" value="<?php echo htmlspecialchars($editCat['slug'] ?? ''); ?>"
-                        placeholder="e.g. kitchen-cabinet"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
-                </div>
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <input type="hidden" name="id" value="<?php echo $editCat['id'] ?? ''; ?>">
+                    <input type="hidden" name="existing_image" value="<?php echo $editCat['image'] ?? ''; ?>">
+                    
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Gallery Name</label>
+                        <input type="text" name="name" required value="<?php echo htmlspecialchars($editCat['name'] ?? ''); ?>"
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none transition font-bold text-slate-700">
+                    </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category Image/Icon</label>
-                    <input type="file" name="image" accept="image/*"
-                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
-                    <?php if(!empty($editCat['image'])): ?>
-                        <img src="../<?php echo $editCat['image']; ?>" class="mt-2 w-16 h-16 rounded-lg object-cover border border-gray-100">
-                    <?php endif; ?>
-                </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Custom Slug</label>
+                        <input type="text" name="slug" value="<?php echo htmlspecialchars($editCat['slug'] ?? ''); ?>"
+                            placeholder="e.g. kitchen-cabinet"
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none transition font-bold text-slate-700">
+                    </div>
 
-                <div class="pt-2 flex gap-2">
-                    <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200">
-                        <?php echo $editCat ? 'Update Category' : 'Save Category'; ?>
-                    </button>
-                    <?php if($editCat): ?>
-                        <a href="categories.php" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition">Cancel</a>
-                    <?php endif; ?>
-                </div>
-            </form>
-        </div>
-    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Cover Media</label>
+                        <div class="relative group mt-2">
+                            <input type="file" name="image" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                            <div class="w-full py-10 border-2 border-dashed border-slate-100 rounded-3xl flex flex-col items-center justify-center bg-slate-50/50 group-hover:bg-amber-50 group-hover:border-amber-200 transition-all">
+                                <span class="text-4xl mb-2 opacity-20">📸</span>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Upload Icon</span>
+                            </div>
+                        </div>
+                        <?php if(!empty($editCat['image'])): ?>
+                            <img src="../<?php echo $editCat['image']; ?>" class="mt-4 w-20 h-20 rounded-2xl object-cover border-4 border-white shadow-xl">
+                        <?php endif; ?>
+                    </div>
 
-    <!-- List Section -->
-    <div class="md:col-span-2">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b">
-                <h2 class="font-extrabold text-lg">Category List (<?php echo count($categories); ?>)</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50 border-b">
-                        <tr>
-                            <th class="px-6 py-3 text-left font-semibold text-gray-500">Image</th>
-                            <th class="px-6 py-3 text-left font-semibold text-gray-500">Name</th>
-                            <th class="px-6 py-3 text-left font-semibold text-gray-500">Slug</th>
-                            <th class="px-6 py-3 text-right font-semibold text-gray-500">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        <?php foreach ($categories as $cat): ?>
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4">
-                                <img src="../<?php echo !empty($cat['image']) ? $cat['image'] : 'https://placehold.co/400x400/f5f5f5/aaa?text='.$cat['name']; ?>" 
-                                     class="w-10 h-10 rounded-full object-cover bg-gray-100 border border-gray-100 shadow-sm"
-                                     onerror="this.src='https://placehold.co/100x100/f5f5f5/aaa?text=Error'">
-                            </td>
-                            <td class="px-6 py-4 font-bold text-gray-800"><?php echo htmlspecialchars($cat['name']); ?></td>
-                            <td class="px-6 py-4 text-gray-400 font-mono text-xs"><?php echo htmlspecialchars($cat['slug']); ?></td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <a href="categories.php?edit=<?php echo $cat['id']; ?>" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition font-semibold">Edit</a>
-                                    <a href="categories.php?delete=<?php echo $cat['id']; ?>" 
-                                       onclick="return confirm('Are you sure you want to delete this category?')"
-                                       class="text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition font-semibold">Delete</a>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                    <div class="pt-4 flex gap-3">
+                        <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-amber-200 uppercase tracking-widest text-xs">
+                            <?php echo $editCat ? 'Update' : 'Create'; ?>
+                        </button>
+                        <?php if($editCat): ?>
+                            <a href="categories.php" class="bg-slate-100 hover:bg-slate-200 text-slate-500 font-black px-6 py-4 rounded-2xl transition uppercase tracking-widest text-xs">Cancel</a>
+                        <?php endif; ?>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
+        <!-- List Section -->
+        <div class="lg:col-span-2">
+            <div class="glass-card rounded-[2.5rem] shadow-sm overflow-hidden border border-white/40">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50/30">
+                                <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Preview</th>
+                                <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Collection</th>
+                                <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Slug Reference</th>
+                                <th class="px-10 py-5 text-right font-bold text-slate-400 uppercase tracking-widest text-[10px]">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <?php foreach ($categories as $cat): ?>
+                            <tr class="hover:bg-amber-50/20 transition group">
+                                <td class="px-10 py-6">
+                                    <img src="../<?php echo !empty($cat['image']) ? $cat['image'] : 'https://placehold.co/400x400/f5f5f5/aaa?text='.$cat['name']; ?>" 
+                                         class="w-14 h-14 rounded-2xl object-cover bg-white shadow-sm group-hover:scale-110 transition-transform duration-500">
+                                </td>
+                                <td class="px-10 py-6 font-black text-slate-900 group-hover:text-amber-600 transition-colors"><?php echo htmlspecialchars($cat['name']); ?></td>
+                                <td class="px-10 py-6 text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]"><?php echo htmlspecialchars($cat['slug']); ?></td>
+                                <td class="px-10 py-6 text-right">
+                                    <div class="flex justify-end gap-3">
+                                        <a href="categories.php?edit=<?php echo $cat['id']; ?>" class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-blue-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm">
+                                            <i class="ph ph-note-pencil text-lg"></i>
+                                        </a>
+                                        <a href="categories.php?delete=<?php echo $cat['id']; ?>" 
+                                           onclick="return confirm('Permanent delete?')"
+                                           class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-rose-500 flex items-center justify-center hover:bg-rose-600 hover:text-white transition shadow-sm">
+                                            <i class="ph ph-trash text-lg"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+</main>
+</body>
+</html>
 
 </body>
 </html>

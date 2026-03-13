@@ -183,6 +183,50 @@ foreach ($rowCategories as $slug) {
 <?php endif; ?>
 <?php endforeach; ?>
 
+<!-- Quick Inquiry Form -->
+<section class="py-20 bg-amber-50" id="inquiry">
+    <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto bg-white rounded-[3rem] shadow-2xl shadow-amber-200/50 overflow-hidden flex flex-col md:flex-row">
+            <div class="md:w-1/2 p-12 bg-amber-600 text-white flex flex-col justify-center">
+                <h2 class="text-3xl font-black mb-6">Need a custom <br><span class="text-amber-200 text-4xl">Kitchen Solution?</span></h2>
+                <p class="text-amber-100 mb-8 leading-relaxed">Send us your requirements and our experts will get back to you with the best quote and design consultancy.</p>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl">📞</div>
+                        <span class="font-bold">+880 1700-000000</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl">📍</div>
+                        <span class="font-bold">Uttara, Dhaka, Bangladesh</span>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2 p-12">
+                <form action="api/submit_lead.php" method="POST" class="space-y-6">
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
+                            <input type="text" name="name" required placeholder="John Doe" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Phone Number</label>
+                            <input type="text" name="phone" required placeholder="017xxxxxxxx" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Your Message</label>
+                            <textarea name="message" rows="4" placeholder="How can we help you?" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-amber-500 outline-none transition"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-slate-200">
+                        Send Inquiry
+                    </button>
+                    <p class="text-[10px] text-gray-400 text-center font-bold uppercase tracking-widest mt-4">We respect your privacy. No spam, ever.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Why Choose Us -->
 <section class="py-16 bg-gray-900 text-white">
     <div class="container mx-auto px-4">
