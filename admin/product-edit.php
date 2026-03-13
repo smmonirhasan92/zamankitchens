@@ -5,13 +5,12 @@
  */
 require_once __DIR__ . '/../includes/db.php';
 
-$adminTitle = 'Edit Product';
-include_once __DIR__ . '/includes/header.php';
 
 $id = $_GET['id'] ?? null;
 $product = null;
 $message = "";
 $error = "";
+
 
 // Fetch Product for editing
 if ($id && is_numeric($id)) {
@@ -113,6 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->fetchAll();
 $msg = $_GET['msg'] ?? '';
+
+$adminTitle = 'Edit Product';
+include_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="max-w-7xl mx-auto">
