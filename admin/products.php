@@ -1,113 +1,77 @@
 <?php
-require_once __DIR__ . '/../includes/db.php';
-
-$adminTitle = 'Manage Products';
+$adminTitle = 'Product Management';
+$adminTopbarAction = '<a href="product-edit.php" class="topbar-btn btn-primary"><i class="ph ph-plus-circle"></i> Add Product</a>';
 include_once __DIR__ . '/includes/header.php';
 
-$message = "";
-$error = "";
-
-// Handle Delete
-if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
-    try {
-        $stmt = $pdo->prepare("DELETE FROM products WHERE id = ?");
-        $stmt->execute([$_GET['delete']]);
-        $message = "Product deleted successfully!";
-    } catch(Exception $e) { $error = "Error: " . $e->getMessage(); }
-}
-
-// Fetch Products with category names
+$products = [];
 try {
-    $stmt = $pdo->query("SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC");
-    $products = $stmt->fetchAll();
-} catch(Exception $e) { $products = []; }
-
-// Fetch Categories for dropdown
-$categories = $pdo->query("SELECT id, name FROM categories ORDER BY name ASC")->fetchAll();
+    $products = $pdo->query("SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
+} catch(Exception $e) {}
 ?>
 
-<?php if($message): ?> <div class="max-w-7xl mx-auto px-6 mt-6"><div class="bg-green-50 text-green-700 p-4 rounded-2xl font-bold border border-green-100">✅ <?php echo $message; ?></div></div> <?php endif; ?>
-<?php if($error): ?> <div class="max-w-7xl mx-auto px-6 mt-6"><div class="bg-red-50 text-red-700 p-4 rounded-2xl font-bold border border-red-100">❌ <?php echo $error; ?></div></div> <?php endif; ?>
-
-<div class="px-12 py-10">
-    <div class="flex items-center justify-between mb-12">
-        <div>
-            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Product Catalog</h1>
-            <p class="text-slate-500 font-medium">Manage your professional-grade kitchen collection.</p>
+<div class="admin-card">
+    <div class="admin-card-header">
+        <span class="admin-card-title">All Products</span>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+            <span style="font-size:0.75rem; color:#9ca3af; font-weight:700;"><?php echo count($products); ?> Products</span>
         </div>
-        <a href="product-edit.php" class="bg-amber-600 hover:bg-amber-700 text-white font-black px-8 py-3.5 rounded-2xl transition shadow-lg shadow-amber-200 flex items-center gap-2">
-            <i class="ph ph-plus-circle text-lg"></i>
-            Add New Product
-        </a>
     </div>
-
-    <?php if($message): ?> <div class="bg-emerald-50 text-emerald-700 p-6 rounded-2xl font-bold border border-emerald-100 mb-8 animate-fade-in">✅ <?php echo $message; ?></div> <?php endif; ?>
-    <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-6 rounded-2xl font-bold border border-rose-100 mb-8 animate-fade-in">❌ <?php echo $error; ?></div> <?php endif; ?>
-
-    <div class="glass-card rounded-[2.5rem] shadow-sm overflow-hidden border border-white/40">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="bg-slate-50/30">
-                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Product Information</th>
-                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Category</th>
-                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Sale Price</th>
-                        <th class="px-10 py-5 text-left font-bold text-slate-400 uppercase tracking-widest text-[10px]">Inventory</th>
-                        <th class="px-10 py-5 text-right font-bold text-slate-400 uppercase tracking-widest text-[10px]">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    <?php if(empty($products)): ?>
-                    <tr><td colspan="5" class="px-10 py-20 text-center">
-                        <div class="text-5xl mb-4 opacity-10">🏷️</div>
-                        <div class="text-slate-400 font-bold uppercase tracking-widest text-xs">No products in catalog</div>
-                    </td></tr>
-                    <?php endif; ?>
-                    <?php foreach ($products as $p): ?>
-                    <tr class="hover:bg-amber-50/20 transition group">
-                        <td class="px-10 py-6">
-                            <?php 
-                            $img = !empty($p['image']) ? $p['image'] : (!empty($p['main_image']) ? $p['main_image'] : 'https://placehold.co/400x300/f5f5f5/aaa?text=No+Image');
-                            if (strpos($img, '../') === false && strpos($img, 'http') === false) $img = "../" . $img;
-                            ?>
-                            <div class="flex items-center gap-5">
-                                <img src="<?php echo $img; ?>" class="w-16 h-16 rounded-2xl object-cover bg-white shadow-sm group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300/f5f5f5/aaa?text=No+Image'">
-                                <div>
-                                    <div class="font-black text-slate-900 group-hover:text-amber-600 transition-colors"><?php echo htmlspecialchars($p['name']); ?></div>
-                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><?php echo $p['slug']; ?></div>
-                                </div>
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($products)): ?>
+                <tr><td colspan="6" style="text-align:center; padding:3rem; color:#9ca3af;">No products found.</td></tr>
+                <?php endif; ?>
+                <?php foreach($products as $i => $p): 
+                    $img = !empty($p['image']) ? $p['image'] : '../assets/images/placeholder.jpg';
+                ?>
+                <tr>
+                    <td style="color:#d1d5db; font-weight:800;"><?php echo $i+1; ?></td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:0.875rem;">
+                            <img src="<?php echo htmlspecialchars($img); ?>" 
+                                 style="width:40px; height:40px; border-radius:8px; object-cover: cover; background:#f3f4f6;"
+                                 onerror="this.src='https://placehold.co/100x100/f3f4f6/9ca3af?text=Pro'">
+                            <div style="min-width:0;">
+                                <div style="font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;"><?php echo htmlspecialchars($p['name']); ?></div>
+                                <div style="font-size:0.6875rem; color:#9ca3af;">ID: #<?php echo str_pad($p['id'], 3, '0', STR_PAD_LEFT); ?></div>
                             </div>
-                        </td>
-                        <td class="px-10 py-6">
-                            <span class="px-4 py-2 bg-slate-100 text-slate-600 text-[10px] font-black rounded-xl uppercase tracking-wider"><?php echo htmlspecialchars($p['category_name'] ?? 'Uncategorized'); ?></span>
-                        </td>
-                        <td class="px-10 py-6 font-black text-slate-900 text-lg">৳ <?php echo number_format($p['price']); ?></td>
-                        <td class="px-10 py-6">
-                            <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider <?php echo $p['stock_status'] == 'In Stock' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'; ?>">
-                                <?php echo $p['stock_status']; ?>
-                            </span>
-                        </td>
-                        <td class="px-10 py-6 text-right">
-                            <div class="flex justify-end gap-3">
-                                <a href="product-edit.php?id=<?php echo $p['id']; ?>" class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-blue-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition shadow-sm">
-                                    <i class="ph ph-note-pencil text-lg"></i>
-                                </a>
-                                <a href="products.php?delete=<?php echo $p['id']; ?>" onclick="return confirm('Permanent delete?')" class="w-10 h-10 rounded-xl bg-white border border-slate-100 text-rose-500 flex items-center justify-center hover:bg-rose-600 hover:text-white transition shadow-sm">
-                                    <i class="ph ph-trash text-lg"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                    <td><span style="font-size:0.75rem; font-weight:700; color:#4b5563; background:#f3f4f6; padding:0.25rem 0.625rem; border-radius:20px;"><?php echo htmlspecialchars($p['category_name'] ?: 'Uncategorized'); ?></span></td>
+                    <td style="font-weight:800; color:#111827;">৳ <?php echo number_format($p['price']); ?></td>
+                    <td>
+                        <?php if(!empty($p['is_featured'])): ?>
+                            <span class="status-badge" style="background:rgba(239,35,60,0.1); color:#ef233c;">⭐ Featured</span>
+                        <?php else: ?>
+                            <span class="status-badge" style="background:#f3f4f6; color:#9ca3af;">Standard</span>
+                        <?php endif; ?>
+                    </td>
+                    <td style="text-align:right;">
+                        <div style="display:inline-flex; gap:0.5rem;">
+                            <a href="product-edit.php?id=<?php echo $p['id']; ?>" class="btn btn-ghost" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
+                                <i class="ph ph-note-pencil" style="font-size:1rem;"></i>
+                            </a>
+                            <button onclick="if(confirm('Delete this product?')) window.location.href='products.php?delete=<?php echo $p['id']; ?>'" class="btn btn-danger" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
+                                <i class="ph ph-trash" style="font-size:1rem;"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
-</main>
-</body>
-</html>
-
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
