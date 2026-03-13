@@ -86,31 +86,92 @@ foreach ($rowCategories as $slug) {
 </section>
 
 <!-- ===========================
-     SHOP BY CATEGORY GRID
+     INTERACTIVE SHOPPING: CATEGORY FILTER & PRODUCTS
 =========================== -->
-<section class="py-16 bg-white">
+<section id="products" class="py-20 bg-white">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Shop by Category</h2>
-            <p class="text-gray-500">Explore our wide range of premium products</p>
+        <div class="text-center mb-12">
+            <span class="inline-block bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-4">Our Collection</span>
+            <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-4">Premium Kitchen <span class="text-amber-500">Essentials</span></h2>
+            <p class="text-slate-500 max-w-2xl mx-auto">Click a category to instantly browse our professional-grade products tailored for modern Bangladesh homes.</p>
         </div>
-        
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+
+        <!-- CATEGORY TABS (Scrollable on mobile) -->
+        <div class="flex items-center justify-center mb-10 overflow-x-auto pb-4 no-scrollbar gap-4 md:gap-8">
+            <button onclick="filterCategory('all', this)" class="cat-tab active whitespace-nowrap px-8 py-3 rounded-2xl font-bold transition-all duration-300 shadow-sm">
+                Everything
+            </button>
             <?php foreach($gridCats as $cat): ?>
-            <a href="category/<?php echo $cat['slug']; ?>" class="group flex flex-col items-center text-center">
-                <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100 group-hover:border-amber-500 transition-all duration-300 mb-4 shadow-sm group-hover:shadow-md">
-                    <img src="<?php echo htmlspecialchars($cat['image'] ?? 'https://placehold.co/400x400/f5f5f5/aaa?text='.$cat['name']); ?>" 
-                         alt="<?php echo htmlspecialchars($cat['name']); ?>"
-                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                </div>
-                <h3 class="text-sm md:text-base font-bold text-gray-800 group-hover:text-amber-600 transition tracking-tight">
-                    <?php echo htmlspecialchars($cat['name']); ?>
-                </h3>
-            </a>
+            <button onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" 
+                    class="cat-tab whitespace-nowrap px-8 py-3 rounded-2xl font-bold transition-all duration-300 shadow-sm border border-slate-100 flex items-center gap-3">
+                <img src="<?php echo htmlspecialchars($cat['image'] ?? 'assets/images/placeholder.jpg'); ?>" class="w-6 h-6 rounded-full object-cover">
+                <?php echo htmlspecialchars($cat['name']); ?>
+            </button>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <?php
+        // Fetch all products for filtering
+        $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
+        ?>
+        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 transition-all duration-500">
+            <?php foreach($allProducts as $p): ?>
+            <div class="product-item transition-all duration-500 transform opacity-100 scale-100" data-category="<?php echo $p['cat_slug']; ?>">
+                <?php include __DIR__ . '/includes/product-card.php'; ?>
+            </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
+
+<style>
+    .cat-tab.active {
+        background: #f59e0b; /* amber-500 */
+        color: white;
+        box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+        transform: translateY(-2px);
+    }
+    .cat-tab:not(.active) {
+        background: #f8fafc; /* slate-50 */
+        color: #64748b; /* slate-500 */
+    }
+    .cat-tab:not(.active):hover {
+        background: #f1f5f9;
+        border-color: #f59e0b;
+        color: #0f172a;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<script>
+    function filterCategory(slug, btn) {
+        // Update Tabs
+        document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const items = document.querySelectorAll('.product-item');
+        const grid = document.getElementById('product-grid');
+        
+        // Faster, smoother filtering
+        items.forEach(item => {
+            if (slug === 'all' || item.getAttribute('data-category') === slug) {
+                item.style.display = 'block';
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1)';
+                }, 10);
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 300);
+            }
+        });
+    }
+</script>
 
 <!-- Initialize Swiper -->
 <script>

@@ -3,7 +3,7 @@
  * Reusable Product Card Component
  * Expects: $p array with keys: id, name, main_image, price, slug
  */
-$imgSrc = !empty($p['main_image']) ? $p['image_url'] ?? $p['main_image'] : 'https://placehold.co/400x400/f5f5f5/aaa?text=No+Image';
+$imgSrc = !empty($p['image']) ? $p['image'] : (!empty($p['main_image']) ? $p['main_image'] : 'assets/images/placeholder.jpg');
 ?>
 <div class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-amber-300 hover:shadow-xl transition duration-300 flex flex-col">
     <!-- Image -->
