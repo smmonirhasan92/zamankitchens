@@ -147,82 +147,93 @@ $msg = $_GET['msg'] ?? '';
                 </div>
             </div>
 
-            <!-- Variations & specifications -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <div class="flex items-center justify-between mb-6 mt-0">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> 
-                        Product Variations (Size, Color, etc.)
-                    </h3>
-                    <button type="button" onclick="addVariation()" class="text-indigo-600 font-bold text-xs hover:underline">+ ADD VARIATION</button>
-                </div>
-                <div id="variation-container" class="space-y-3">
-                    <?php 
-                    $vars = $product['variations'] ?? [['name'=>'', 'value'=>'']];
-                    foreach($vars as $v): ?>
-                    <div class="flex gap-3 variation-row">
-                        <input type="text" name="var_name[]" value="<?php echo htmlspecialchars($v['name']); ?>" placeholder="Name (e.g. Size)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        <input type="text" name="var_value[]" value="<?php echo htmlspecialchars($v['value']); ?>" placeholder="Value (e.g. Medium)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="flex items-center justify-between mb-6 mt-10">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <span class="w-2 h-6 bg-blue-500 rounded-full"></span> 
-                        Technical Specifications
-                    </h3>
-                    <button type="button" onclick="addSpec()" class="text-blue-600 font-bold text-xs hover:underline">+ ADD SPEC</button>
-                </div>
-                <div id="spec-container" class="space-y-3">
-                    <?php 
-                    $specs = $product['specifications'] ?? [['label'=>'', 'value'=>'']];
-                    foreach($specs as $s): ?>
-                    <div class="flex gap-3 spec-row">
-                        <input type="text" name="spec_label[]" value="<?php echo htmlspecialchars($s['label']); ?>" placeholder="Label (e.g. Material)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        <input type="text" name="spec_value[]" value="<?php echo htmlspecialchars($s['value']); ?>" placeholder="Value (e.g. Stainless Steel)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
+            <!-- Advanced Options Toggle -->
+            <div onclick="document.getElementById('advanced-options').classList.toggle('hidden')" class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-5 text-center cursor-pointer hover:bg-gray-100 hover:border-indigo-300 transition group mt-8">
+                <h3 class="text-sm font-bold text-gray-600 group-hover:text-indigo-600 flex items-center justify-center gap-2">
+                    <span>⚙️</span> Show Advanced Options (Variations, Specs, Wholesale)
+                </h3>
             </div>
-            <!-- Wholesale Pricing Rules -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <div class="flex items-center justify-between mb-6 mt-0">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <span class="w-2 h-6 bg-pink-500 rounded-full"></span> 
-                        Wholesale Price Rules (Tiered Pricing)
-                    </h3>
-                    <button type="button" onclick="addPriceRule()" class="text-pink-600 font-bold text-xs hover:underline">+ ADD RULE</button>
-                </div>
-                <div id="price-rule-container" class="space-y-3">
-                    <?php 
-                    $rules = $priceRules ?? [];
-                    foreach($rules as $r): ?>
-                    <div class="flex gap-3 rule-row">
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-bold text-gray-400 mb-1">Min Qty</label>
-                            <input type="number" name="rule_min_qty[]" value="<?php echo htmlspecialchars($r['min_qty']); ?>" placeholder="10" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-bold text-gray-400 mb-1">Type</label>
-                            <select name="rule_type[]" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                                <option value="fixed" <?php echo $r['discount_type'] == 'fixed' ? 'selected' : ''; ?>>Fixed Price</option>
-                                <option value="percentage" <?php echo $r['discount_type'] == 'percentage' ? 'selected' : ''; ?>>% Discount</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-bold text-gray-400 mb-1">Value (৳ or %)</label>
-                            <input type="number" step="0.01" name="rule_value[]" value="<?php echo htmlspecialchars($r['value']); ?>" placeholder="150" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
-                        </div>
-                        <div class="flex-none pt-6">
-                            <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
-                        </div>
+
+            <!-- Advanced Options Container (Hidden by default) -->
+            <div id="advanced-options" class="hidden space-y-6 mt-6">
+                <!-- Variations & specifications -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6 mt-0">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> 
+                            Product Variations (Size, Color, etc.)
+                        </h3>
+                        <button type="button" onclick="addVariation()" class="text-indigo-600 font-bold text-xs hover:underline">+ ADD VARIATION</button>
                     </div>
-                    <?php endforeach; ?>
+                    <div id="variation-container" class="space-y-3">
+                        <?php 
+                        $vars = (!empty($product['variations'])) ? $product['variations'] : [];
+                        foreach($vars as $v): ?>
+                        <div class="flex gap-3 variation-row">
+                            <input type="text" name="var_name[]" value="<?php echo htmlspecialchars($v['name']); ?>" placeholder="Name (e.g. Size)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            <input type="text" name="var_value[]" value="<?php echo htmlspecialchars($v['value']); ?>" placeholder="Value (e.g. Medium)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-6 mt-10">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <span class="w-2 h-6 bg-blue-500 rounded-full"></span> 
+                            Technical Specifications
+                        </h3>
+                        <button type="button" onclick="addSpec()" class="text-blue-600 font-bold text-xs hover:underline">+ ADD SPEC</button>
+                    </div>
+                    <div id="spec-container" class="space-y-3">
+                        <?php 
+                        $specs = (!empty($product['specifications'])) ? $product['specifications'] : [];
+                        foreach($specs as $s): ?>
+                        <div class="flex gap-3 spec-row">
+                            <input type="text" name="spec_label[]" value="<?php echo htmlspecialchars($s['label']); ?>" placeholder="Label (e.g. Material)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            <input type="text" name="spec_value[]" value="<?php echo htmlspecialchars($s['value']); ?>" placeholder="Value (e.g. Stainless Steel)" class="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            <button type="button" onclick="this.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-4 italic">* If "Fixed Price", it becomes the unit price. If "% Discount", it's deducted from the sale price.</p>
+                
+                <!-- Wholesale Pricing Rules -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6 mt-0">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <span class="w-2 h-6 bg-pink-500 rounded-full"></span> 
+                            Wholesale Price Rules (Tiered Pricing)
+                        </h3>
+                        <button type="button" onclick="addPriceRule()" class="text-pink-600 font-bold text-xs hover:underline">+ ADD RULE</button>
+                    </div>
+                    <div id="price-rule-container" class="space-y-3">
+                        <?php 
+                        $rules = $priceRules ?? [];
+                        foreach($rules as $r): ?>
+                        <div class="flex gap-3 rule-row">
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Min Qty</label>
+                                <input type="number" name="rule_min_qty[]" value="<?php echo htmlspecialchars($r['min_qty']); ?>" placeholder="10" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Type</label>
+                                <select name="rule_type[]" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                                    <option value="fixed" <?php echo $r['discount_type'] == 'fixed' ? 'selected' : ''; ?>>Fixed Price</option>
+                                    <option value="percentage" <?php echo $r['discount_type'] == 'percentage' ? 'selected' : ''; ?>>% Discount</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-[10px] font-bold text-gray-400 mb-1">Value (৳ or %)</label>
+                                <input type="number" step="0.01" name="rule_value[]" value="<?php echo htmlspecialchars($r['value']); ?>" placeholder="150" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl outline-none">
+                            </div>
+                            <div class="flex-none pt-6">
+                                <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-400 p-2 hover:text-red-600">✕</button>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-4 italic">* If "Fixed Price", it becomes the unit price. If "% Discount", it's deducted from the sale price.</p>
+                </div>
             </div>
 
             <!-- SEO Settings -->
