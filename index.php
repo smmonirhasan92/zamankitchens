@@ -460,41 +460,43 @@ foreach ($rowCategories as $slug) {
 <!-- ===========================
      CHECKOUT MODAL (Zoom-in Animation)
 =========================== -->
-<div id="checkout-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-4">
+<div id="checkout-modal" class="fixed inset-0 z-[120] hidden items-center justify-center p-3">
     <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-md" onclick="closeCheckout()"></div>
-    <div id="checkout-content" class="relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden transition-all duration-500 transform scale-75 opacity-0 border border-slate-100">
-        <div class="bg-amber-500 p-8 text-white flex justify-between items-center">
-            <div>
-                <h2 class="text-2xl font-black italic">Place Order</h2>
-                <p class="text-amber-100 text-xs font-bold uppercase tracking-widest mt-1">Cash on Delivery</p>
-            </div>
-            <button onclick="closeCheckout()" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition">✕</button>
+    <div id="checkout-content" class="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 transform scale-75 opacity-0 border border-slate-100">
+        
+        <!-- Top Right Close Button -->
+        <button onclick="closeCheckout()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/10 flex items-center justify-center hover:bg-black/20 transition z-10 text-slate-800 font-bold">✕</button>
+
+        <div class="bg-amber-400 p-6 text-slate-900 text-center relative border-b border-amber-500/20">
+            <h2 class="text-2xl font-black italic tracking-tight">Place Order</h2>
+            <p class="text-amber-900/80 text-[10px] font-bold uppercase tracking-widest mt-1">Cash on Delivery</p>
         </div>
         
-        <form id="order-form" onsubmit="submitOrder(event)" class="p-8 space-y-5">
-            <div id="order-summary-mini" class="bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-4">
+        <form id="order-form" onsubmit="submitOrder(event)" class="p-6 space-y-4">
+            <div id="order-summary-mini" class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-2 max-h-32 overflow-y-auto hidden">
                 <!-- Summary injected here -->
             </div>
             
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="relative group">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition">👤</span>
-                    <input type="text" name="name" required placeholder="Your Full Name" class="w-full pl-12 pr-6 py-4 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:border-amber-500 outline-none transition text-sm">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition text-sm">👤</span>
+                    <input type="text" name="name" required placeholder="Full Name" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none transition text-sm font-medium text-slate-800">
                 </div>
                 <div class="relative group">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-20 group-focus-within:opacity-100 transition">📞</span>
-                    <input type="tel" name="phone" required placeholder="Mobile Number" class="w-full pl-12 pr-6 py-4 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:border-amber-500 outline-none transition text-sm">
-                </div>
-                <div class="relative group">
-                    <span class="absolute left-4 top-4 opacity-20 group-focus-within:opacity-100 transition">📍</span>
-                    <textarea name="address" required rows="3" placeholder="Full Delivery Address" class="w-full pl-12 pr-6 py-4 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:border-amber-500 outline-none transition text-sm resize-none"></textarea>
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition text-sm">📞</span>
+                    <input type="tel" name="phone" required placeholder="Mobile Number" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none transition text-sm font-medium text-slate-800">
                 </div>
             </div>
+            
+            <div class="relative group">
+                <span class="absolute left-4 top-3.5 opacity-30 group-focus-within:opacity-100 transition text-sm">📍</span>
+                <textarea name="address" required rows="2" placeholder="Full Delivery Address" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none transition text-sm font-medium text-slate-800 resize-none"></textarea>
+            </div>
 
-            <button type="submit" id="order-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-2xl transition shadow-xl shadow-slate-200">
-                Confirm Order ৳ <span id="checkout-total">0</span>
+            <button type="submit" id="order-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition shadow-xl shadow-slate-200 mt-2 flex justify-center items-center gap-2">
+                Confirm Order <span class="text-amber-400">৳ <span id="checkout-total">0</span></span>
             </button>
-            <p class="text-[10px] text-gray-400 text-center font-bold uppercase tracking-widest">Pay cash after receiving your items</p>
+            <p class="text-[10px] text-slate-400 text-center font-bold uppercase tracking-widest mt-2">Pay cash after receiving your items</p>
         </form>
 
         <!-- Success Message (Hidden) -->

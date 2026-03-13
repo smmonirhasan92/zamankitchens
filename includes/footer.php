@@ -40,8 +40,8 @@
                 <h4 class="text-white font-bold mb-4 text-sm tracking-wide uppercase">Information</h4>
                 <ul class="space-y-2 text-sm">
                     <li><a href="#" class="hover:text-amber-400 transition">About Us</a></li>
-                    <li><a href="#" class="hover:text-amber-400 transition">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-amber-400 transition">Return Policy</a></li>
+                    <li><a href="privacy.php" class="hover:text-amber-400 transition">Privacy Policy</a></li>
+                    <li><a href="terms.php" class="hover:text-amber-400 transition">Terms & Conditions</a></li>
                     <li><a href="admin/" class="hover:text-amber-400 transition">Admin Panel</a></li>
                 </ul>
             </div>
