@@ -1,6 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/smmonirhasan92/public_html
+    - export DEPLOYPATH=/home/zamankitchens/public_html
     - /bin/rsync -avz --exclude '.git' --exclude '.cpanel.yml' --exclude '.gitignore' --exclude 'node_modules' --exclude 'vendor' ./ $DEPLOYPATH
     - /bin/echo "OCE: Repository synchronized with public_html."
