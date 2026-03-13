@@ -35,21 +35,83 @@ try {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     echo "✅ Price rules table ready.\n";
 
-    // 4. Populate mandatory categories if empty
+    // 4. Hero Slides table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS hero_slides (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        subtitle VARCHAR(255) DEFAULT NULL,
+        image VARCHAR(255) NOT NULL,
+        button_text VARCHAR(50) DEFAULT 'Shop Now',
+        button_link VARCHAR(255) DEFAULT '#products',
+        order_index INT DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    echo "✅ Hero slides table ready.\n";
+
+    // 5. Users and Addresses
+    $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role ENUM('customer', 'admin') DEFAULT 'customer',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS user_addresses (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        address_label VARCHAR(50) DEFAULT 'Home',
+        address_line TEXT NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        zip_code VARCHAR(20) DEFAULT NULL,
+        is_default TINYINT(1) DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    echo "✅ User authentication tables ready.\n";
+
+    // 6. Category Image column fix
+    try {
+        $pdo->exec("ALTER TABLE categories ADD COLUMN image VARCHAR(255) DEFAULT NULL");
+        echo "✅ Categories table updated with image column.\n";
+    } catch (Exception $e) {}
+
+    // 7. Comprehensive Seeding
     $catCount = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
-    if ($catCount == 0) {
-        $stmt = $pdo->prepare("INSERT IGNORE INTO categories (name, slug) VALUES (?, ?)");
+    if ($catCount <= 4) {
+        $pdo->exec("TRUNCATE TABLE categories");
+        $stmt = $pdo->prepare("INSERT INTO categories (name, slug, image) VALUES (?, ?, ?)");
         $cats = [
-            ['Kitchen Cabinet', 'kitchen-cabinet'],
-            ['Kitchen Hood', 'kitchen-hood'],
-            ['Gas Stove', 'gas-stove'],
-            ['Premium Sink', 'sink']
+            ['Kitchen Cabinet', 'kitchen-cabinet', 'assets/images/cat-cabinet.jpg'],
+            ['Kitchen Hood', 'kitchen-hood', 'assets/images/cat-hood.jpg'],
+            ['Gas Stove', 'gas-stove', 'assets/images/cat-stove.jpg'],
+            ['Premium Sinks', 'sinks', 'assets/images/cat-sink.jpg'],
+            ['Bath Appliances', 'bath', 'assets/images/cat-bath.jpg']
         ];
         foreach ($cats as $cat) $stmt->execute($cat);
-        echo "✅ Categories populated.\n";
+        echo "✅ Professional categories seeded.\n";
     }
 
-    echo "\nSetup Complete!\n";
+    $prodCount = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    if ($prodCount == 0) {
+        $categories = $pdo->query("SELECT id, name FROM categories")->fetchAll();
+        $stmt = $pdo->prepare("INSERT INTO products (category_id, name, description, price, purchase_price, image, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        
+        foreach ($categories as $cat) {
+            for ($i = 1; $i <= 3; $i++) {
+                $stmt->execute([
+                    $cat['id'],
+                    $cat['name'] . " Pro " . $i,
+                    "High-quality professional " . strtolower($cat['name']) . " for your dream kitchen. Durable and elegant design.",
+                    rand(5000, 50000),
+                    rand(3000, 25000),
+                    'assets/images/placeholder.jpg',
+                    rand(10, 50)
+                ]);
+            }
+        }
+        echo "✅ 15 Professional products seeded.\n";
+    }
+
+    echo "\n🚀 Master Setup Complete! Your store is now ready for professional use.\n";
 } catch (Exception $e) {
     echo "❌ Error: " . $e->getMessage() . "\n";
 }
