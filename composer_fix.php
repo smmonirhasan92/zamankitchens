@@ -12,7 +12,7 @@ if (!isset($_GET['pass']) || $_GET['pass'] !== $password) {
 }
 
 // Paths
-$corePath = __DIR__ . '/repositories/zamankitchens';
+$corePath = __DIR__ . '/../repositories/zamankitchens';
 $composerPhar = __DIR__ . '/composer.phar';
 
 if (!file_exists($composerPhar)) {
