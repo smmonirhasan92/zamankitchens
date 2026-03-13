@@ -3,6 +3,9 @@
  * Zaman Kitchens - Header Component
  * Features: Sticky header, Category Dropdown, Search Bar
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/db.php';
 
 // Fetch categories for mega dropdown
@@ -106,6 +109,29 @@ try {
 
             <!-- Action Icons -->
             <div class="flex items-center gap-2 ml-auto">
+                <!-- User Profile -->
+                <?php if(isset($_SESSION['user_id'])): ?>
+                <a href="<?php echo SITE_URL; ?>/profile.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </a>
+                <?php else: ?>
+                <a href="<?php echo SITE_URL; ?>/login.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                </a>
+                <?php endif; ?>
+
+                <!-- Wishlist Trigger -->
+                <a href="<?php echo SITE_URL; ?>/wishlist.php" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-rose-100 transition border border-slate-100 group hidden sm:flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span id="wishlist-count" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white hidden">0</span>
+                </a>
+
                 <!-- Cart Trigger -->
                 <button onclick="toggleCart()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
