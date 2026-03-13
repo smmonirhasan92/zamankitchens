@@ -96,13 +96,16 @@ try {
     if ($prodCount < 10) {
         $pdo->exec("TRUNCATE TABLE products");
         $categories = $pdo->query("SELECT id, name FROM categories")->fetchAll();
-        $stmt = $pdo->prepare("INSERT INTO products (category_id, name, description, price, purchase_price, image, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, image, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         
         foreach ($categories as $cat) {
             for ($i = 1; $i <= 3; $i++) {
+                $name = $cat['name'] . " Pro " . $i;
+                $slug = strtolower(str_replace(' ', '-', $name)) . '-' . rand(100, 999);
                 $stmt->execute([
                     $cat['id'],
-                    $cat['name'] . " Pro " . $i,
+                    $name,
+                    $slug,
                     "High-quality professional " . strtolower($cat['name']) . " for your dream kitchen. Durable and elegant design.",
                     rand(5000, 50000),
                     rand(3000, 25000),
