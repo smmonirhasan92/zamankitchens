@@ -15,25 +15,25 @@ $jsData = json_encode([
 ?>
 <style>
 .zk-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.zk-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.18), 0 0 0 1px rgba(249,115,22,0.1); }
+.zk-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.18), 0 0 0 1px rgba(239,35,60,0.12); }
 .zk-card:hover .zk-img { transform: scale(1.08); }
 .zk-img { transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 .zk-buy-btn {
-    background: linear-gradient(135deg, #1e1e2e, #0f0f1a);
+    background: linear-gradient(135deg, #2b2d42, #1a1b2e);
     transition: all 0.3s ease;
     position: relative; overflow: hidden;
 }
 .zk-buy-btn::before {
     content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s;
-    background: linear-gradient(135deg, #F97316, #FBBF24);
+    background: linear-gradient(135deg, #ef233c, #d80032);
 }
 .zk-buy-btn:hover::before { opacity: 1; }
 .zk-buy-btn span { position: relative; z-index: 1; }
 .zk-price-tag {
-    background: linear-gradient(135deg, #F97316, #FBBF24);
+    background: linear-gradient(135deg, #ef233c, #d80032);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
-.zk-wishlist-btn:hover { background: rgba(244,63,94,0.1); border-color: #f43f5e; color: #f43f5e; }
+.zk-wishlist-btn:hover { background: rgba(239,35,60,0.08); border-color: #ef233c; color: #ef233c; }
 </style>
 <div onclick='openQuickView(<?php echo $jsData; ?>)' class="zk-card cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-100/80 flex flex-col relative shadow-sm hover:shadow-2xl" style="box-shadow: 0 4px 15px -3px rgba(0,0,0,0.06);">
     <!-- Image -->
@@ -46,7 +46,7 @@ $jsData = json_encode([
         
         <?php if (!empty($p['is_featured'])): ?>
         <span class="absolute top-3 left-3 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md z-10"
-              style="background: linear-gradient(135deg, #F97316, #FBBF24);">⭐ Featured</span>
+              style="background: linear-gradient(135deg, #ef233c, #d80032);">⭐ Featured</span>
         <?php endif; ?>
         
         <!-- Quick action buttons overlay -->

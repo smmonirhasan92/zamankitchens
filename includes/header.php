@@ -48,9 +48,10 @@ try {
 <body class="bg-white text-gray-900 antialiased">
 
 <!-- ===== TOP BAR ===== -->
-<div class="bg-amber-600 text-white text-xs text-center py-1.5 px-4">
-    🚚 Free Delivery in Dhaka &nbsp;|&nbsp; 📞 <a href="tel:01700000000" class="underline hover:no-underline font-bold">01700-000000</a> &nbsp;|&nbsp; 💬 WhatsApp Available 10AM–8PM
+<div style="background: linear-gradient(90deg, #d80032, #ef233c, #d80032); color: #edf2f4;" class="text-xs text-center py-1.5 px-4 font-bold tracking-wide">
+    🚚 Free Delivery in Dhaka &nbsp;|&nbsp; 📞 <a href="tel:01700000000" class="underline hover:no-underline" style="color: #edf2f4;">01700-000000</a> &nbsp;|&nbsp; 💬 WhatsApp Available 10AM–8PM
 </div>
+
 
 <!-- ===== MAIN HEADER ===== -->
 <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
