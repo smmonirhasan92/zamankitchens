@@ -16,7 +16,13 @@ $corePath = __DIR__ . '/../repositories/zamankitchens';
 $composerPhar = __DIR__ . '/composer.phar';
 
 if (!file_exists($composerPhar)) {
-    die("Error: composer.phar not found in " . __DIR__);
+    echo "composer.phar not found. Attempting to download...<br>";
+    $composerUrl = 'https://getcomposer.org/composer.phar';
+    if (file_put_contents($composerPhar, file_get_contents($composerUrl))) {
+        echo "✅ composer.phar downloaded successfully.<br>";
+    } else {
+        die("❌ Error: Failed to download composer.phar. Please upload it manually to " . __DIR__);
+    }
 }
 
 if (!is_dir($corePath)) {
