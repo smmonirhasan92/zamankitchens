@@ -18,17 +18,35 @@ $imgSrc = !empty($p['image']) ? $p['image'] : (!empty($p['main_image']) ? $p['ma
         <?php endif; ?>
     </a>
     <!-- Info -->
-    <div class="p-4 flex flex-col flex-1">
-        <h3 class="font-bold text-gray-800 text-sm md:text-base mb-1 line-clamp-2 flex-1">
+    <div class="p-5 flex flex-col flex-1">
+        <h3 class="font-black text-slate-800 text-sm md:text-lg mb-2 line-clamp-2 italic">
             <a href="product/<?php echo htmlspecialchars($p['slug'] ?? ''); ?>" class="hover:text-amber-600 transition">
                 <?php echo htmlspecialchars($p['name']); ?>
             </a>
         </h3>
-        <div class="flex items-center justify-between mt-3">
-            <span class="text-xl font-extrabold text-amber-600">৳ <?php echo number_format($p['price']); ?></span>
-            <a href="checkout.php?product=<?php echo $p['id']; ?>" class="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition shadow hover:shadow-amber-200">
-                Buy Now
-            </a>
+        <div class="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</span>
+                <span class="text-xl font-black text-amber-600">৳ <?php echo number_format($p['price']); ?></span>
+            </div>
+            <div class="flex gap-2">
+                <!-- Data for JS -->
+                <?php 
+                $jsData = json_encode([
+                    'id' => $p['id'],
+                    'name' => $p['name'],
+                    'price' => $p['price'],
+                    'image' => $imgSrc,
+                    'description' => $p['description'] ?? 'Premium quality kitchen appliance.'
+                ], JSON_HEX_APOS);
+                ?>
+                <button onclick='openQuickView(<?php echo $jsData; ?>)' class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-amber-100 flex items-center justify-center transition" title="Quick View">
+                    👁️
+                </button>
+                <button onclick='addToCart(<?php echo $jsData; ?>)' class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 flex items-center justify-center transition shadow-lg shadow-slate-200" title="Add to Bag">
+                    <span class="text-white">👜</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

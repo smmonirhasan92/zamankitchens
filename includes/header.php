@@ -104,6 +104,14 @@ try {
 
             <!-- Action Icons -->
             <div class="flex items-center gap-2 ml-auto">
+                <!-- Cart Trigger -->
+                <button onclick="toggleCart()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                </button>
+
                 <a href="tel:01700000000" class="hidden md:flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
                     📞 <span>Call Now</span>
                 </a>
