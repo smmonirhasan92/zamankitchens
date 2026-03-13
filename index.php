@@ -344,7 +344,7 @@ foreach ($rowCategories as $slug) {
         renderCart();
     }
 
-    function addToCart(product) {
+    function addToCart(product, skipAnimation = false) {
         const exists = cart.find(item => item.id == product.id);
         if (exists) {
             exists.qty++;
@@ -353,28 +353,45 @@ foreach ($rowCategories as $slug) {
         }
         localStorage.setItem('zk_cart', JSON.stringify(cart));
         
-        // Fly-to-cart effect simulation
-        const btn = event.target;
-        btn.classList.add('bg-green-500');
-        btn.innerHTML = 'Added! ✓';
-        setTimeout(() => {
-            btn.classList.remove('bg-green-500');
-            btn.innerHTML = 'Add to Bag';
-        }, 1000);
+        if (!skipAnimation && typeof window.event !== 'undefined' && window.event) {
+            let btn = window.event.target;
+            if (btn && btn.closest) {
+                btn = btn.closest('button');
+            }
+            if (btn) {
+                const originalText = btn.innerHTML;
+                btn.classList.add('bg-green-500');
+                btn.innerHTML = '✓';
+                setTimeout(() => {
+                    btn.classList.remove('bg-green-500');
+                    btn.innerHTML = originalText;
+                }, 1000);
+            }
+        }
 
         renderCart();
-        if (window.innerWidth > 768) toggleCart();
+        if (!skipAnimation && window.innerWidth > 768) {
+            const sideCart = document.getElementById('side-cart');
+            if (sideCart && sideCart.classList.contains('translate-x-full')) {
+                toggleCart();
+            }
+        }
     }
 
     function buyNow(product) {
-        addToCart(product);
+        // Add item to cart SILENTLY (no animation, no sidecart)
+        addToCart(product, true);
+        
+        // Hide side cart if open
+        const sideCart = document.getElementById('side-cart');
+        if (sideCart && !sideCart.classList.contains('translate-x-full')) {
+            sideCart.classList.add('translate-x-full');
+        }
+        
+        // Open the Checkout Modal Immediately
         setTimeout(() => {
-            const sideCart = document.getElementById('side-cart');
-            if (sideCart && !sideCart.classList.contains('translate-x-full')) {
-                sideCart.classList.add('translate-x-full');
-            }
             openCheckout();
-        }, 100);
+        }, 50);
     }
 
     function renderCart() {
