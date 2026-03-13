@@ -19,9 +19,11 @@ try {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     echo "✅ Leads table created.\n";
 
-    // 2. Ensure product purchase_price exists
+    // 2. Ensure product columns exist
     $pdo->exec("ALTER TABLE products ADD COLUMN IF NOT EXISTS purchase_price DECIMAL(10,2) DEFAULT 0.00");
-    echo "✅ Products table updated with purchase_price.\n";
+    $pdo->exec("ALTER TABLE products ADD COLUMN IF NOT EXISTS image VARCHAR(255) DEFAULT 'assets/images/placeholder.jpg'");
+    $pdo->exec("ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INT DEFAULT 0");
+    echo "✅ Products table schema standardized.\n";
 
     // 3. Ensure price_rules table exists (for Wholesale)
     $pdo->exec("CREATE TABLE IF NOT EXISTS price_rules (
