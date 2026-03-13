@@ -3,8 +3,11 @@
  * Zaman Kitchens - Manage Hero Slides
  * Features: List, Add, Edit, Delete slides with Image Upload
  */
-session_start();
 require_once __DIR__ . '/../includes/db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Auth Guard
 if (!isset($_SESSION['admin_id'])) {
@@ -53,15 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($image_path) {
         try {
             if ($id) {
-                // Update
                 $stmt = $pdo->prepare("UPDATE hero_slides SET title = ?, subtitle = ?, image_path = ?, button_text = ?, button_link = ?, order_index = ?, is_active = ? WHERE id = ?");
                 $stmt->execute([$title, $subtitle, $image_path, $button_text, $button_link, $order_index, $is_active, $id]);
-                $message = "Slide updated!";
+                $message = "Slide updated successfully!";
             } else {
-                // Insert
                 $stmt = $pdo->prepare("INSERT INTO hero_slides (title, subtitle, image_path, button_text, button_link, order_index, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$title, $subtitle, $image_path, $button_text, $button_link, $order_index, $is_active]);
-                $message = "Slide added!";
+                $message = "Slide added successfully!";
             }
         } catch(Exception $e) { $error = "Database Error: " . $e->getMessage(); }
     } else {
@@ -79,117 +80,125 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     $stmt->execute([$_GET['edit']]);
     $editSlide = $stmt->fetch();
 }
-?>
-<?php 
-$adminTitle = 'Manage Slider';
+
+$adminTitle = 'Hero Slider';
 include_once __DIR__ . '/includes/header.php'; 
 ?>
 
-<div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8">
+<div class="grid md:grid-cols-12 gap-8 items-start">
     
     <!-- Form Section -->
-    <div class="md:col-span-1">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-            <h2 class="text-xl font-extrabold mb-6"><?php echo $editSlide ? 'Edit Slide' : 'Add New Slide'; ?></h2>
-            
-            <?php if($message): ?> <div class="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm font-medium border border-green-100">✅ <?php echo $message; ?></div> <?php endif; ?>
-            <?php if($error): ?> <div class="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm font-medium border border-red-100">❌ <?php echo $error; ?></div> <?php endif; ?>
+    <div class="md:col-span-4">
+        <div class="admin-card sticky top-24">
+            <div class="admin-card-header">
+                <span class="admin-card-title"><?php echo $editSlide ? 'Edit Slide' : 'Create New Slide'; ?></span>
+            </div>
+            <div class="admin-card-body">
+                <?php if($message): ?> <div class="bg-emerald-50 text-emerald-700 p-3 rounded-xl mb-4 text-xs font-bold border border-emerald-100 flex items-center gap-2"><i class="ph ph-check-circle text-lg"></i> <?php echo $message; ?></div> <?php endif; ?>
+                <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-3 rounded-xl mb-4 text-xs font-bold border border-rose-100 flex items-center gap-2"><i class="ph ph-warning-circle text-lg"></i> <?php echo $error; ?></div> <?php endif; ?>
 
-            <form method="POST" enctype="multipart/form-data" class="space-y-4">
-                <input type="hidden" name="id" value="<?php echo $editSlide['id'] ?? ''; ?>">
-                <input type="hidden" name="existing_image" value="<?php echo $editSlide['image_path'] ?? ''; ?>">
-                
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Slide Title</label>
-                    <input type="text" name="title" value="<?php echo htmlspecialchars($editSlide['title'] ?? ''); ?>"
-                        placeholder="e.g. Dream Kitchen Sinks"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Subtitle/Description</label>
-                    <textarea name="subtitle" rows="2"
-                        placeholder="e.g. Modern designs for your dream kitchen."
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm resize-none"><?php echo htmlspecialchars($editSlide['subtitle'] ?? ''); ?></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+                <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <input type="hidden" name="id" value="<?php echo $editSlide['id'] ?? ''; ?>">
+                    <input type="hidden" name="existing_image" value="<?php echo $editSlide['image_path'] ?? ''; ?>">
+                    
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Button Text</label>
-                        <input type="text" name="button_text" value="<?php echo htmlspecialchars($editSlide['button_text'] ?? 'Shop Now'); ?>"
-                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
+                        <label class="admin-label">Slide Heading</label>
+                        <input type="text" name="title" value="<?php echo htmlspecialchars($editSlide['title'] ?? ''); ?>"
+                            placeholder="e.g. Dream Kitchen Solutions" class="admin-input">
                     </div>
+
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Order Index</label>
-                        <input type="number" name="order_index" value="<?php echo $editSlide['order_index'] ?? 0; ?>"
-                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
+                        <label class="admin-label">Description / Sub-text</label>
+                        <textarea name="subtitle" rows="3" placeholder="Tell a quick story..." class="admin-input"><?php echo htmlspecialchars($editSlide['subtitle'] ?? ''); ?></textarea>
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Button Link</label>
-                    <input type="text" name="button_link" value="<?php echo htmlspecialchars($editSlide['button_link'] ?? '#'); ?>"
-                        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
-                </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="admin-label">Button Text</label>
+                            <input type="text" name="button_text" value="<?php echo htmlspecialchars($editSlide['button_text'] ?? 'Shop Now'); ?>" class="admin-input">
+                        </div>
+                        <div>
+                            <label class="admin-label">Sort Order</label>
+                            <input type="number" name="order_index" value="<?php echo $editSlide['order_index'] ?? 0; ?>" class="admin-input">
+                        </div>
+                    </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Slide Image (1600x600 recommended)</label>
-                    <input type="file" name="image" accept="image/*"
-                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer">
-                    <?php if(!empty($editSlide['image_path'])): ?>
-                        <img src="../<?php echo $editSlide['image_path']; ?>" class="mt-2 w-full h-24 rounded-lg object-cover border border-gray-100 shadow-sm">
-                    <?php endif; ?>
-                </div>
+                    <div>
+                        <label class="admin-label">Redirect Link</label>
+                        <input type="text" name="button_link" value="<?php echo htmlspecialchars($editSlide['button_link'] ?? '#'); ?>" class="admin-input">
+                    </div>
 
-                <div class="flex items-center gap-2 py-2">
-                    <input type="checkbox" name="is_active" id="is_active" <?php echo ($editSlide['is_active'] ?? 1) ? 'checked' : ''; ?> class="w-4 h-4 text-amber-600 rounded">
-                    <label for="is_active" class="text-sm font-medium text-gray-700 cursor-pointer">Published / Active</label>
-                </div>
+                    <div>
+                        <label class="admin-label">Slide Artwork</label>
+                        <div class="relative group mt-1">
+                            <?php if(!empty($editSlide['image_path'])): ?>
+                                <img src="../<?php echo $editSlide['image_path']; ?>" class="w-full h-32 rounded-xl object-cover border border-slate-100 mb-3 grayscale group-hover:grayscale-0 transition duration-500">
+                            <?php endif; ?>
+                            <input type="file" name="image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                        </div>
+                    </div>
 
-                <div class="pt-2 flex gap-2">
-                    <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-amber-200">
-                        <?php echo $editSlide ? 'Update Slide' : 'Save Slide'; ?>
-                    </button>
-                    <?php if($editSlide): ?>
-                        <a href="slides.php" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition">Cancel</a>
-                    <?php endif; ?>
-                </div>
-            </form>
+                    <div class="flex items-center gap-2 py-2">
+                        <input type="checkbox" name="is_active" id="is_active" <?php echo ($editSlide['is_active'] ?? 1) ? 'checked' : ''; ?> class="w-5 h-5 accent-emerald-500 rounded cursor-pointer">
+                        <label for="is_active" class="text-xs font-black text-slate-600 cursor-pointer">Show this slide live</label>
+                    </div>
+
+                    <div class="pt-2 flex gap-3">
+                        <button type="submit" class="flex-1 btn btn-primary py-3 justify-center text-sm">
+                            <i class="ph ph-magic-wand"></i>
+                            <?php echo $editSlide ? 'Update Artwork' : 'Launch Slide'; ?>
+                        </button>
+                        <?php if($editSlide): ?>
+                            <a href="slides.php" class="btn btn-ghost py-3 px-4">✕</a>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- List Section -->
-    <div class="md:col-span-2 space-y-4">
+    <div class="md:col-span-8 grid gap-5">
         <?php if(empty($slides)): ?>
-            <div class="bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-100">
-                <div class="text-4xl mb-2">🖼️</div>
-                <h3 class="font-bold text-gray-400">No slides found. Add your first promotional slide!</h3>
+            <div class="admin-card p-16 text-center border-2 border-dashed border-slate-200">
+                <div class="text-5xl mb-4">🖼️</div>
+                <h3 class="font-black text-slate-400">Your gallery is empty. Create your first hero slide!</h3>
             </div>
         <?php else: ?>
             <?php foreach ($slides as $slide): ?>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row h-full group">
-                <div class="md:w-1/3 relative h-48 md:h-auto">
-                    <img src="../<?php echo $slide['image_path']; ?>" class="w-full h-full object-cover">
-                    <div class="absolute top-2 left-2 px-2 py-1 rounded bg-black/50 text-white text-[10px] font-bold"><?php echo $slide['order_index']; ?>. Index</div>
-                </div>
-                <div class="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-extrabold text-lg text-gray-900"><?php echo htmlspecialchars($slide['title']); ?></h3>
-                            <?php if($slide['is_active']): ?>
-                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVE</span>
-                            <?php else: ?>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">DRAFT</span>
-                            <?php endif; ?>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4 line-clamp-2"><?php echo htmlspecialchars($slide['subtitle']); ?></p>
-                        <div class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Link: <?php echo htmlspecialchars($slide['button_link']); ?></div>
+            <div class="admin-card group hover:border-indigo-200 transition duration-300">
+                <div class="flex flex-col md:flex-row h-full">
+                    <!-- Artwork Preview -->
+                    <div class="md:w-52 relative h-40 md:h-auto overflow-hidden">
+                        <img src="../<?php echo $slide['image_path']; ?>" class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition duration-700">
+                        <div class="absolute top-2 left-2 px-3 py-1 rounded-full bg-black/70 backdrop-blur text-white text-[9px] font-black uppercase tracking-widest">Index #<?php echo $slide['order_index']; ?></div>
                     </div>
-                    <div class="flex gap-4 mt-6">
-                        <a href="slides.php?edit=<?php echo $slide['id']; ?>" class="flex-1 text-center bg-gray-50 hover:bg-blue-50 text-blue-600 font-bold py-2 rounded-lg border border-gray-100 hover:border-blue-200 transition">Edit</a>
-                        <a href="slides.php?delete=<?php echo $slide['id']; ?>" 
-                           onclick="return confirm('Delete this slide?')"
-                           class="flex-1 text-center bg-gray-50 hover:bg-red-50 text-red-500 font-bold py-2 rounded-lg border border-gray-100 hover:border-red-200 transition">Delete</a>
+                    <!-- Details -->
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-black text-lg text-slate-900 leading-tight"><?php echo htmlspecialchars($slide['title']); ?></h3>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Link: <?php echo htmlspecialchars($slide['button_link']); ?></p>
+                                </div>
+                                <?php if($slide['is_active']): ?>
+                                    <span class="status-badge" style="background:rgba(16,185,129,0.1); color:#10b981;">● Active</span>
+                                <?php else: ?>
+                                    <span class="status-badge" style="background:#f3f4f6; color:#9ca3af;">○ Drafted</span>
+                                <?php endif; ?>
+                            </div>
+                            <p class="text-sm text-slate-500 line-clamp-2 leading-relaxed"><?php echo htmlspecialchars($slide['subtitle']); ?></p>
+                        </div>
+                        <div class="flex items-center gap-2 mt-6">
+                            <a href="slides.php?edit=<?php echo $slide['id']; ?>" class="btn btn-ghost flex-1 justify-center text-xs">
+                                <i class="ph ph-pencil-simple"></i> Edit Slide
+                            </a>
+                            <a href="slides.php?delete=<?php echo $slide['id']; ?>" 
+                               onclick="return confirm('Immediately delete this slide?')"
+                               class="btn btn-danger px-4 justify-center">
+                                <i class="ph ph-trash"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,5 +208,4 @@ include_once __DIR__ . '/includes/header.php';
 
 </div>
 
-</body>
-</html>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

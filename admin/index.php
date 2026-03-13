@@ -13,8 +13,6 @@ if (isset($_SESSION['admin_id'])) {
 $error = "";
 
 // ==== ONE-TIME BYPASS TOKEN (Delete after first use) ====
-// Visit: /admin/?zk_reset=zamankitchens_reset_2024
-// Visit: /admin/?zk_reset=zamankitchens_reset_2024
 if (isset($_GET['zk_reset']) && $_GET['zk_reset'] === 'zamankitchens_reset_2024') {
     try {
         $newPass = 'admin123';
@@ -25,7 +23,6 @@ if (isset($_GET['zk_reset']) && $_GET['zk_reset'] === 'zamankitchens_reset_2024'
         exit();
     } catch(Exception $e) { $error = "Reset error: " . $e->getMessage(); }
 }
-// ==== END BYPASS ====
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'] ?? '';
@@ -37,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$username]);
             $admin = $stmt->fetch();
 
-            // Robust check: supports both plain-text (new requested style) and hashed (original style)
             $is_authenticated = false;
             if ($admin) {
                 if ($password === $admin['password']) {
@@ -68,48 +64,116 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Zaman Kitchens</title>
+    <title>Management Portal | Zaman Kitchens</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .shining-button {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+        .shining-button:hover {
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            transform: translateY(-2px);
+        }
+        .input-dark {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .input-dark:focus {
+            border-color: #ef4444;
+            background: rgba(15, 23, 42, 0.9);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+        .vibrant-bg {
+            background: radial-gradient(circle at top left, rgba(239, 68, 68, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.1), transparent 40%);
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+<body class="vibrant-bg flex items-center justify-center min-h-screen p-6">
+    
+    <!-- Animated Blobs -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-[10%] left-[10%] w-[30rem] h-[30rem] bg-red-600/10 rounded-full blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-[10%] right-[10%] w-[25rem] h-[25rem] bg-indigo-600/10 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="max-w-md w-full">
+        <!-- Logo/Header -->
         <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-gray-800">Zaman Kitchens</h1>
-            <p class="text-gray-500 mt-2">Admin Control Panel</p>
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-600/20 rounded-2xl border border-red-500/30 mb-6 group">
+                <i class="ph ph-shield-check-bold text-3xl text-red-500 group-hover:scale-110 transition duration-300"></i>
+            </div>
+            <h1 class="text-3xl font-black text-white tracking-tight">Management Portal</h1>
+            <p class="text-slate-400 font-medium mt-2">Zaman Kitchens Pro Admin</p>
         </div>
 
-        <?php if($error): ?>
-            <div class="bg-red-50 text-red-600 p-4 rounded-lg mb-6 text-sm border border-red-100">
-                <?php echo $error; ?>
-            </div>
-        <?php endif; ?>
+        <!-- Login Card -->
+        <div class="glass-card rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Accent -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
 
-        <form method="POST" class="space-y-6">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
-                <input type="text" name="username" required 
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
-                    placeholder="Enter username">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-                <input type="password" name="password" required 
-                    class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
-                    placeholder="••••••••">
-            </div>
-            <button type="submit" 
-                class="w-full bg-amber-600 text-white font-bold py-3 rounded-lg hover:bg-amber-700 transition duration-300 shadow-lg shadow-amber-200">
-                Sign In
-            </button>
-        </form>
+            <?php if($error): ?>
+                <div class="bg-red-500/10 text-red-400 p-4 rounded-2xl mb-8 text-sm font-bold border border-red-500/20 flex items-center gap-3">
+                    <i class="ph ph-warning-circle-bold text-lg"></i>
+                    <?php echo $error; ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" class="space-y-6">
+                <div class="space-y-2">
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Username</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                            <i class="ph ph-user-bold text-lg"></i>
+                        </span>
+                        <input type="text" name="username" required 
+                            class="input-dark w-full pl-12 pr-4 py-4 rounded-2xl font-bold"
+                            placeholder="Enter username">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Secure Password</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                            <i class="ph ph-lock-key-bold text-lg"></i>
+                        </span>
+                        <input type="password" name="password" required 
+                            class="input-dark w-full pl-12 pr-4 py-4 rounded-2xl font-bold"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                        class="shining-button w-full text-white font-black py-4 rounded-2xl flex items-center justify-center gap-2 group">
+                        Enter Workspace
+                        <i class="ph ph-arrow-right-bold group-hover:translate-x-1 transition"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
         
-        <div class="mt-8 text-center">
-            <a href="../" class="text-sm text-gray-500 hover:text-amber-600 transition">&larr; Back to Website</a>
+        <div class="mt-10 text-center">
+            <a href="../" class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-white transition">
+                <i class="ph ph-arrow-left-bold"></i>
+                Return to Website
+            </a>
         </div>
     </div>
+
 </body>
 </html>
