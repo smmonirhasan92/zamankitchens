@@ -25,6 +25,13 @@ $jsData = json_encode([
         <?php if (!empty($p['is_featured'])): ?>
         <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md z-10">Featured</span>
         <?php endif; ?>
+        
+        <!-- Wishlist Button -->
+        <button onclick="event.stopPropagation(); toggleWishlist(<?php echo htmlspecialchars($jsData); ?>)" class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur border border-transparent flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white hover:border-rose-100 shadow-sm transition wishlist-btn-<?php echo $p['id']; ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+        </button>
     </div>
     <!-- Info -->
     <div class="p-4 flex flex-col flex-1">

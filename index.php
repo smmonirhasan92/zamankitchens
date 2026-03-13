@@ -337,6 +337,57 @@ foreach ($rowCategories as $slug) {
 <script>
     // Global State
     let cart = JSON.parse(localStorage.getItem('zk_cart')) || [];
+    let wishlist = JSON.parse(localStorage.getItem('zk_wishlist')) || [];
+
+    // Wishlist Logic
+    function renderWishlistCount() {
+        const countEl = document.getElementById('wishlist-count');
+        if (countEl) {
+            if (wishlist.length > 0) {
+                countEl.innerHTML = wishlist.length;
+                countEl.classList.remove('hidden');
+            } else {
+                countEl.classList.add('hidden');
+            }
+        }
+    }
+
+    function toggleWishlist(product) {
+        const index = wishlist.findIndex(item => item.id == product.id);
+        let action = 'added';
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            action = 'removed';
+        } else {
+            wishlist.push(product);
+        }
+        localStorage.setItem('zk_wishlist', JSON.stringify(wishlist));
+        renderWishlistCount();
+
+        // Animate Button if exists
+        if (typeof window.event !== 'undefined' && window.event) {
+            let btn = window.event.target;
+            if (btn && btn.closest) btn = btn.closest(`.wishlist-btn-${product.id}`) || btn.closest('button');
+            if (btn && btn.classList.contains(`wishlist-btn-${product.id}`)) {
+                if (action === 'added') {
+                    btn.classList.add('bg-rose-50', 'text-rose-500', 'border-rose-100');
+                    btn.classList.remove('bg-white/80', 'text-slate-400', 'border-transparent');
+                } else {
+                    btn.classList.remove('bg-rose-50', 'text-rose-500', 'border-rose-100');
+                    btn.classList.add('bg-white/80', 'text-slate-400', 'border-transparent');
+                }
+            }
+        }
+        
+        // If on wishlist page, re-render
+        if (typeof renderWishlistPage === 'function') {
+            renderWishlistPage();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderWishlistCount();
+    });
 
     function toggleCart() {
         const sideCart = document.getElementById('side-cart');
