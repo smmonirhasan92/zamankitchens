@@ -36,6 +36,9 @@ echo "Running 'php composer.phar install' in $corePath...<br><br>";
 ini_set('memory_limit', '512M');
 set_time_limit(300);
 
+// Fix "The HOME or COMPOSER_HOME environment variable must be set" error
+putenv('HOME=' . __DIR__);
+
 // Command to run
 $cmd = "cd $corePath && php $composerPhar install --no-dev 2>&1";
 
