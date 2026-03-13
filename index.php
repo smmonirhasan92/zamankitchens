@@ -396,12 +396,18 @@ foreach ($rowCategories as $slug) {
 
     function renderCart() {
         const countEl = document.getElementById('cart-count');
+        const container = document.getElementById('cart-items');
+        const totalEl = document.getElementById('cart-total');
+
         if (countEl) countEl.innerHTML = cart.reduce((a, b) => a + b.qty, 0);
+
+        if (!container || !totalEl) return;
 
         if (cart.length === 0) {
             container.innerHTML = `<div class="text-center py-12 text-slate-400">
                 <div class="text-4xl mb-4">🛍️</div>
                 <p class="font-bold">Your bag is empty</p>
+                <p class="text-xs mt-2">Add some kitchen magic to get started!</p>
             </div>`;
             totalEl.innerHTML = '৳ 0';
             return;
