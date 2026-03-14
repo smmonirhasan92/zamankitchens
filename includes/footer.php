@@ -70,7 +70,6 @@
         <!-- Bottom Bar -->
         <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-500">
             <span>&copy; <?php echo date('Y'); ?> Zaman Kitchens. All rights reserved.</span>
-            <span>Powered by Pure PHP | Hosted on NVMe SSD</span>
         </div>
     </div>
 </footer>
