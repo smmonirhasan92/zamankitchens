@@ -80,13 +80,13 @@ $jsData = json_encode([
         <h3 class="font-black text-slate-900 text-sm leading-tight mb-3 line-clamp-2 group-hover:text-red-600 transition" style="letter-spacing: -0.01em;">
             <?php echo htmlspecialchars($p['name']); ?>
         </h3>
-        <div class="mt-auto pt-3 flex items-center justify-between border-t border-slate-50 gap-2">
+        <div class="mt-auto pt-3 flex flex-col sm:flex-row sm:items-center justify-between border-t border-slate-50 gap-2">
             <div class="flex flex-col">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Price</span>
-                <span class="text-base md:text-lg font-black zk-price-tag leading-none">৳ <?php echo number_format($p['price']); ?></span>
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Price</span>
+                <span class="text-sm md:text-lg font-black zk-price-tag leading-none">৳ <?php echo number_format($p['price']); ?></span>
             </div>
             
-            <div class="flex items-center gap-1.5 relative z-20">
+            <div class="flex items-center gap-1 relative z-20">
                 <!-- Add to Bag -->
                 <button onclick="event.stopPropagation(); addToCart(<?php echo htmlspecialchars(json_encode($p)); ?>);"
                     class="h-9 w-9 flex-shrink-0 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-red-50 text-slate-500 hover:text-red-500 border border-slate-100 hover:border-red-100 transition group/btn shadow-sm">
@@ -97,7 +97,7 @@ $jsData = json_encode([
 
                 <!-- Buy Now -->
                 <button onclick="event.stopPropagation(); buyNow(<?php echo htmlspecialchars(json_encode($p)); ?>);"
-                    class="zk-buy-btn text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-md">
+                    class="zk-buy-btn text-white text-[9px] md:text-[10px] font-black uppercase tracking-wider px-2 md:px-4 py-2 md:py-2.5 rounded-xl shadow-md">
                     <span>Buy Now</span>
                 </button>
             </div>

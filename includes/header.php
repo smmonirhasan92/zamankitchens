@@ -48,8 +48,14 @@ try {
 <body class="bg-white text-gray-900 antialiased">
 
 <!-- ===== TOP BAR ===== -->
-<div style="background: linear-gradient(90deg, #d80032, #ef233c, #d80032); color: #edf2f4;" class="text-xs text-center py-1.5 px-4 font-bold tracking-wide">
-    🚚 Free Delivery in Dhaka &nbsp;|&nbsp; 📞 <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="underline hover:no-underline" style="color: #edf2f4;"><?php echo SITE_PHONE; ?></a> &nbsp;|&nbsp; 💬 WhatsApp Available 10AM–8PM
+<div style="background: linear-gradient(90deg, #d80032, #ef233c, #d80032); color: #edf2f4;" class="text-[10px] md:text-xs text-center py-1.5 px-2 font-bold tracking-wide overflow-hidden whitespace-nowrap">
+    <div class="flex items-center justify-center gap-2 md:gap-4 animate-scroll md:animate-none">
+        <span>🚚 Free Delivery in Dhaka</span>
+        <span class="opacity-30">|</span>
+        <span>📞 <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hover:underline" style="color: #edf2f4;"><?php echo SITE_PHONE; ?></a></span>
+        <span class="opacity-30 hidden md:inline">|</span>
+        <span class="hidden md:inline">💬 WhatsApp Available 10AM–8PM</span>
+    </div>
 </div>
 
 
@@ -60,15 +66,7 @@ try {
 
             <!-- Logo -->
             <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center gap-2">
-                <div class="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                </div>
-                <div class="leading-none">
-                    <span class="font-extrabold text-gray-900 text-base tracking-tight">Zaman</span>
-                    <span class="font-extrabold text-red-600 text-base tracking-tight"> Kitchens</span>
-                </div>
+                <img src="<?php echo SITE_URL; ?>/assets/img/logo.png" alt="Zaman Kitchens" class="h-10 md:h-12 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/ef233c/ffffff?text=Zaman+Kitchens';">
             </a>
 
             <!-- Category Dropdown (Desktop) -->

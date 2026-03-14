@@ -197,8 +197,8 @@ foreach ($rowCategories as $slug) {
         </div>
 
         <!-- CIRCULAR CATEGORY NAV -->
-        <div class="flex flex-wrap items-center justify-center gap-6 md:gap-12 mb-20">
-            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer text-center">
+        <div class="flex md:flex-wrap items-center md:items-start justify-start md:justify-center gap-6 md:gap-12 mb-20 overflow-x-auto pb-4 scrollbar-hide flex-nowrap md:flex-wrap px-4 -mx-4">
+            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer text-center flex-shrink-0">
                 <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg overflow-hidden mb-3 mx-auto"
                      style="background: #2b2d42;">
                     <span class="text-3xl">🏠</span>
@@ -209,7 +209,7 @@ foreach ($rowCategories as $slug) {
             <?php foreach($gridCats as $cat): 
                 $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : null;
             ?>
-            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer text-center">
+            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer text-center flex-shrink-0">
                 <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-white border border-slate-100 shadow-sm group-hover:shadow-md overflow-hidden mb-3 mx-auto">
                     <?php if($catImg): ?>
                         <img src="<?php echo htmlspecialchars($catImg); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-115">
@@ -226,7 +226,7 @@ foreach ($rowCategories as $slug) {
         <?php
         $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
         ?>
-        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
             <?php foreach($allProducts as $p): ?>
             <div class="product-item transition-all duration-700 transform opacity-100 scale-100" data-category="<?php echo $p['cat_slug']; ?>">
                 <?php include __DIR__ . '/includes/product-card.php'; ?>
