@@ -33,18 +33,31 @@ try {
                 <tr><td colspan="6" style="text-align:center; padding:3rem; color:#9ca3af;">No products found.</td></tr>
                 <?php endif; ?>
                 <?php foreach($products as $i => $p): 
-                    $img = !empty($p['image']) ? $p['image'] : '../assets/images/placeholder.jpg';
+                    $img = !empty($p['image']) ? '../' . $p['image'] : (!empty($p['main_image']) ? '../' . $p['main_image'] : null);
+    // Remove duplicate '../' if already present
+    if ($img) $img = str_replace('../..', '..', $img);
                 ?>
                 <tr>
                     <td style="color:#d1d5db; font-weight:800;"><?php echo $i+1; ?></td>
                     <td>
-                        <div style="display:flex; align-items:center; gap:0.875rem;">
-                            <img src="<?php echo htmlspecialchars($img); ?>" 
-                                 style="width:40px; height:40px; border-radius:8px; object-cover: cover; background:#f3f4f6;"
-                                 onerror="this.src='https://placehold.co/100x100/f3f4f6/9ca3af?text=Pro'">
+                        <div style="display:flex; align-items:center; gap:1rem;">
+                            <!-- Improved Thumbnail Preview -->
+                            <div style="position:relative; width:64px; height:64px; flex-shrink:0;">
+                                <?php if ($img): ?>
+                                    <img src="<?php echo htmlspecialchars($img); ?>" 
+                                         style="width:100%; height:100%; border-radius:14px; object-fit: cover; background:#f8fafc; border:1.5px solid #f1f5f9; box-shadow:0 4px 12px -2px rgba(0,0,0,0.08); transition:transform 0.2s;"
+                                         onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <?php endif; ?>
+                                <div class="thumbnail-fallback" style="display: <?php echo $img ? 'none' : 'flex'; ?>; width:100%; height:100%; border-radius:14px; background:linear-gradient(135deg, #fff1f2, #ffe4e6); border:1.5px solid #fecdd3; align-items:center; justify-content:center; flex-direction:column; gap:1px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+                                    <i class="ph ph-image-square text-rose-400 text-2xl" style="margin-bottom:-2px;"></i>
+                                    <span style="font-size:7px; font-weight:900; color:#fb7185; text-transform:uppercase; letter-spacing:0.08em;">No Image</span>
+                                </div>
+                            </div>
+                            <!-- Product Details -->
                             <div style="min-width:0;">
-                                <div style="font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;"><?php echo htmlspecialchars($p['name']); ?></div>
-                                <div style="font-size:0.6875rem; color:#9ca3af;">ID: #<?php echo str_pad($p['id'], 3, '0', STR_PAD_LEFT); ?></div>
+                                <div style="font-weight:800; color:#111827; font-size:0.9375rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; line-height:1.2;"><?php echo htmlspecialchars($p['name']); ?></div>
+                                <div style="font-size:0.75rem; color:#9ca3af; font-weight:600; margin-top:4px;">ID: #<?php echo str_pad($p['id'], 3, '0', STR_PAD_LEFT); ?></div>
                             </div>
                         </div>
                     </td>

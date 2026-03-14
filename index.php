@@ -99,7 +99,7 @@ foreach ($rowCategories as $slug) {
 
             <p class="text-slate-400 text-lg md:text-xl mb-10 max-w-lg leading-relaxed font-medium">
                 Bangladesh's finest kitchen cabinets, sinks, hoods & accessories.<br>
-                <span style="color: #FBBF24; font-weight: 700;">৳ 3,200 থেকে শুরু</span> — Cash on Delivery available.
+                <span class="text-red-500 font-bold">৳ 3,200 থেকে শুরু</span> — Cash on Delivery available.
             </p>
 
             <!-- CTAs -->
@@ -168,9 +168,15 @@ foreach ($rowCategories as $slug) {
     .cat-pill-item.active .cat-pill-inner {
         background: linear-gradient(135deg, #ef233c, #d80032);
         color: #edf2f4;
-        box-shadow: 0 10px 30px -5px rgba(239,35,60,0.5);
-        transform: translateY(-3px);
+        box-shadow: 0 15px 35px -8px rgba(239,35,60,0.5);
+        transform: translateY(-6px) scale(1.05);
+        border-color: #ef233c !important;
     }
+    .cat-pill-item.active .cat-name {
+        color: #ef233c !important;
+        font-weight: 900;
+    }
+    .cat-pill-inner { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .product-section-bg {
         background: linear-gradient(180deg, #edf2f4 0%, #f5f5f7 60%, #edf2f4 100%);
     }
@@ -181,7 +187,7 @@ foreach ($rowCategories as $slug) {
 </style>
 <section id="products" class="product-section-bg py-20">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-14">
+        <div class="text-center mb-16">
             <span class="inline-block text-[10px] font-black uppercase tracking-[0.35em] px-6 py-2 rounded-full mb-6"
                   style="background: rgba(239,35,60,0.08); color: #d80032; border: 1px solid rgba(239,35,60,0.25);">🔥 Premium Selections</span>
             <h2 class="text-4xl md:text-6xl font-black mb-5 tracking-tight" style="color: #2b2d42;">
@@ -190,20 +196,28 @@ foreach ($rowCategories as $slug) {
             <p class="max-w-xl mx-auto text-lg leading-relaxed" style="color: #8d99ae;">Tap any category to instantly filter our full collection.</p>
         </div>
 
-        <!-- PILL CATEGORY NAV -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mb-14">
-            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer">
-                <div class="cat-pill-inner flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all duration-300 text-white shadow-lg"
+        <!-- CIRCULAR CATEGORY NAV -->
+        <div class="flex flex-wrap items-center justify-center gap-6 md:gap-12 mb-20">
+            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer text-center">
+                <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg overflow-hidden mb-3 mx-auto"
                      style="background: #2b2d42;">
-                    <span>🏠</span> All Products
+                    <span class="text-3xl">🏠</span>
                 </div>
+                <span class="cat-name block text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-700">All Products</span>
             </div>
-            <?php foreach($gridCats as $cat): ?>
-            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer">
-                <div class="cat-pill-inner flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm transition-all duration-300 shadow-sm"
-                     style="background: white; border: 1px solid rgba(43,45,66,0.12); color: #2b2d42;">
-                    <?php echo htmlspecialchars($cat['name']); ?>
+
+            <?php foreach($gridCats as $cat): 
+                $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : null;
+            ?>
+            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer text-center">
+                <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-white border border-slate-100 shadow-sm group-hover:shadow-md overflow-hidden mb-3 mx-auto">
+                    <?php if($catImg): ?>
+                        <img src="<?php echo htmlspecialchars($catImg); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-115">
+                    <?php else: ?>
+                        <span class="text-3xl opacity-20">🍽️</span>
+                    <?php endif; ?>
                 </div>
+                <span class="cat-name block text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-red-500 transition-colors"><?php echo htmlspecialchars($cat['name']); ?></span>
             </div>
             <?php endforeach; ?>
         </div>
@@ -267,7 +281,7 @@ foreach ($rowCategories as $slug) {
                 <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">⭐ Featured Products</h2>
                 <p class="text-gray-500 mt-1">Handpicked bestsellers from our collection</p>
             </div>
-            <a href="#" class="text-amber-600 font-semibold hover:underline hidden md:block">View All &rarr;</a>
+            <a href="#" class="text-red-600 font-semibold hover:underline hidden md:block">View All &rarr;</a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <?php foreach($featured as $p): ?>
@@ -291,7 +305,7 @@ foreach ($rowCategories as $slug) {
             <div class="absolute inset-0 bg-black/50 flex items-center px-8">
                 <div>
                     <h2 class="text-2xl font-extrabold text-white"><?php echo $row['name']; ?></h2>
-                    <a href="category/<?php echo $slug; ?>" class="text-amber-400 text-sm mt-1 inline-block">View all &rarr;</a>
+                    <a href="category/<?php echo $slug; ?>" class="text-white bg-red-600/20 hover:bg-red-600 px-3 py-1 rounded-lg text-xs mt-2 inline-block transition">View all &rarr;</a>
                 </div>
             </div>
         </div>
@@ -300,7 +314,7 @@ foreach ($rowCategories as $slug) {
             <div>
                 <h2 class="text-2xl font-extrabold text-gray-900"><?php echo $row['name']; ?></h2>
             </div>
-            <a href="category/<?php echo $slug; ?>" class="text-amber-600 font-semibold hover:underline">View All &rarr;</a>
+            <a href="category/<?php echo $slug; ?>" class="text-red-600 font-semibold hover:underline">View All &rarr;</a>
         </div>
         <?php endif; ?>
 
@@ -320,23 +334,23 @@ foreach ($rowCategories as $slug) {
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto bg-slate-900 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl">
             <div class="md:w-2/5 p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-r border-white/5">
-                <h2 class="text-2xl font-black mb-4"><span class="text-amber-400">Custom</span> Design?</h2>
+                <h2 class="text-2xl font-black mb-4"><span class="text-red-500">Custom</span> Design?</h2>
                 <p class="text-slate-400 text-xs mb-6 leading-relaxed">Our experts will find the perfect fit for your kitchen.</p>
                 <div class="space-y-3">
                     <div class="flex items-center gap-3 text-sm font-bold">
-                        <span class="text-amber-500">📞</span> +880 1700-000000
+                        <span class="text-red-600">📞</span> +880 1700-000000
                     </div>
                     <div class="flex items-center gap-3 text-sm font-bold">
-                        <span class="text-amber-500">📍</span> Uttara, Dhaka
+                        <span class="text-red-600">📍</span> Uttara, Dhaka
                     </div>
                 </div>
             </div>
             <div class="md:w-3/5 p-8">
                 <form action="api/submit_lead.php" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" name="name" required placeholder="Name" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-amber-500 transition text-sm">
-                    <input type="text" name="phone" required placeholder="Phone" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-amber-500 transition text-sm">
-                    <input type="text" name="message" placeholder="Requirements" class="md:col-span-2 w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-amber-500 transition text-sm">
-                    <button type="submit" class="md:col-span-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-black py-3 rounded-xl transition shadow-lg shadow-amber-500/20 text-sm">
+                    <input type="text" name="name" required placeholder="Name" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-red-500 transition text-sm">
+                    <input type="text" name="phone" required placeholder="Phone" class="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-red-500 transition text-sm">
+                    <input type="text" name="message" placeholder="Requirements" class="md:col-span-2 w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-red-500 transition text-sm">
+                    <button type="submit" class="md:col-span-2 bg-red-600 hover:bg-red-700 text-white font-black py-3 rounded-xl transition shadow-lg shadow-red-600/20 text-sm">
                         Send Request
                     </button>
                 </form>
@@ -391,7 +405,7 @@ foreach ($rowCategories as $slug) {
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeCompareModal()"></div>
     <div class="relative bg-slate-50 w-full max-w-6xl h-full max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col border border-white/20">
         <div class="p-6 md:p-8 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3"><span class="text-amber-500">⇄</span> Product Comparison</h2>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3"><span class="text-red-600">⇄</span> Product Comparison</h2>
             <button onclick="closeCompareModal()" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 text-slate-600 transition font-bold">✕</button>
         </div>
         <div class="flex-1 overflow-x-auto p-6 md:p-8">
@@ -433,7 +447,7 @@ foreach ($rowCategories as $slug) {
             <span class="text-slate-500 font-bold uppercase tracking-widest text-xs">Total</span>
             <span id="cart-total" class="text-2xl font-black text-slate-900">৳ 0</span>
         </div>
-        <button onclick="toggleCart(); openCheckout();" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 text-center font-black py-4 rounded-2xl transition shadow-xl shadow-amber-500/20 block">
+        <button onclick="toggleCart(); openCheckout();" class="w-full bg-red-600 hover:bg-red-700 text-white text-center font-black py-4 rounded-2xl transition shadow-xl shadow-red-600/20 block">
             Checkout Now
         </button>
     </div>
@@ -470,10 +484,10 @@ foreach ($rowCategories as $slug) {
             bar.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] bg-slate-900/90 backdrop-blur-md text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-6 transform transition-all duration-300 translate-y-24';
             bar.innerHTML = `
                 <div class="flex items-center gap-2 font-bold text-sm">
-                    <span><span id="compare-count" class="text-amber-400">0</span> Items to Compare</span>
+                    <span><span id="compare-count" class="text-red-500">0</span> Items to Compare</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="openCompareModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-5 py-2 rounded-xl text-sm font-black transition">Compare Now</button>
+                    <button onclick="openCompareModal()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl text-sm font-black transition">Compare Now</button>
                     <button onclick="clearCompare()" class="text-slate-400 hover:text-white transition">✕</button>
                 </div>
             `;
@@ -511,7 +525,7 @@ foreach ($rowCategories as $slug) {
                     <button onclick="toggleCompare({id: ${p.id}}); openCompareModal();" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition">✕</button>
                     <img src="${p.image}" class="w-full h-48 object-cover rounded-2xl mb-6 bg-slate-50">
                     <h3 class="font-black text-slate-900 text-lg mb-2 leading-tight">${p.name}</h3>
-                    <div class="text-2xl font-black text-amber-600 mb-6">৳ ${parseInt(p.price).toLocaleString()}</div>
+                    <div class="text-2xl font-black text-red-600 mb-6">৳ ${parseInt(p.price).toLocaleString()}</div>
                     
                     <div class="space-y-4 text-sm">
                         <div class="border-t border-slate-100 pt-4">

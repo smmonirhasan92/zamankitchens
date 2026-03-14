@@ -8,7 +8,7 @@
             <!-- Brand -->
             <div class="col-span-2 md:col-span-1">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-9 h-9 bg-amber-600 rounded-lg flex items-center justify-center">
+                    <div class="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center">
                         <span class="text-white font-extrabold text-sm">ZK</span>
                     </div>
                     <span class="font-extrabold text-white text-lg">Zaman Kitchens</span>
@@ -16,8 +16,8 @@
                 <p class="text-sm text-gray-400 leading-relaxed mb-4">Bangladesh's trusted source for premium kitchen accessories and sinks since 2015.</p>
                 <!-- Social Links -->
                 <div class="flex gap-3">
-                    <a href="#" class="w-8 h-8 bg-white/10 hover:bg-amber-600 rounded-lg flex items-center justify-center transition text-xs font-bold">f</a>
-                    <a href="#" class="w-8 h-8 bg-white/10 hover:bg-amber-600 rounded-lg flex items-center justify-center transition text-xs font-bold">YT</a>
+                    <a href="#" class="w-8 h-8 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition text-xs font-bold">f</a>
+                    <a href="#" class="w-8 h-8 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition text-xs font-bold">YT</a>
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
                         $footerCats = $pdo->query("SELECT name, slug FROM categories LIMIT 6")->fetchAll();
                         foreach ($footerCats as $c):
                     ?>
-                    <li><a href="<?php echo SITE_URL; ?>/category/<?php echo $c['slug']; ?>" class="hover:text-amber-400 transition"><?php echo htmlspecialchars($c['name']); ?></a></li>
+                    <li><a href="<?php echo SITE_URL; ?>/category/<?php echo $c['slug']; ?>" class="hover:text-red-500 transition"><?php echo htmlspecialchars($c['name']); ?></a></li>
                     <?php endforeach; } catch(Exception $e){} ?>
                 </ul>
             </div>
@@ -39,10 +39,10 @@
             <div>
                 <h4 class="text-white font-bold mb-4 text-sm tracking-wide uppercase">Information</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="#" class="hover:text-amber-400 transition">About Us</a></li>
-                    <li><a href="privacy.php" class="hover:text-amber-400 transition">Privacy Policy</a></li>
-                    <li><a href="terms.php" class="hover:text-amber-400 transition">Terms & Conditions</a></li>
-                    <li><a href="admin/" class="hover:text-amber-400 transition">Admin Panel</a></li>
+                    <li><a href="#" class="hover:text-red-500 transition">About Us</a></li>
+                    <li><a href="privacy.php" class="hover:text-red-500 transition">Privacy Policy</a></li>
+                    <li><a href="terms.php" class="hover:text-red-500 transition">Terms & Conditions</a></li>
+                    <li><a href="admin/" class="hover:text-red-500 transition">Admin Panel</a></li>
                 </ul>
             </div>
 
@@ -56,11 +56,11 @@
                     </li>
                     <li class="flex items-center gap-2">
                         <span>📞</span>
-                        <a href="tel:01700000000" class="hover:text-amber-400 transition">01700-000000</a>
+                        <a href="tel:01700000000" class="hover:text-red-500 transition">01700-000000</a>
                     </li>
                     <li class="flex items-center gap-2">
                         <span>💬</span>
-                        <a href="https://wa.me/8801700000000" target="_blank" class="hover:text-amber-400 transition">WhatsApp Chat</a>
+                        <a href="https://wa.me/8801700000000" target="_blank" class="hover:text-red-500 transition">WhatsApp Chat</a>
                     </li>
                 </ul>
             </div>
@@ -88,7 +88,7 @@
     </a>
 
     <!-- Call Button (Mobile Only) -->
-    <a href="tel:01700000000" class="md:hidden flex items-center justify-center bg-amber-600 hover:bg-amber-700 text-white font-bold w-14 h-14 rounded-full shadow-xl transition">
+    <a href="tel:01700000000" class="md:hidden flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-bold w-14 h-14 rounded-full shadow-xl transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>

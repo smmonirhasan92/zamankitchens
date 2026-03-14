@@ -46,7 +46,7 @@ try {
 // Top products by order count
 $topProducts = [];
 try {
-    $topProducts = $pdo->query("SELECT p.name, COUNT(oi.id) as order_count, SUM(oi.price * oi.quantity) as revenue FROM order_items oi JOIN products p ON oi.product_id=p.id GROUP BY oi.product_id ORDER BY order_count DESC LIMIT 5")->fetchAll();
+    $topProducts = $pdo->query("SELECT p.name, p.image, COUNT(oi.id) as order_count, SUM(oi.price * oi.quantity) as revenue FROM order_items oi JOIN products p ON oi.product_id=p.id GROUP BY oi.product_id ORDER BY order_count DESC LIMIT 5")->fetchAll();
 } catch(Exception $e) {}
 ?>
 
@@ -172,9 +172,19 @@ try {
             <?php if (empty($topProducts)): ?>
             <p style="color:#9ca3af; text-align:center; padding:2rem 0; font-size:0.875rem;">No order data yet.</p>
             <?php endif; ?>
-            <?php foreach($topProducts as $i => $tp): ?>
+            <?php foreach($topProducts as $i => $tp): 
+                $img = !empty($tp['image']) ? '../' . $tp['image'] : null;
+            ?>
             <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid #f3f4f6;">
                 <span style="font-size:0.75rem; font-weight:900; color:#d1d5db; width:20px; flex-shrink:0;"><?php echo $i+1; ?></span>
+                <?php if ($img): ?>
+                    <img src="<?php echo htmlspecialchars($img); ?>" 
+                         style="width:36px; height:36px; border-radius:8px; object-fit: cover; background:#f8fafc;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <?php endif; ?>
+                <div class="thumbnail-fallback" style="display: <?php echo $img ? 'none' : 'flex'; ?>; width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg, #f8fafc, #f1f5f9); border:1px solid #e2e8f0; align-items:center; justify-center; flex-shrink:0;">
+                    <i class="ph ph-package text-slate-400 text-lg" style="margin:auto;"></i>
+                </div>
                 <div style="flex:1; min-width:0;">
                     <div style="font-size:0.8125rem; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?php echo htmlspecialchars($tp['name']); ?></div>
                     <div style="font-size:0.6875rem; color:#9ca3af; margin-top:2px;"><?php echo $tp['order_count']; ?> orders</div>

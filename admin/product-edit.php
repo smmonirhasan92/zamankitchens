@@ -68,12 +68,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Main Image Upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/../assets/uploads/products/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-        $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $file_name = $slug . '-' . time() . '.' . $file_ext;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
-            $main_image = 'assets/uploads/products/' . $file_name;
+        $upload_dir = __DIR__ . '/../assets/uploads/pr/';
+        if (!is_dir($upload_dir)) {
+            if(!mkdir($upload_dir, 0777, true)) {
+                $error = "❌ Directory 'assets/uploads/pr/' missing and could not be created.";
+            }
+        }
+        
+        if (!is_writable($upload_dir)) {
+            $error = "❌ Folder 'assets/uploads/pr/' is not writable. Please fix permissions.";
+        } else {
+            $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $file_name = $slug . '-' . time() . '.' . $file_ext;
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $file_name)) {
+                $main_image = 'assets/uploads/pr/' . $file_name;
+            } else {
+                $error = "❌ Failed to move uploaded file. Check server tmp limits.";
+            }
         }
     }
 
@@ -328,9 +339,17 @@ include_once __DIR__ . '/includes/header.php';
                 <div class="admin-card-body">
                     <div class="border-2 border-dashed border-slate-100 rounded-2xl p-4 text-center">
                         <?php 
-                        $previewImg = !empty($product['image']) ? '../' . $product['image'] : 'https://placehold.co/400x400/f8fafc/94a3b8?text=Upload+Image';
+                        $previewImg = !empty($product['image']) ? '../' . $product['image'] : null;
                         ?>
-                        <img id="image-preview" src="<?php echo $previewImg; ?>" class="w-full h-48 object-contain rounded-xl mb-4 bg-slate-50">
+                        <?php if ($previewImg): ?>
+                            <img id="image-preview" src="<?php echo $previewImg; ?>" class="w-full h-48 object-contain rounded-xl mb-4 bg-slate-50"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <?php endif; ?>
+                        
+                        <div id="image-fallback" style="display: <?php echo $previewImg ? 'none' : 'flex'; ?>; width:100%; height:12rem; border-radius:12px; background:linear-gradient(135deg, #fff1f2, #ffe4e6); border:1px solid #fecdd3; align-items:center; justify-content:center; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+                            <i class="ph ph-image-square text-rose-400 text-4xl" style="margin:auto 0 0;"></i>
+                            <span style="font-size:0.625rem; font-weight:800; color:#fb7185; text-transform:uppercase; letter-spacing:0.1em; margin:0 0 auto;">No Product Image</span>
+                        </div>
                         
                         <label class="cursor-pointer block">
                             <span class="btn btn-ghost text-[10px] py-2">Select New Image</span>
@@ -349,7 +368,13 @@ function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('image-preview').src = e.target.result;
+            const preview = document.getElementById('image-preview');
+            const fallback = document.getElementById('image-fallback');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            if (fallback) fallback.style.display = 'none';
         }
         reader.readAsDataURL(input.files[0]);
     }

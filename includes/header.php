@@ -60,20 +60,20 @@ try {
 
             <!-- Logo -->
             <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center gap-2">
-                <div class="w-9 h-9 bg-amber-600 rounded-lg flex items-center justify-center">
+                <div class="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                 </div>
                 <div class="leading-none">
                     <span class="font-extrabold text-gray-900 text-base tracking-tight">Zaman</span>
-                    <span class="font-extrabold text-amber-600 text-base tracking-tight"> Kitchens</span>
+                    <span class="font-extrabold text-red-600 text-base tracking-tight"> Kitchens</span>
                 </div>
             </a>
 
             <!-- Category Dropdown (Desktop) -->
             <div class="hidden md:block relative group ml-4">
-                <button class="flex items-center gap-1.5 font-semibold text-sm text-gray-700 hover:text-amber-600 transition px-3 py-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                <button class="flex items-center gap-1.5 font-semibold text-sm text-gray-700 hover:text-red-600 transition px-3 py-2 rounded-lg hover:bg-gray-50 border border-gray-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -87,8 +87,8 @@ try {
                     <?php foreach($categories as $cat): ?>
                     <a href="<?php echo SITE_URL; ?>#products" 
                        onclick="if(window.location.pathname === '/' || window.location.pathname === '/index.php') { event.preventDefault(); filterCategory('<?php echo $cat['slug']; ?>', document.querySelector('.cat-circle-item[onclick*=\\'<?php echo $cat['slug']; ?>\\']')); }"
-                       class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 font-medium transition">
-                        <span class="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0"></span>
+                       class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 font-medium transition">
+                        <span class="w-2 h-2 bg-red-400 rounded-full flex-shrink-0"></span>
                         <?php echo htmlspecialchars($cat['name']); ?>
                     </a>
                     <?php endforeach; ?>
@@ -99,8 +99,8 @@ try {
             <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-xl">
                 <div class="relative">
                     <input type="text" name="q" placeholder="Search sinks, hoods, cabinets..."
-                        class="w-full pl-4 pr-12 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition">
-                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-600 transition">
+                        class="w-full pl-4 pr-12 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-red-400 focus:bg-white transition">
+                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -112,14 +112,14 @@ try {
             <div class="flex items-center gap-2 ml-auto">
                 <!-- User Profile -->
                 <?php if(isset($_SESSION['user_id'])): ?>
-                <a href="<?php echo SITE_URL; ?>/profile.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="<?php echo SITE_URL; ?>/profile.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </a>
                 <?php else: ?>
-                <a href="<?php echo SITE_URL; ?>/login.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="<?php echo SITE_URL; ?>/login.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                 </a>
@@ -134,14 +134,14 @@ try {
                 </a>
 
                 <!-- Cart Trigger -->
-                <button onclick="toggleCart()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-amber-100 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button onclick="toggleCart()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
-
-                <a href="tel:01700000000" class="hidden md:flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
+ 
+                <a href="tel:01700000000" class="hidden md:flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
                     📞 <span>Call Now</span>
                 </a>
                 <!-- Mobile Menu Button -->
@@ -158,7 +158,7 @@ try {
     <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white">
         <div class="container mx-auto px-4 py-3 grid grid-cols-2 gap-2">
             <?php foreach($categories as $cat): ?>
-            <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="text-sm text-gray-700 hover:text-amber-600 font-medium py-1.5 px-2">
+            <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="text-sm text-gray-700 hover:text-red-600 font-medium py-1.5 px-2">
                 <?php echo htmlspecialchars($cat['name']); ?>
             </a>
             <?php endforeach; ?>
