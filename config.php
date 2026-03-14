@@ -7,6 +7,17 @@
 define('SITE_NAME', 'Zaman Kitchens');
 define('SITE_URL', 'https://www.zamankitchens.com');
 
+// Contact Information
+define('SITE_PHONE', '01720-579899');
+define('SITE_PHONE_RAW', '01720579899');
+define('SITE_WHATSAPP', '8801720579899');
+define('SITE_ADDRESS', 'House-143, Senpara Parbata, Mirpur-10, Dhaka-1216 (Metro Pillar No-263), Dhaka, Bangladesh, 1216');
+
+// Social Media Links
+define('SITE_FB', 'https://facebook.com/zamankitchens');
+define('SITE_YT', 'https://youtube.com/@zamankitchens');
+define('SITE_INS', 'https://instagram.com/zamankitchens');
+
 // Database Credentials
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'zamankitchens_db');

@@ -49,7 +49,7 @@ try {
 
 <!-- ===== TOP BAR ===== -->
 <div style="background: linear-gradient(90deg, #d80032, #ef233c, #d80032); color: #edf2f4;" class="text-xs text-center py-1.5 px-4 font-bold tracking-wide">
-    🚚 Free Delivery in Dhaka &nbsp;|&nbsp; 📞 <a href="tel:01700000000" class="underline hover:no-underline" style="color: #edf2f4;">01700-000000</a> &nbsp;|&nbsp; 💬 WhatsApp Available 10AM–8PM
+    🚚 Free Delivery in Dhaka &nbsp;|&nbsp; 📞 <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="underline hover:no-underline" style="color: #edf2f4;"><?php echo SITE_PHONE; ?></a> &nbsp;|&nbsp; 💬 WhatsApp Available 10AM–8PM
 </div>
 
 
@@ -141,7 +141,7 @@ try {
                     <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
  
-                <a href="tel:01700000000" class="hidden md:flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
+                <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hidden md:flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
                     📞 <span>Call Now</span>
                 </a>
                 <!-- Mobile Menu Button -->
