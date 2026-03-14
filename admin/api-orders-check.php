@@ -3,7 +3,7 @@
  * AJAX - Pending Orders Count API
  * Extremely lightweight and safe for live sites.
  */
-require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
 header('Content-Type: application/json');
 

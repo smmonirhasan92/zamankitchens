@@ -321,9 +321,10 @@ try {
     let lastPendingCount = <?php echo (int)$pendingOrders; ?>;
     
     function checkNewOrders() {
-        fetch('api-orders-check.php')
+        fetch('api-orders-check.php?cache=' + Date.now())
             .then(response => response.json())
             .then(data => {
+                console.log('Order Poll:', data); // Debug Log
                 if (data.success) {
                     const newCount = data.pending_count;
                     
@@ -386,6 +387,7 @@ try {
         document.head.appendChild(style);
     }
 
-    // Start Polling every 15 seconds
-    setInterval(checkNewOrders, 15000);
+    // Start Polling every 10 seconds
+    setInterval(checkNewOrders, 10000);
+    console.log('Live Notifications Active');
     </script>
