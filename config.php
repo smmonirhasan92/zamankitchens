@@ -14,7 +14,7 @@ define('SITE_WHATSAPP', '8801720579899');
 define('SITE_ADDRESS', 'House-143, Senpara Parbata, Mirpur-10, Dhaka-1216 (Metro Pillar No-263), Dhaka, Bangladesh, 1216');
 
 // Social Media Links
-define('SITE_FB', 'https://facebook.com/zamankitchens');
+define('SITE_FB', 'https://www.facebook.com/Zamankitchens1');
 define('SITE_YT', 'https://youtube.com/@zamankitchens');
 define('SITE_INS', 'https://instagram.com/zamankitchens');
 
