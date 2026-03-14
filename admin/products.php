@@ -1,4 +1,12 @@
 <?php
+require_once __DIR__ . '/../includes/db.php';
+
+// Handle Product Deletion
+if (isset($_GET['delete'])) {
+    $pdo->prepare("DELETE FROM products WHERE id = ?")->execute([$_GET['delete']]);
+    header("Location: products.php"); exit();
+}
+
 $adminTitle = 'Product Management';
 $adminTopbarAction = '<a href="product-edit.php" class="topbar-btn btn-primary"><i class="ph ph-plus-circle"></i> Add Product</a>';
 include_once __DIR__ . '/includes/header.php';

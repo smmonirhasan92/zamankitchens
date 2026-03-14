@@ -1,6 +1,5 @@
 <?php
-$adminTitle = 'Orders Management';
-include_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/../includes/db.php';
 
 $allowed = ['Pending', 'Processing', 'Delivered', 'Cancelled'];
 
@@ -11,6 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
     }
     header("Location: orders.php"); exit();
 }
+
+$adminTitle = 'Orders Management';
+include_once __DIR__ . '/includes/header.php';
 
 $statusFilter = $_GET['status'] ?? '';
 $sql = "SELECT * FROM orders";
