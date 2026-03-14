@@ -311,3 +311,81 @@ try {
 
     <!-- Page body injected here -->
     <div class="admin-page-body">
+
+    <!-- Live Notification Sound -->
+    <audio id="orderNotificationSound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+    let lastPendingCount = <?php echo (int)$pendingOrders; ?>;
+    
+    function checkNewOrders() {
+        fetch('api-orders-check.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newCount = data.pending_count;
+                    
+                    if (newCount > lastPendingCount) {
+                        // Play Sound
+                        const sound = document.getElementById('orderNotificationSound');
+                        if (sound) sound.play().catch(e => console.log('Audio play failed:', e));
+                        
+                        // Show Notification (Custom Toast)
+                        showOrderToast(newCount - lastPendingCount);
+                        
+                        // Update UI Badges
+                        updateOrderBadges(newCount);
+                    }
+                    lastPendingCount = newCount;
+                }
+            })
+            .catch(err => console.error('Notification Error:', err));
+    }
+
+    function showOrderToast(newAmount) {
+        const toast = document.createElement('div');
+        toast.style = "position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: #ef233c; color: white; padding: 1.25rem 2rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(239,35,60,0.3); display: flex; align-items: center; gap: 1rem; border: 2px solid rgba(255,255,255,0.2); animation: slideIn 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);";
+        toast.innerHTML = `
+            <div style="width:40px; height:40px; background:rgba(255,255,255,0.2); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                <i class="ph ph-package" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+                <div style="font-weight:900; font-size:1rem; line-height:1.1;">NEW ORDER!</div>
+                <div style="font-size:0.75rem; font-weight:700; opacity:0.9;">You have ${newAmount} new order(s)</div>
+            </div>
+            <button onclick="this.parentElement.remove()" style="margin-left:10px; color:white; opacity:0.6; font-size:1.2rem;">×</button>
+        `;
+        document.body.appendChild(toast);
+        
+        // Auto hide after 8 seconds
+        setTimeout(() => { if(toast.parentElement) toast.remove(); }, 8000);
+    }
+
+    function updateOrderBadges(count) {
+        // Update Sidebar Badge
+        const sidebarBadge = document.querySelector('.nav-badge');
+        if (sidebarBadge) {
+            sidebarBadge.innerText = count;
+            sidebarBadge.style.display = count > 0 ? 'block' : 'none';
+        }
+        
+        // Update Topbar Bell Text
+        const bellText = document.querySelector('.topbar-btn-ghost span');
+        if (bellText) {
+            bellText.innerHTML = count > 0 ? `<span style="color:#ef233c; font-weight:800;">${count} Pending</span>` : 'All Clear';
+        }
+    }
+
+    // Add CSS for animation if not present
+    if (!document.getElementById('toast-styles')) {
+        const style = document.createElement('style');
+        style.id = 'toast-styles';
+        style.innerHTML = `@keyframes slideIn { from { transform: translateX(100%) scale(0.5); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }`;
+        document.head.appendChild(style);
+    }
+
+    // Start Polling every 15 seconds
+    setInterval(checkNewOrders, 15000);
+    </script>
