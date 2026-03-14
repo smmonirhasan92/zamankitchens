@@ -24,6 +24,7 @@ try {
                     <th>Product</th>
                     <th>Category</th>
                     <th>Price</th>
+                    <th>Barcode</th>
                     <th>Status</th>
                     <th style="text-align:right;">Actions</th>
                 </tr>
@@ -64,6 +65,13 @@ try {
                     <td><span style="font-size:0.75rem; font-weight:700; color:#4b5563; background:#f3f4f6; padding:0.25rem 0.625rem; border-radius:20px;"><?php echo htmlspecialchars($p['category_name'] ?: 'Uncategorized'); ?></span></td>
                     <td style="font-weight:800; color:#111827;">৳ <?php echo number_format($p['price']); ?></td>
                     <td>
+                        <?php if(!empty($p['barcode'])): ?>
+                            <div style="font-family:'Courier New', monospace; font-size:10px; font-weight:700; background:#f9fafb; border:1px solid #e5e7eb; padding:2px 6px; border-radius:4px; display:inline-block; letter-spacing:1px;"><?php echo htmlspecialchars($p['barcode']); ?></div>
+                        <?php else: ?>
+                            <span style="color:#9ca3af; font-size:11px; font-style:italic;">No Barcode</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
                         <?php if(!empty($p['is_featured'])): ?>
                             <span class="status-badge" style="background:rgba(239,35,60,0.1); color:#ef233c;">⭐ Featured</span>
                         <?php else: ?>
@@ -72,6 +80,9 @@ try {
                     </td>
                     <td style="text-align:right;">
                         <div style="display:inline-flex; gap:0.5rem;">
+                            <a href="barcode-print.php?id=<?php echo $p['id']; ?>" class="btn btn-ghost" style="padding:0.4rem; width:32px; height:32px; justify-content:center;" title="Print Barcode">
+                                <i class="ph ph-barcode" style="font-size:1rem;"></i>
+                            </a>
                             <a href="product-edit.php?id=<?php echo $p['id']; ?>" class="btn btn-ghost" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
                                 <i class="ph ph-note-pencil" style="font-size:1rem;"></i>
                             </a>

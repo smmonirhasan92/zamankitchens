@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'] ?? '';
     $meta_title = $_POST['meta_title'] ?? '';
     $meta_description = $_POST['meta_description'] ?? '';
+    $barcode = trim($_POST['barcode'] ?? '');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
     // Process Variations
@@ -91,12 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ? WHERE id = ?");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $id]);
+                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ? WHERE id = ?");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $id]);
                 $message = "Product updated successfully!";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, image, meta_title, meta_description, variations, specifications, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured]);
+                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_status, image, meta_title, meta_description, variations, specifications, is_featured, barcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -299,6 +300,18 @@ include_once __DIR__ . '/includes/header.php';
                         <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <label class="text-xs font-black text-slate-600 cursor-pointer" for="is_featured">⭐ Feature on Homepage</label>
                             <input type="checkbox" id="is_featured" name="is_featured" class="w-5 h-5 rounded accent-emerald-500" <?php echo ($product['is_featured'] ?? 0) ? 'checked' : ''; ?>>
+                        </div>
+
+                        <div>
+                            <label class="admin-label flex items-center justify-between">
+                                Barcode (EAN/UPC)
+                                <span class="text-[10px] text-slate-400 font-normal italic">Unique required</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" name="barcode" value="<?php echo htmlspecialchars($product['barcode'] ?? ''); ?>" 
+                                       class="admin-input font-mono font-bold tracking-widest pl-10" placeholder="e.g. 1234567890123">
+                                <i class="ph ph-barcode absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                            </div>
                         </div>
 
                         <div>
