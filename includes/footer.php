@@ -7,18 +7,24 @@
 
             <!-- Brand -->
             <div class="col-span-2 md:col-span-1">
-                <div class="flex items-center gap-2 mb-4">
+                <a href="<?php echo SITE_URL; ?>" class="flex items-center gap-2 mb-4 hover:opacity-80 transition">
                     <div class="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center">
                         <span class="text-white font-extrabold text-sm">ZK</span>
                     </div>
                     <span class="font-extrabold text-white text-lg">Zaman Kitchens</span>
-                </div>
+                </a>
                 <p class="text-sm text-gray-400 leading-relaxed mb-4">Bangladesh's trusted source for premium kitchen accessories and sinks since 2015.</p>
                 <!-- Social Links -->
                 <div class="flex gap-3">
-                    <a href="<?php echo SITE_FB; ?>" target="_blank" class="w-8 h-8 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition text-xs font-bold">f</a>
-                    <a href="<?php echo SITE_YT; ?>" target="_blank" class="w-8 h-8 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition text-xs font-bold">YT</a>
-                    <a href="<?php echo SITE_INS; ?>" target="_blank" class="w-8 h-8 bg-white/10 hover:bg-red-600 rounded-lg flex items-center justify-center transition text-xs font-bold">Ins</a>
+                    <a href="<?php echo SITE_FB; ?>" target="_blank" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-xl flex items-center justify-center transition text-white border border-white/5" title="Facebook">
+                        <i class="ph-bold ph-facebook-logo text-lg"></i>
+                    </a>
+                    <a href="<?php echo SITE_YT; ?>" target="_blank" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-xl flex items-center justify-center transition text-white border border-white/5" title="YouTube">
+                        <i class="ph-bold ph-youtube-logo text-lg"></i>
+                    </a>
+                    <a href="<?php echo SITE_INS; ?>" target="_blank" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-xl flex items-center justify-center transition text-white border border-white/5" title="Instagram">
+                        <i class="ph-bold ph-instagram-logo text-lg"></i>
+                    </a>
                 </div>
             </div>
 

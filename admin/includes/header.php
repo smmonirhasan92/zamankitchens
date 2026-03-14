@@ -1,4 +1,5 @@
 <?php
+ob_start();
 /**
  * Zaman Kitchens - Admin Panel Header & Sidebar
  * Design: Sleek dark sidebar, clean top bar
