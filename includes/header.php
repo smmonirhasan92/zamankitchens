@@ -41,6 +41,16 @@ try {
         /* WhatsApp button pulse */
         @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
         .wa-pulse::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: #25d366; animation: pulse-ring 1.5s infinite; z-index: -1; }
+        
+        /* Top bar scroll for mobile */
+        @keyframes scroll-text { 0% { transform: translateX(10%); } 100% { transform: translateX(-100%); } }
+        @media (max-width: 640px) {
+            .animate-scroll {
+                display: inline-flex;
+                animation: scroll-text 15s linear infinite;
+                padding-left: 100%;
+            }
+        }
     </style>
 
     <?php echo $extraHead ?? ''; ?>
