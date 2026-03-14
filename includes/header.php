@@ -76,7 +76,7 @@ try {
 
             <!-- Logo -->
             <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center gap-2">
-                <img src="<?php echo SITE_URL; ?>/assets/img/logo.png" alt="Zaman Kitchens" class="h-10 md:h-12 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/ef233c/ffffff?text=Zaman+Kitchens';">
+                <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-10 md:h-12 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/ef233c/ffffff?text=Zaman+Kitchens';">
             </a>
 
             <!-- Category Dropdown (Desktop) -->
