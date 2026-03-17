@@ -76,12 +76,13 @@ try {
         <div class="swiper-button-prev"></div>
         <div class="swiper-pagination"></div>
     </div>
+    </div>
 </section>
 
 <!-- ===========================
-     Gazi-style Feature Row
+     Gazi-style Feature Row (Tightened)
 =========================== -->
-<section class="py-8 bg-white border-b border-slate-50">
+<section class="py-4 bg-white border-b border-slate-50">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 justify-items-center">
             <!-- Feature 1 -->
@@ -107,16 +108,13 @@ try {
 <!-- ===========================
      Gazi-style Circular Categories
 =========================== -->
-<section class="py-12 bg-white">
+<section class="py-10 bg-gray-50/50">
     <div class="container mx-auto px-4">
-        <div class="flex flex-col items-center text-center mb-8">
-            <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter mb-2">
+        <div class="flex flex-col items-center text-center mb-10">
+            <h2 class="text-xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">
                 Explore Categories
             </h2>
-            <div class="h-1 w-12 bg-red-600 rounded-full mb-4"></div>
-            <a href="categories.php" class="text-xs font-black text-red-600 hover:text-red-700 uppercase tracking-widest flex items-center justify-center gap-1">
-                View All <i class="ph-bold ph-caret-right"></i>
-            </a>
+            <div class="h-1.5 w-12 bg-red-600 rounded-full mb-4"></div>
         </div>
 
         <div class="flex items-center justify-center gap-6 md:gap-10 overflow-x-auto pb-6 scrollbar-hide">
@@ -126,7 +124,7 @@ try {
             <a href="category/<?php echo $cat['slug']; ?>" class="flex-shrink-0 group text-center w-24 md:w-32">
                 <div class="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white border border-slate-100 shadow-sm group-hover:shadow-md group-hover:border-red-500 transition-all duration-300 flex items-center justify-center overflow-hidden mb-3 mx-auto">
                     <img src="<?php echo htmlspecialchars($catImg); ?>" alt="<?php echo htmlspecialchars($cat['name']); ?>" 
-                         class="w-4/5 h-4/5 object-contain group-hover:scale-110 transition-transform duration-500">
+                         class="w-[85%] h-[85%] object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <span class="block text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-700 group-hover:text-red-600 transition-colors leading-tight">
                     <?php echo htmlspecialchars($cat['name']); ?>
@@ -141,14 +139,14 @@ try {
      CATEGORIZED PRODUCT ROWS (Gazi Style)
 =========================== -->
 <?php foreach($categoryRows as $slug => $row): ?>
-<section class="py-12 <?php echo $slug === 'sink' ? 'bg-gray-50' : 'bg-white'; ?>">
+<section class="py-10 <?php echo $slug === 'sink' ? 'bg-gray-50' : 'bg-white'; ?>">
     <div class="container mx-auto px-4">
-        <div class="flex flex-col items-center text-center mb-8">
+        <div class="flex flex-col items-center text-center mb-6">
             <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter mb-2">
                 <?php echo htmlspecialchars($row['name']); ?>
             </h2>
-            <div class="h-1 w-16 bg-red-600 rounded-full mb-4"></div>
-            <a href="category/<?php echo $slug; ?>" class="text-xs font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center justify-center gap-1 transition-colors">
+            <div class="h-1 w-14 bg-red-600 rounded-full mb-3"></div>
+            <a href="category/<?php echo $slug; ?>" class="text-[10px] font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center justify-center gap-1 transition-colors">
                 Explore More <i class="ph-bold ph-caret-right"></i>
             </a>
         </div>
@@ -167,7 +165,7 @@ try {
 <!-- ===========================
      Gazi-style Campaign Banners
 =========================== -->
-<section class="py-8 bg-gray-50">
+<section class="py-6 bg-gray-50/30">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
@@ -187,19 +185,13 @@ try {
 </section>
 
 <!-- ===========================
-     QUICK FILTER SECTION (Gazi Style)
+     QUICK FILTER SECTION (Gazi Style - Clean)
 =========================== -->
-<section class="py-16 bg-slate-900 relative overflow-hidden">
-    <!-- Decorative background -->
-    <div class="absolute inset-0 opacity-5">
-        <div class="absolute top-0 left-0 w-64 h-64 bg-red-600 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
-        <div class="absolute bottom-0 right-0 w-64 h-64 bg-red-600 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2"></div>
-    </div>
-
+<section class="py-12 bg-slate-50 relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tighter uppercase">All Products</h2>
-            <div class="h-1 w-20 bg-red-600 mx-auto rounded-full"></div>
+        <div class="text-center mb-8">
+            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">All Products</h2>
+            <div class="h-1.5 w-16 bg-red-600 mx-auto rounded-full"></div>
         </div>
 
         <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
@@ -234,70 +226,16 @@ try {
     });
 </script>
 
-<!-- ===========================
-     FEATURED PRODUCTS ROW
-=========================== -->
-<?php if (!empty($featured)): ?>
-<section id="featured" class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-10">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">⭐ Featured Products</h2>
-            <p class="text-gray-500 mt-2">Handpicked bestsellers from our collection</p>
-            <div class="h-1 w-16 bg-red-600 mx-auto rounded-full mt-4"></div>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            <?php foreach($featured as $p): ?>
-            <?php include __DIR__ . '/includes/product-card.php'; ?>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
 
-<!-- ===========================
-     CATEGORY-WISE ROWS
-=========================== -->
-<?php foreach($categoryRows as $slug => $row): ?>
-<?php if (!empty($row['products'])): ?>
-<section class="py-12 <?php echo $slug === 'sink' ? 'bg-white' : 'bg-gray-50'; ?>" id="cat-<?php echo $slug; ?>">
-    <div class="container mx-auto px-4">
-        <!-- Category Banner -->
-        <?php if ($row['banner']): ?>
-        <div class="relative mb-8 rounded-2xl overflow-hidden h-40" style="background: url('<?php echo $row['banner']; ?>') center/cover">
-            <div class="absolute inset-0 bg-black/50 flex items-center px-8">
-                <div>
-                    <h2 class="text-2xl font-extrabold text-white"><?php echo $row['name']; ?></h2>
-                    <a href="category/<?php echo $slug; ?>" class="text-white bg-red-600/20 hover:bg-red-600 px-3 py-1 rounded-lg text-xs mt-2 inline-block transition">View all &rarr;</a>
-                </div>
-            </div>
-        </div>
-        <?php else: ?>
-        <div class="flex flex-col items-center text-center mb-8">
-            <h2 class="text-2xl font-extrabold text-gray-900 mb-2"><?php echo $row['name']; ?></h2>
-            <div class="h-1 w-16 bg-red-600 rounded-full mb-4"></div>
-            <a href="category/<?php echo $slug; ?>" class="text-red-600 font-semibold hover:underline">View All &rarr;</a>
-        </div>
-        <?php endif; ?>
-
-        <!-- Product Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            <?php foreach($row['products'] as $p): ?>
-            <?php include __DIR__ . '/includes/product-card.php'; ?>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-<?php endforeach; ?>
 
 <!-- Quick Inquiry Form: COMPACT & SLIM -->
-<section class="py-12 bg-white" id="inquiry">
+<section class="py-10 bg-white" id="inquiry">
     <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto bg-slate-900 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl">
-            <div class="md:w-2/5 p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-r border-white/5 flex flex-col items-center justify-center text-center">
-                <h2 class="text-2xl font-black mb-4"><span class="text-red-500">Custom</span> Design?</h2>
-                <p class="text-slate-400 text-xs mb-6 leading-relaxed">Our experts will find the perfect fit for your kitchen.</p>
-                <div class="space-y-3 flex flex-col items-center">
+        <div class="max-w-4xl mx-auto bg-slate-900 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-xl">
+            <div class="md:w-2/5 p-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-r border-white/5 flex flex-col items-center justify-center text-center">
+                <h2 class="text-xl font-black mb-2"><span class="text-red-500">Custom</span> Design?</h2>
+                <p class="text-slate-400 text-[10px] mb-4 leading-relaxed tracking-wide">Our experts will find the perfect fit for your kitchen.</p>
+                <div class="space-y-2 flex flex-col items-center">
                     <div class="flex items-center gap-3 text-sm font-bold">
                         <span class="text-red-600">📞</span> <?php echo SITE_PHONE; ?>
                     </div>

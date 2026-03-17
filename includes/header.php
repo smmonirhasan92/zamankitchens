@@ -30,12 +30,14 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
+        h1, h2, h3, h4, .font-black { letter-spacing: -0.02em; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -112,12 +114,12 @@ try {
                 <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-12 md:h-16 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/d80032/ffffff?text=Zaman+Kitchens';">
             </a>
 
-            <!-- Search Bar (Gazi Style - More prominent) -->
-            <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-2xl px-4 hidden md:block">
+            <!-- Search Bar (Gazi Style - Slimmer & Modern) -->
+            <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-xl px-4 hidden md:block">
                 <div class="relative group">
-                    <input type="text" name="q" placeholder="Search for products (Gas Stove, Kitchen Hood...)"
-                        class="w-full pl-6 pr-14 py-3 text-sm bg-gray-50 border-2 border-slate-100 rounded-full focus:outline-none focus:border-red-600 focus:bg-white transition-all shadow-sm group-hover:shadow-md">
-                    <button type="submit" class="absolute right-1 top-1 bottom-1 px-5 h-auto bg-red-600 hover:bg-red-700 text-white rounded-full transition-all flex items-center justify-center">
+                    <input type="text" name="q" placeholder="Search for products (Gas Stove, Sinks...)"
+                        class="w-full pl-5 pr-12 py-2.5 text-sm bg-gray-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-600 focus:bg-white transition-all shadow-sm group-hover:shadow-md">
+                    <button type="submit" class="absolute right-1 top-1 bottom-1 w-10 h-auto bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all flex items-center justify-center">
                         <i class="ph-bold ph-magnifying-glass text-lg"></i>
                     </button>
                 </div>
