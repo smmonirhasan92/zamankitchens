@@ -21,7 +21,6 @@ $nav_items = [
     ['label' => 'Orders',     'icon' => 'package',       'url' => 'orders.php'],
     ['label' => 'Products',   'icon' => 'tag',           'url' => 'products.php'],
     ['label' => 'Categories', 'icon' => 'folder-simple', 'url' => 'categories.php'],
-    ['label' => 'Generics',   'icon' => 'pill',          'url' => 'generics.php'],
     ['label' => 'Inquiries',  'icon' => 'envelope',      'url' => 'inquiries.php'],
     ['label' => 'Hero Slides','icon' => 'images',        'url' => 'slides.php'],
     ['label' => 'Inventory',  'icon' => 'stack',         'url' => 'inventory.php'],

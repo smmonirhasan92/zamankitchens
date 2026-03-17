@@ -68,9 +68,6 @@ try {
                             <div style="min-width:0;">
                                 <div style="font-weight:800; color:#111827; font-size:0.9375rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; line-height:1.2;">
                                     <?php echo htmlspecialchars($p['name']); ?>
-                                    <?php if(($p['product_type'] ?? '') === 'medicine'): ?>
-                                        <span style="font-size:8px; background:#fff1f2; color:#e11d48; padding:2px 6px; border-radius:6px; margin-left:4px; vertical-align:middle; border:1px solid #ffe4e6;">MEDICINE</span>
-                                    <?php endif; ?>
                                 </div>
                                 <div style="font-size:0.75rem; color:#9ca3af; font-weight:600; margin-top:4px;">ID: #<?php echo str_pad($p['id'], 3, '0', STR_PAD_LEFT); ?></div>
                             </div>

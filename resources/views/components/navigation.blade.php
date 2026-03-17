@@ -31,33 +31,6 @@
                 </div>
             </li>
 
-            <!-- Pharma Example -->
-            <li class="oce-nav-item">
-                <a href="#" class="oce-nav-link">Healthcare/Pharma</a>
-                <div class="oce-mega-menu">
-                    <div class="oce-mega-column">
-                        <h4>By Company</h4>
-                        <ul class="oce-mega-list">
-                            <li><a href="#">Square Pharma <span class="oce-brand-badge">Top</span></a></li>
-                            <li><a href="#">Beximco</a></li>
-                            <li><a href="#">Incepta</a></li>
-                        </ul>
-                    </div>
-                    <div class="oce-mega-column">
-                        <h4>Daily Medicine</h4>
-                        <ul class="oce-mega-list">
-                            <li><a href="#">Pain Relief</a></li>
-                            <li><a href="#">Vitamins</a></li>
-                        </ul>
-                    </div>
-                    <div class="oce-mega-column">
-                        <h4>Prescription</h4>
-                        <ul class="oce-mega-list">
-                            <li><a href="#">Upload Prescription</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </li>
             
             <li><a href="#" class="oce-nav-link">Wholesale Corner</a></li>
         </ul>

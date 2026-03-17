@@ -13,9 +13,8 @@ $slug = $_GET['slug'] ?? basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PAT
 
 if ($slug) {
     try {
-        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug, g.name AS generic_name FROM products p 
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug FROM products p 
                                LEFT JOIN categories c ON p.category_id = c.id 
-                               LEFT JOIN generics g ON p.generic_id = g.id 
                                WHERE p.slug = ?");
         $stmt->execute([$slug]);
         $product = $stmt->fetch();
@@ -99,33 +98,6 @@ include_once __DIR__ . '/includes/header.php';
                 </span>
             </div>
 
-            <!-- Pharma Specific Info -->
-            <?php if(($product['product_type'] ?? '') === 'medicine'): ?>
-            <div class="mb-6 p-6 bg-slate-50 border border-slate-100 rounded-[2rem] w-full">
-                <?php if(!empty($product['generic_name'])): ?>
-                <div class="mb-4">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Generic Name</span>
-                    <span class="text-lg font-bold text-slate-800"><?php echo htmlspecialchars($product['generic_name']); ?></span>
-                </div>
-                <?php endif; ?>
-                
-                <div class="flex justify-center gap-10">
-                    <?php if(!empty($product['dosage_form'])): ?>
-                    <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Dosage Form</span>
-                        <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['dosage_form']); ?></span>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if(!empty($product['strength'])): ?>
-                    <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Strength</span>
-                        <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['strength']); ?></span>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <?php endif; ?>
 
             <!-- Key Info Badges -->
             <div class="flex flex-wrap justify-center gap-3 mb-8">

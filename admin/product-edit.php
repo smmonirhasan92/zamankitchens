@@ -34,8 +34,7 @@ if ($id && is_numeric($id)) {
     $priceRules = $priceRules->fetchAll();
 }
 
-// Fetch Generics for dropdown
-$allGenerics = $pdo->query("SELECT id, name FROM generics ORDER BY name ASC")->fetchAll();
+// (Generics query removed)
 
 // Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -52,12 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $barcode = trim($_POST['barcode'] ?? '');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
-    // Pharma Fields
-    $product_type = $_POST['product_type'] ?? 'physical';
-    $generic_id = !empty($_POST['generic_id']) ? $_POST['generic_id'] : null;
-    $dosage_form = $_POST['dosage_form'] ?? '';
-    $strength = $_POST['strength'] ?? '';
-    $registration_number = $_POST['registration_number'] ?? '';
+    $product_type = 'physical';
+    $generic_id = null;
+    $dosage_form = '';
+    $strength = '';
+    $registration_number = '';
     $expiry_date = !empty($_POST['expiry_date']) ? $_POST['expiry_date'] : null;
     $batch_number = $_POST['batch_number'] ?? '';
     
@@ -187,49 +185,6 @@ include_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <!-- Pharma Details (Conditional) -->
-            <div id="pharma-section" class="<?php echo ($product['product_type'] ?? '') === 'medicine' ? '' : 'hidden'; ?> admin-card">
-                <div class="admin-card-header">
-                    <span class="admin-card-title flex items-center gap-2">
-                        <i class="ph ph-first-aid text-rose-500 text-lg"></i>
-                        Pharmaceutical Details
-                    </span>
-                </div>
-                <div class="admin-card-body grid grid-cols-2 gap-5">
-                    <div class="col-span-2">
-                        <label class="admin-label">Generic Name</label>
-                        <select name="generic_id" class="admin-input font-bold">
-                            <option value="">Select Generic</option>
-                            <?php foreach($allGenerics as $gen): ?>
-                            <option value="<?php echo $gen['id']; ?>" <?php echo ($product['generic_id'] ?? '') == $gen['id'] ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($gen['name']); ?>
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <p class="text-[10px] text-slate-400 mt-1">Don't see it? <a href="generics.php" target="_blank" class="text-indigo-600 underline">Add Generic Name</a></p>
-                    </div>
-                    <div>
-                        <label class="admin-label">Dosage Form</label>
-                        <input type="text" name="dosage_form" value="<?php echo htmlspecialchars($product['dosage_form'] ?? ''); ?>" placeholder="e.g. Tablet, Syrup" class="admin-input">
-                    </div>
-                    <div>
-                        <label class="admin-label">Strength</label>
-                        <input type="text" name="strength" value="<?php echo htmlspecialchars($product['strength'] ?? ''); ?>" placeholder="e.g. 500mg, 10ml" class="admin-input">
-                    </div>
-                    <div>
-                        <label class="admin-label">DAR / Reg Number</label>
-                        <input type="text" name="registration_number" value="<?php echo htmlspecialchars($product['registration_number'] ?? ''); ?>" placeholder="e.g. 123-456-789" class="admin-input">
-                    </div>
-                    <div>
-                        <label class="admin-label">Batch Number</label>
-                        <input type="text" name="batch_number" value="<?php echo htmlspecialchars($product['batch_number'] ?? ''); ?>" placeholder="e.g. BNT-001" class="admin-input">
-                    </div>
-                    <div>
-                        <label class="admin-label">Expiry Date</label>
-                        <input type="date" name="expiry_date" value="<?php echo htmlspecialchars($product['expiry_date'] ?? ''); ?>" class="admin-input">
-                    </div>
-                </div>
-            </div>
 
             <!-- Advanced Options Toggle -->
             <div onclick="document.getElementById('advanced-options').classList.toggle('hidden')" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center cursor-pointer hover:bg-slate-50 hover:border-emerald-300 transition group">
@@ -377,15 +332,7 @@ include_once __DIR__ . '/includes/header.php';
                             </div>
                         </div>
 
-                        <div>
-                            <label class="admin-label">Product Type</label>
-                            <select name="product_type" onchange="togglePharma(this.value)" class="admin-input font-bold">
-                                <option value="physical" <?php echo ($product['product_type'] ?? '') == 'physical' ? 'selected' : ''; ?>>Physical Product</option>
-                                <option value="medicine" <?php echo ($product['product_type'] ?? '') == 'medicine' ? 'selected' : ''; ?>>Medicine / Pharma</option>
-                                <option value="digital" <?php echo ($product['product_type'] ?? '') == 'digital' ? 'selected' : ''; ?>>Digital Asset</option>
-                                <option value="service" <?php echo ($product['product_type'] ?? '') == 'service' ? 'selected' : ''; ?>>Service</option>
-                            </select>
-                        </div>
+                        <input type="hidden" name="product_type" value="physical">
 
                         <div>
                             <label class="admin-label">Category</label>
@@ -453,15 +400,6 @@ include_once __DIR__ . '/includes/header.php';
     </form>
 </div>
 
-<script>
-function togglePharma(val) {
-    const pharmaSection = document.getElementById('pharma-section');
-    if (val === 'medicine') {
-        pharmaSection.classList.remove('hidden');
-    } else {
-        pharmaSection.classList.add('hidden');
-    }
-}
 function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();

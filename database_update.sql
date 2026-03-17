@@ -22,26 +22,6 @@ ADD COLUMN IF NOT EXISTS purchase_price DECIMAL(10,2) DEFAULT 0.00;
 -- 2. Ensure Categories table has dedicated image support
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS hero_image VARCHAR(255) DEFAULT NULL;
 
--- 3. Pharma Support: Create Generics Table
-CREATE TABLE IF NOT EXISTS generics (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE,
-    slug VARCHAR(255) NOT NULL UNIQUE,
-    indication TEXT DEFAULT NULL,
-    side_effects TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 4. Pharma Support: Add fields to Products
-ALTER TABLE products 
-ADD COLUMN IF NOT EXISTS product_type ENUM('physical', 'medicine', 'digital', 'service') DEFAULT 'physical',
-ADD COLUMN IF NOT EXISTS generic_id INT DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS dosage_form VARCHAR(100) DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS strength VARCHAR(100) DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS registration_number VARCHAR(100) DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS expiry_date DATE DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS batch_number VARCHAR(100) DEFAULT NULL,
-ADD CONSTRAINT fk_product_generic FOREIGN KEY (generic_id) REFERENCES generics(id) ON DELETE SET NULL;
 
 -- 5. Cleanup: Initial Hero Slides
 INSERT IGNORE INTO hero_slides (image_path, title, subtitle, button_text, button_link) VALUES 
