@@ -42,14 +42,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle File Upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $upload_dir = __DIR__ . '/../assets/uploads/slides/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        if (!is_dir($upload_dir)) {
+            if(!mkdir($upload_dir, 0777, true)) {
+                $error = "❌ Directory 'assets/uploads/slides/' missing and could not be created.";
+            }
+        }
         
-        $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $file_name = 'slide-' . time() . '.' . $file_ext;
-        $target_file = $upload_dir . $file_name;
-        
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $image_path = 'assets/uploads/slides/' . $file_name;
+        if (!is_writable($upload_dir)) {
+            $error = "❌ Folder 'assets/uploads/slides/' is not writable. Please fix permissions.";
+        } else {
+            $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $file_name = 'slide-' . time() . '.' . $file_ext;
+            $target_file = $upload_dir . $file_name;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                $image_path = 'assets/uploads/slides/' . $file_name;
+            } else {
+                $error = "❌ Failed to move uploaded file. Check server tmp limits.";
+            }
         }
     }
 

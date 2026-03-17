@@ -24,6 +24,8 @@ if ($id && is_numeric($id)) {
         $product['variations'] = json_decode($product['variations'] ?? '[]', true) ?: [];
         $product['specifications'] = json_decode($product['specifications'] ?? '[]', true) ?: [];
         $product['gallery_images'] = json_decode($product['gallery_images'] ?? '[]', true) ?: [];
+        // Compatibility fix for column name
+        $product['image'] = $product['main_image'] ?? ($product['image'] ?? '');
     }
 
     // Fetch Price Rules
@@ -31,6 +33,9 @@ if ($id && is_numeric($id)) {
     $priceRules->execute([$id]);
     $priceRules = $priceRules->fetchAll();
 }
+
+// Fetch Generics for dropdown
+$allGenerics = $pdo->query("SELECT id, name FROM generics ORDER BY name ASC")->fetchAll();
 
 // Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -46,6 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $meta_description = $_POST['meta_description'] ?? '';
     $barcode = trim($_POST['barcode'] ?? '');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
+    
+    // Pharma Fields
+    $product_type = $_POST['product_type'] ?? 'physical';
+    $generic_id = !empty($_POST['generic_id']) ? $_POST['generic_id'] : null;
+    $dosage_form = $_POST['dosage_form'] ?? '';
+    $strength = $_POST['strength'] ?? '';
+    $registration_number = $_POST['registration_number'] ?? '';
+    $expiry_date = !empty($_POST['expiry_date']) ? $_POST['expiry_date'] : null;
+    $batch_number = $_POST['batch_number'] ?? '';
     
     // Process Variations
     $var_names = $_POST['var_name'] ?? [];
@@ -94,12 +108,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ? WHERE id = ?");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $id]);
+                // Try 'main_image' first, then fallback to 'image' if needed (for legacy schema)
+                $sql = "UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ?, product_type = ?, generic_id = ?, dosage_form = ?, strength = ?, registration_number = ?, expiry_date = ?, batch_number = ? WHERE id = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $product_type, $generic_id, $dosage_form, $strength, $registration_number, $expiry_date, $batch_number, $id]);
                 $message = "Product updated successfully!";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_qty, stock_status, image, meta_title, meta_description, variations, specifications, is_featured, barcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode]);
+                $sql = "INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_qty, stock_status, main_image, meta_title, meta_description, variations, specifications, is_featured, barcode, product_type, generic_id, dosage_form, strength, registration_number, expiry_date, batch_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $product_type, $generic_id, $dosage_form, $strength, $registration_number, $expiry_date, $batch_number]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -166,6 +183,50 @@ include_once __DIR__ . '/includes/header.php';
                     <div>
                         <label class="admin-label">Description</label>
                         <textarea name="description" rows="8" class="admin-input" placeholder="Give a detailed description..."><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pharma Details (Conditional) -->
+            <div id="pharma-section" class="<?php echo ($product['product_type'] ?? '') === 'medicine' ? '' : 'hidden'; ?> admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title flex items-center gap-2">
+                        <i class="ph ph-first-aid text-rose-500 text-lg"></i>
+                        Pharmaceutical Details
+                    </span>
+                </div>
+                <div class="admin-card-body grid grid-cols-2 gap-5">
+                    <div class="col-span-2">
+                        <label class="admin-label">Generic Name</label>
+                        <select name="generic_id" class="admin-input font-bold">
+                            <option value="">Select Generic</option>
+                            <?php foreach($allGenerics as $gen): ?>
+                            <option value="<?php echo $gen['id']; ?>" <?php echo ($product['generic_id'] ?? '') == $gen['id'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($gen['name']); ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="text-[10px] text-slate-400 mt-1">Don't see it? <a href="generics.php" target="_blank" class="text-indigo-600 underline">Add Generic Name</a></p>
+                    </div>
+                    <div>
+                        <label class="admin-label">Dosage Form</label>
+                        <input type="text" name="dosage_form" value="<?php echo htmlspecialchars($product['dosage_form'] ?? ''); ?>" placeholder="e.g. Tablet, Syrup" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Strength</label>
+                        <input type="text" name="strength" value="<?php echo htmlspecialchars($product['strength'] ?? ''); ?>" placeholder="e.g. 500mg, 10ml" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">DAR / Reg Number</label>
+                        <input type="text" name="registration_number" value="<?php echo htmlspecialchars($product['registration_number'] ?? ''); ?>" placeholder="e.g. 123-456-789" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Batch Number</label>
+                        <input type="text" name="batch_number" value="<?php echo htmlspecialchars($product['batch_number'] ?? ''); ?>" placeholder="e.g. BNT-001" class="admin-input">
+                    </div>
+                    <div>
+                        <label class="admin-label">Expiry Date</label>
+                        <input type="date" name="expiry_date" value="<?php echo htmlspecialchars($product['expiry_date'] ?? ''); ?>" class="admin-input">
                     </div>
                 </div>
             </div>
@@ -317,6 +378,16 @@ include_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <div>
+                            <label class="admin-label">Product Type</label>
+                            <select name="product_type" onchange="togglePharma(this.value)" class="admin-input font-bold">
+                                <option value="physical" <?php echo ($product['product_type'] ?? '') == 'physical' ? 'selected' : ''; ?>>Physical Product</option>
+                                <option value="medicine" <?php echo ($product['product_type'] ?? '') == 'medicine' ? 'selected' : ''; ?>>Medicine / Pharma</option>
+                                <option value="digital" <?php echo ($product['product_type'] ?? '') == 'digital' ? 'selected' : ''; ?>>Digital Asset</option>
+                                <option value="service" <?php echo ($product['product_type'] ?? '') == 'service' ? 'selected' : ''; ?>>Service</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label class="admin-label">Category</label>
                             <select name="category_id" class="admin-input font-bold">
                                 <option value="">Select Category</option>
@@ -383,6 +454,14 @@ include_once __DIR__ . '/includes/header.php';
 </div>
 
 <script>
+function togglePharma(val) {
+    const pharmaSection = document.getElementById('pharma-section');
+    if (val === 'medicine') {
+        pharmaSection.classList.remove('hidden');
+    } else {
+        pharmaSection.classList.add('hidden');
+    }
+}
 function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();

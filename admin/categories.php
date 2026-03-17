@@ -11,37 +11,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
 
     if (!empty($_FILES['cat_image']['name'])) {
         $upload_dir = __DIR__ . '/../assets/uploads/ca/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-        $file_ext = pathinfo($_FILES['cat_image']['name'], PATHINFO_EXTENSION);
-        $file_name = $slug . '-' . time() . '.' . $file_ext;
-        if (move_uploaded_file($_FILES['cat_image']['tmp_name'], $upload_dir . $file_name)) {
-            $hero_image = 'assets/uploads/ca/' . $file_name;
+        if (!is_dir($upload_dir)) {
+            if(!mkdir($upload_dir, 0777, true)) {
+                $error = "❌ Directory 'assets/uploads/ca/' missing and could not be created.";
+            }
+        }
+        
+        if (!is_writable($upload_dir)) {
+            $error = "❌ Folder 'assets/uploads/ca/' is not writable. Please fix permissions.";
+        } else {
+            $file_ext = pathinfo($_FILES['cat_image']['name'], PATHINFO_EXTENSION);
+            $file_name = $slug . '-' . time() . '.' . $file_ext;
+            if (move_uploaded_file($_FILES['cat_image']['tmp_name'], $upload_dir . $file_name)) {
+                $hero_image = 'assets/uploads/ca/' . $file_name;
+            } else {
+                $error = "❌ Failed to move uploaded file. Check server tmp limits.";
+            }
         }
     }
 
     if (!empty($name)) {
-        if (!empty($cat_id)) {
-            $pdo->prepare("UPDATE categories SET name=?, slug=?, hero_image=? WHERE id=?")->execute([$name, $slug, $hero_image, $cat_id]);
-        } else {
-            $pdo->prepare("INSERT INTO categories (name, slug, hero_image) VALUES (?, ?, ?)")->execute([$name, $slug, $hero_image]);
+        try {
+            if (!empty($cat_id)) {
+                $pdo->prepare("UPDATE categories SET name=?, slug=?, hero_image=? WHERE id=?")->execute([$name, $slug, $hero_image, $cat_id]);
+                $msg = "Category updated successfully!";
+            } else {
+                $pdo->prepare("INSERT INTO categories (name, slug, hero_image) VALUES (?, ?, ?)")->execute([$name, $slug, $hero_image]);
+                $msg = "Category added successfully!";
+            }
+            if (!empty($error)) {
+                header("Location: categories.php?error=" . urlencode($error));
+            } else {
+                header("Location: categories.php?msg=" . urlencode($msg));
+            }
+            exit();
+        } catch(Exception $e) {
+            header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
+            exit();
         }
     }
     header("Location: categories.php"); exit();
 }
 
 if (isset($_GET['delete'])) {
-    $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$_GET['delete']]);
-    header("Location: categories.php"); exit();
+    try {
+        $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$_GET['delete']]);
+        header("Location: categories.php?msg=" . urlencode("Category deleted successfully!"));
+    } catch (PDOException $e) {
+        if ($e->getCode() == '23000') {
+            header("Location: categories.php?error=" . urlencode("Cannot delete category: It contains linked products. Please move or delete the products first."));
+        } else {
+            header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
+        }
+    }
+    exit();
 }
 
 $adminTitle = 'Categories';
 include_once __DIR__ . '/includes/header.php';
 
 $categories = [];
+$msg = $_GET['msg'] ?? '';
+$error = $_GET['error'] ?? '';
 try {
     $categories = $pdo->query("SELECT c.*, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c ORDER BY c.name ASC")->fetchAll();
 } catch(Exception $e) {}
 ?>
+
+<div class="max-w-7xl mx-auto">
+    <?php if($msg): ?> <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl mb-6 font-bold border border-emerald-100 flex items-center gap-3"><i class="ph ph-check-circle text-xl"></i> <?php echo htmlspecialchars($msg); ?></div> <?php endif; ?>
+    <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-4 rounded-2xl mb-6 font-bold border border-rose-100 flex items-center gap-3"><i class="ph ph-warning-circle text-xl"></i> <?php echo htmlspecialchars($error); ?></div> <?php endif; ?>
 
 <div style="display:grid; grid-template-columns: 1fr 2fr; gap:1.5rem; align-items: start;">
     <!-- Add/Edit Form -->

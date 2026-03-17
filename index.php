@@ -59,7 +59,7 @@ try {
                 <?php foreach($slides as $slide): ?>
                 <div class="swiper-slide">
                     <div class="hero-slide">
-                        <img src="<?php echo htmlspecialchars($slide['image']); ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? ''); ?>">
+                        <img src="<?php echo htmlspecialchars($slide['image_path']); ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? ''); ?>">
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -102,7 +102,7 @@ try {
             </div>
             <!-- Feature 3 -->
             <div class="flex items-center gap-4 group">
-                <img src="image/cX4cvvRRY5TO00HN8KPkVMQoWVeBhk1K0sufJtw1.png" alt="EMI" class="h-10 w-auto group-hover:scale-110 transition-transform">
+                <img src="https://www.zamankitchens.com/assets/logo.png" alt="Zaman Kitchens" class="h-10 w-auto group-hover:scale-110 transition-transform">
                 <div>
                     <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">EMI সুবিধা</h4>
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">২৮টি ব্যাংকের সাথে</p>
@@ -125,16 +125,17 @@ try {
 =========================== -->
 <section class="py-12 bg-white">
     <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl md:text-2xl font-black text-slate-900 border-l-4 border-red-600 pl-4 uppercase tracking-tighter">
+        <div class="flex flex-col items-center text-center mb-8">
+            <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter mb-2">
                 Explore Categories
             </h2>
+            <div class="h-1 w-12 bg-red-600 rounded-full mb-4"></div>
             <a href="categories.php" class="text-xs font-black text-red-600 hover:text-red-700 uppercase tracking-widest flex items-center gap-1">
                 View All <i class="ph-bold ph-caret-right"></i>
             </a>
         </div>
 
-        <div class="flex items-center gap-6 md:gap-10 overflow-x-auto pb-6 scrollbar-hide">
+        <div class="flex items-center justify-center gap-6 md:gap-10 overflow-x-auto pb-6 scrollbar-hide">
             <?php foreach($gridCats as $cat): 
                 $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : 'https://placehold.co/150x150/f1f5f9/94a3b8?text=' . urlencode($cat['name']);
             ?>
@@ -158,13 +159,11 @@ try {
 <?php foreach($categoryRows as $slug => $row): ?>
 <section class="py-12 <?php echo $slug === 'sink' ? 'bg-gray-50' : 'bg-white'; ?>">
     <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
-                <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter">
-                    <?php echo htmlspecialchars($row['name']); ?>
-                </h2>
-                <div class="h-0.5 w-12 md:w-24 bg-red-600 rounded-full hidden sm:block"></div>
-            </div>
+        <div class="flex flex-col items-center text-center mb-8">
+            <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter mb-2">
+                <?php echo htmlspecialchars($row['name']); ?>
+            </h2>
+            <div class="h-1 w-16 bg-red-600 rounded-full mb-4"></div>
             <a href="category/<?php echo $slug; ?>" class="text-xs font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center gap-1 transition-colors">
                 Explore More <i class="ph-bold ph-caret-right"></i>
             </a>
@@ -257,12 +256,10 @@ try {
 <?php if (!empty($featured)): ?>
 <section id="featured" class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">⭐ Featured Products</h2>
-                <p class="text-gray-500 mt-1">Handpicked bestsellers from our collection</p>
-            </div>
-            <a href="#" class="text-red-600 font-semibold hover:underline hidden md:block">View All &rarr;</a>
+        <div class="text-center mb-10">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">⭐ Featured Products</h2>
+            <p class="text-gray-500 mt-2">Handpicked bestsellers from our collection</p>
+            <div class="h-1 w-16 bg-red-600 mx-auto rounded-full mt-4"></div>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <?php foreach($featured as $p): ?>
@@ -291,10 +288,9 @@ try {
             </div>
         </div>
         <?php else: ?>
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-2xl font-extrabold text-gray-900"><?php echo $row['name']; ?></h2>
-            </div>
+        <div class="flex flex-col items-center text-center mb-8">
+            <h2 class="text-2xl font-extrabold text-gray-900 mb-2"><?php echo $row['name']; ?></h2>
+            <div class="h-1 w-16 bg-red-600 rounded-full mb-4"></div>
             <a href="category/<?php echo $slug; ?>" class="text-red-600 font-semibold hover:underline">View All &rarr;</a>
         </div>
         <?php endif; ?>

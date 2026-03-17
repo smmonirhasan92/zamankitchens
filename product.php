@@ -13,7 +13,10 @@ $slug = $_GET['slug'] ?? basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PAT
 
 if ($slug) {
     try {
-        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.slug = ?");
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug, g.name AS generic_name FROM products p 
+                               LEFT JOIN categories c ON p.category_id = c.id 
+                               LEFT JOIN generics g ON p.generic_id = g.id 
+                               WHERE p.slug = ?");
         $stmt->execute([$slug]);
         $product = $stmt->fetch();
 
@@ -88,12 +91,40 @@ include_once __DIR__ . '/includes/header.php';
             <span class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></span>
             <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 leading-tight"><?php echo htmlspecialchars($product['name']); ?></h1>
 
-            <div class="flex items-baseline gap-3 mb-6">
+            <div class="flex items-baseline gap-3 mb-2">
                 <span class="text-4xl font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
                 <span class="text-sm <?php echo ($product['stock_status'] ?? 'In Stock') === 'In Stock' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'; ?> font-bold px-3 py-1 rounded-full">
                     <?php echo htmlspecialchars($product['stock_status'] ?? 'In Stock'); ?>
                 </span>
             </div>
+
+            <!-- Pharma Specific Info -->
+            <?php if(($product['product_type'] ?? '') === 'medicine'): ?>
+            <div class="mb-6 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                <?php if(!empty($product['generic_name'])): ?>
+                <div class="mb-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Generic Name</span>
+                    <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['generic_name']); ?></span>
+                </div>
+                <?php endif; ?>
+                
+                <div class="flex gap-6">
+                    <?php if(!empty($product['dosage_form'])): ?>
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Dosage Form</span>
+                        <span class="text-xs font-bold text-slate-600"><?php echo htmlspecialchars($product['dosage_form']); ?></span>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($product['strength'])): ?>
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Strength</span>
+                        <span class="text-xs font-bold text-slate-600"><?php echo htmlspecialchars($product['strength']); ?></span>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Key Info Badges -->
             <div class="flex flex-wrap gap-2 mb-6">

@@ -10,4 +10,12 @@ class Product extends Model
     {
         return $this->hasMany(PriceRule::class);
     }
+
+    /**
+     * Get the generic name associated with the medicine.
+     */
+    public function generic()
+    {
+        return $this->belongsTo(Generic::class);
+    }
 }
