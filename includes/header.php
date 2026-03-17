@@ -123,17 +123,34 @@ try {
                 </div>
             </form>
 
-            <!-- Quick Actions (Desktop Icons) -->
-            <div class="flex items-center gap-4 ml-auto">
-                <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hidden lg:flex flex-col items-end">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Customer Care</span>
-                    <span class="text-sm font-black text-slate-900"><?php echo SITE_PHONE; ?></span>
+            <!-- Quick Actions (Gazi Style Icons + Labels) -->
+            <div class="flex items-center gap-5 ml-auto">
+                <!-- Compare -->
+                <a href="<?php echo SITE_URL; ?>/compare.php" class="flex flex-col items-center group relative">
+                    <div class="relative mb-1">
+                        <img src="image/compare_icon.png" alt="Compare" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <span id="compare-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
+                    </div>
+                    <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">Compare</span>
                 </a>
-                
-                <button onclick="toggleCart()" class="relative p-3 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-100 transition group">
-                    <i class="ph-bold ph-shopping-bag text-xl text-slate-700 group-hover:text-red-600"></i>
-                    <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </button>
+
+                <!-- Wishlist -->
+                <a href="<?php echo SITE_URL; ?>/wishlist.php" class="flex flex-col items-center group relative border-l border-slate-100 pl-4">
+                    <div class="relative mb-1">
+                        <img src="image/wish_list_icon.png" alt="Wishlist" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <span id="wishlist-count-header" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
+                    </div>
+                    <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">Wishlist</span>
+                </a>
+
+                <!-- My Cart -->
+                <a href="<?php echo SITE_URL; ?>/cart.php" class="flex flex-col items-center group relative border-l border-slate-100 pl-4">
+                    <div class="relative mb-1">
+                        <img src="image/cart_icon.png" alt="Cart" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <span id="cart-count-header" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
+                    </div>
+                    <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">My Cart</span>
+                </a>
             </div>
         </div>
     </div>

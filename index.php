@@ -79,6 +79,48 @@ try {
 </section>
 
 <!-- ===========================
+     Gazi-style Feature Row
+=========================== -->
+<section class="py-8 bg-white border-b border-slate-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Feature 1 -->
+            <div class="flex items-center gap-4 group">
+                <img src="image/02eQFmMczupMD8eID5AjVTQjpW6uCYOSHor0V6rg.jpg" alt="COD" class="h-10 w-auto group-hover:scale-110 transition-transform">
+                <div>
+                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">ক্যাশ অন ডেলিভারিতে</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ক্রয়ের সুবিধা</p>
+                </div>
+            </div>
+            <!-- Feature 2 -->
+            <div class="flex items-center gap-4 group">
+                <img src="image/04AZ86yvpyaFt2jfR5XseGIMi3QVU1LOafCFrkTH.png" alt="Free Delivery" class="h-10 w-auto group-hover:scale-110 transition-transform">
+                <div>
+                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">ফ্রি হোম ডেলিভারি</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">সমগ্র বাংলাদেশে</p>
+                </div>
+            </div>
+            <!-- Feature 3 -->
+            <div class="flex items-center gap-4 group">
+                <img src="image/cX4cvvRRY5TO00HN8KPkVMQoWVeBhk1K0sufJtw1.png" alt="EMI" class="h-10 w-auto group-hover:scale-110 transition-transform">
+                <div>
+                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">EMI সুবিধা</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">২৮টি ব্যাংকের সাথে</p>
+                </div>
+            </div>
+            <!-- Feature 4 -->
+            <div class="flex items-center gap-4 group">
+                <img src="image/call_icon.png" alt="Call" class="h-10 w-auto group-hover:scale-110 transition-transform">
+                <div>
+                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">কল করুন</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">01766688840</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===========================
      Gazi-style Circular Categories
 =========================== -->
 <section class="py-12 bg-white">
@@ -138,6 +180,28 @@ try {
     </div>
 </section>
 <?php endforeach; ?>
+
+<!-- ===========================
+     Gazi-style Campaign Banners
+=========================== -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                <img src="image/beMuLKFPhoWqTU4T0eM9Tz5jplszOBA01y8OinWO.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                <img src="image/hEG14FkfLraHd7zzM8sUgEcTTWgjNwaDeBq63ENr.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                <img src="image/lkQZqSkZKmUHgIW7UTqhDcxZEMGVgBIPvphNpejU.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                <img src="image/niwd6fySuspYlJWj4bylyLkEl6ft4P1ddbPQgavu.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- ===========================
      QUICK FILTER SECTION (Gazi Style)
