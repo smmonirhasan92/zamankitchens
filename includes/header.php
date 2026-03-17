@@ -59,14 +59,40 @@ try {
 </head>
 <body class="bg-white text-gray-900 antialiased">
 
-<!-- ===== TOP BAR ===== -->
-<div style="background: linear-gradient(90deg, #d80032, #ef233c, #d80032); color: #edf2f4;" class="text-[10px] md:text-xs text-center py-1.5 px-2 font-bold tracking-wide overflow-hidden whitespace-nowrap">
-    <div class="flex items-center justify-center gap-2 md:gap-4 animate-scroll md:animate-none">
-        <span>🚚 Free Delivery in Dhaka</span>
-        <span class="opacity-30">|</span>
-        <span>📞 <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hover:underline" style="color: #edf2f4;"><?php echo SITE_PHONE; ?></a></span>
-        <span class="opacity-30 hidden md:inline">|</span>
-        <span class="hidden md:inline">💬 WhatsApp Available 10AM–8PM</span>
+<!-- ===== TOP BAR (Gazi Style) ===== -->
+<div class="bg-slate-900 text-white text-[10px] md:text-xs py-2 border-b border-white/5">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-2">
+        <!-- Contact Info -->
+        <div class="flex items-center gap-4 opacity-80 uppercase tracking-widest font-bold">
+            <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hover:text-red-500 transition flex items-center gap-1.5">
+                <i class="ph-bold ph-phone"></i> <?php echo SITE_PHONE; ?>
+            </a>
+            <span class="hidden md:block opacity-20">|</span>
+            <div class="hidden md:flex items-center gap-1.5">
+                <i class="ph-bold ph-clock"></i> Sat-Thurs | 10am-6pm
+            </div>
+        </div>
+
+        <!-- Utility Links -->
+        <div class="flex items-center gap-4 uppercase tracking-widest font-bold">
+            <div class="flex items-center gap-3">
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <a href="<?php echo SITE_URL; ?>/profile.php" class="hover:text-red-500 transition">My Account</a>
+                <?php else: ?>
+                    <a href="<?php echo SITE_URL; ?>/login.php" class="hover:text-red-500 transition">Login</a>
+                    <span class="opacity-20">|</span>
+                    <a href="<?php echo SITE_URL; ?>/register.php" class="hover:text-red-500 transition">Registration</a>
+                <?php endif; ?>
+            </div>
+            <span class="opacity-20">|</span>
+            <a href="<?php echo SITE_URL; ?>/wishlist.php" class="hover:text-red-500 transition flex items-center gap-1.5">
+                WISHLIST (<span id="wishlist-count-top">0</span>)
+            </a>
+            <span class="opacity-20 hidden md:block">|</span>
+            <button onclick="toggleCart()" class="hover:text-red-500 transition flex items-center gap-1.5 uppercase">
+                My Cart (<span id="cart-count-top">0</span>)
+            </button>
+        </div>
     </div>
 </div>
 
@@ -74,104 +100,90 @@ try {
 <!-- ===== MAIN HEADER ===== -->
 <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
     <div class="container mx-auto px-4">
-        <div class="flex items-center h-16 gap-4">
+        <div class="flex items-center h-20 gap-4">
+
+            <!-- Mobile Menu Toggle -->
+            <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+                <i class="ph-bold ph-list text-xl"></i>
+            </button>
 
             <!-- Logo -->
-            <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center gap-2">
-                <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-10 md:h-12 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/ef233c/ffffff?text=Zaman+Kitchens';">
+            <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center">
+                <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-12 md:h-16 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/d80032/ffffff?text=Zaman+Kitchens';">
             </a>
 
-            <!-- Category Dropdown (Desktop) -->
-            <div class="hidden md:block relative group ml-4">
-                <button class="flex items-center gap-1.5 font-semibold text-sm text-gray-700 hover:text-red-600 transition px-3 py-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                    All Categories
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                <!-- Dropdown Menu -->
-                <div class="absolute top-full left-0 mt-1 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 hidden group-hover:block min-w-56 z-50">
-                    <?php foreach($categories as $cat): ?>
-                    <a href="<?php echo SITE_URL; ?>#products" 
-                       onclick="if(window.location.pathname === '/' || window.location.pathname === '/index.php') { event.preventDefault(); filterCategory('<?php echo $cat['slug']; ?>', document.querySelector('.cat-circle-item[onclick*=\\'<?php echo $cat['slug']; ?>\\']')); }"
-                       class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 font-medium transition">
-                        <span class="w-2 h-2 bg-red-400 rounded-full flex-shrink-0"></span>
-                        <?php echo htmlspecialchars($cat['name']); ?>
-                    </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <!-- Search Bar -->
-            <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-xl">
-                <div class="relative">
-                    <input type="text" name="q" placeholder="Search sinks, hoods, cabinets..."
-                        class="w-full pl-4 pr-12 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-red-400 focus:bg-white transition">
-                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+            <!-- Search Bar (Gazi Style - More prominent) -->
+            <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-2xl px-4 hidden md:block">
+                <div class="relative group">
+                    <input type="text" name="q" placeholder="Search for products (Gas Stove, Kitchen Hood...)"
+                        class="w-full pl-6 pr-14 py-3 text-sm bg-gray-50 border-2 border-slate-100 rounded-full focus:outline-none focus:border-red-600 focus:bg-white transition-all shadow-sm group-hover:shadow-md">
+                    <button type="submit" class="absolute right-1 top-1 bottom-1 px-5 h-auto bg-red-600 hover:bg-red-700 text-white rounded-full transition-all flex items-center justify-center">
+                        <i class="ph-bold ph-magnifying-glass text-lg"></i>
                     </button>
                 </div>
             </form>
 
-            <!-- Action Icons -->
-            <div class="flex items-center gap-2 ml-auto">
-                <!-- User Profile -->
-                <?php if(isset($_SESSION['user_id'])): ?>
-                <a href="<?php echo SITE_URL; ?>/profile.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+            <!-- Quick Actions (Desktop Icons) -->
+            <div class="flex items-center gap-4 ml-auto">
+                <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hidden lg:flex flex-col items-end">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Customer Care</span>
+                    <span class="text-sm font-black text-slate-900"><?php echo SITE_PHONE; ?></span>
                 </a>
-                <?php else: ?>
-                <a href="<?php echo SITE_URL; ?>/login.php" class="hidden sm:flex p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                    </svg>
-                </a>
-                <?php endif; ?>
-
-                <!-- Wishlist Trigger -->
-                <a href="<?php echo SITE_URL; ?>/wishlist.php" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-rose-100 transition border border-slate-100 group hidden sm:flex">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                    <span id="wishlist-count" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white hidden">0</span>
-                </a>
-
-                <!-- Cart Trigger -->
-                <button onclick="toggleCart()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-red-50 transition border border-slate-100 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
-                </button>
- 
-                <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hidden md:flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition">
-                    📞 <span>Call Now</span>
-                </a>
-                <!-- Mobile Menu Button -->
-                <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
+                
+                <button onclick="toggleCart()" class="relative p-3 rounded-full bg-slate-50 hover:bg-red-50 border border-slate-100 transition group">
+                    <i class="ph-bold ph-shopping-bag text-xl text-slate-700 group-hover:text-red-600"></i>
+                    <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white">
-        <div class="container mx-auto px-4 py-3 grid grid-cols-2 gap-2">
+    <!-- Navigation Menu (Gazi Style Secondary Header) -->
+    <div class="bg-gray-50 border-t border-gray-100 hidden md:block">
+        <div class="container mx-auto px-4">
+            <nav class="flex items-center justify-center gap-8 py-3 text-xs font-black uppercase tracking-[0.15em] text-slate-700">
+                <a href="<?php echo SITE_URL; ?>" class="hover:text-red-600 transition">Home</a>
+                <?php foreach(array_slice($categories, 0, 7) as $cat): ?>
+                <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="hover:text-red-600 transition"><?php echo htmlspecialchars($cat['name']); ?></a>
+                <?php endforeach; ?>
+                <a href="<?php echo SITE_URL; ?>/video" class="hover:text-red-600 transition">Videos</a>
+                <a href="<?php echo SITE_URL; ?>/blog" class="hover:text-red-600 transition">Blogs</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Container -->
+    <div id="mobileMenu" class="hidden md:hidden fixed inset-0 z-[60] bg-white">
+        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-10 w-auto object-contain">
+            <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="p-2">
+                <i class="ph-bold ph-x text-2xl"></i>
+            </button>
+        </div>
+        <div class="p-6 flex flex-col gap-6 font-bold uppercase tracking-widest text-sm text-slate-700">
+            <a href="<?php echo SITE_URL; ?>">Home</a>
             <?php foreach($categories as $cat): ?>
-            <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="text-sm text-gray-700 hover:text-red-600 font-medium py-1.5 px-2">
-                <?php echo htmlspecialchars($cat['name']); ?>
-            </a>
+            <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>"><?php echo htmlspecialchars($cat['name']); ?></a>
             <?php endforeach; ?>
+            <hr class="border-gray-100">
+            <a href="<?php echo SITE_URL; ?>/login.php">Login / Register</a>
         </div>
     </div>
 </header>
+
+<script>
+    // Keep badge counts updated
+    function updateHeaderCounts() {
+        const cart = JSON.parse(localStorage.getItem('zk_cart')) || [];
+        const wishlist = JSON.parse(localStorage.getItem('zk_wishlist')) || [];
+        const cartCount = cart.reduce((a, b) => a + b.qty, 0);
+        
+        document.getElementById('cart-count-top').innerText = cartCount;
+        document.getElementById('cart-count-badge').innerText = cartCount;
+        document.getElementById('wishlist-count-top').innerText = wishlist.length;
+    }
+    document.addEventListener('DOMContentLoaded', updateHeaderCounts);
+    window.addEventListener('storage', updateHeaderCounts);
+    // Custom event for internal updates
+    window.addEventListener('cartUpdated', updateHeaderCounts);
+</script>

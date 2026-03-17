@@ -33,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please enter a valid Bangladeshi mobile number (01XXXXXXXXX).";
     } else {
         try {
+            $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+            $stmt->execute([$pid]);
+            $prod = $stmt->fetch();
+
             if (!$prod) {
                 $error = "Product not found. Please try again.";
             } else {
@@ -61,6 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Insert order item
                 $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)")
                     ->execute([$orderId, $prod['id'], $qty, $unitPrice]);
+
+                // Update stock quantity and status
+                $newQty = max(0, $prod['stock_qty'] - $qty);
+                $newStatus = ($newQty <= 0) ? 'Out of Stock' : $prod['stock_status'];
+                
+                $pdo->prepare("UPDATE products SET stock_qty = ?, stock_status = ? WHERE id = ?")
+                    ->execute([$newQty, $newStatus, $pid]);
 
                 // Redirect to success
                 header("Location: order-success.php?id=$orderId");

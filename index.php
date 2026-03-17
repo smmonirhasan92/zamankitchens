@@ -18,248 +18,165 @@ try {
     $gridCats = $pdo->query("SELECT * FROM categories ORDER BY id ASC LIMIT 11")->fetchAll();
 } catch(Exception $e) {}
 
-// Fetch products by specific categories for "BD Style" rows
+// Fetch top 4-5 categories that have products to show as rows
 $categoryRows = [];
-$rowCategories = ['sink', 'kitchen-accessories', 'kitchen-hood', 'gas-stove'];
-foreach ($rowCategories as $slug) {
-    try {
-        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.hero_image AS cat_banner FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE c.slug = ? ORDER BY p.created_at DESC LIMIT 4");
-        $stmt->execute([$slug]);
+try {
+    // Get categories that have products
+    $catsWithProducts = $pdo->query("SELECT c.* FROM categories c WHERE (SELECT COUNT(*) FROM products WHERE category_id = c.id) > 0 LIMIT 6")->fetchAll();
+    
+    foreach ($catsWithProducts as $cat) {
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.hero_image AS cat_banner FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE c.id = ? ORDER BY p.created_at DESC LIMIT 4");
+        $stmt->execute([$cat['id']]);
         $rows = $stmt->fetchAll();
         if (!empty($rows)) {
-            $categoryRows[$slug] = [
-                'name' => $rows[0]['cat_name'],
-                'banner' => $rows[0]['cat_banner'],
+            $categoryRows[$cat['slug']] = [
+                'name' => $cat['name'],
+                'banner' => $cat['hero_image'],
                 'products' => $rows
             ];
         }
-    } catch(Exception $e) {}
-}
+    }
+} catch(Exception $e) {}
 ?>
 
 <!-- ===========================
-     HERO SLIDER SECTION — VIBRANT DARK EDITION
+     HERO SLIDER SECTION (Gazi Style)
 =========================== -->
 <style>
-    @keyframes hero-float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-18px); } }
-    @keyframes gradient-x { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
-    .hero-gradient-text {
-        background: linear-gradient(135deg, #ef233c 0%, #d80032 50%, #8d99ae 100%);
-        background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-size: 200% 200%; animation: gradient-x 4s ease infinite;
-    }
-    .hero-badge-pulse::before {
-        content: ''; position: absolute; inset: -4px; border-radius: 50px;
-        background: rgba(239,35,60,0.3); animation: pulse-ring 2s ease-out infinite;
-    }
-    .hero-cta-main {
-        background: linear-gradient(135deg, #ef233c, #d80032) !important;
-        box-shadow: 0 20px 40px -8px rgba(239,35,60,0.55) !important;
-    }
-    .hero-cta-main:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 28px 50px -8px rgba(239,35,60,0.75) !important; }
-    .floating-blob1 { animation: hero-float 6s ease-in-out infinite; }
-    .floating-blob2 { animation: hero-float 8s ease-in-out infinite reverse; }
-    .floating-blob3 { animation: hero-float 7s ease-in-out 1s infinite; }
-    .hero-grid-bg {
-        background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        background-size: 60px 60px;
-    }
-    .stat-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); background: rgba(43,45,66,0.5); }
+    .heroSwiper { width: 100%; height: auto; }
+    .hero-slide { position: relative; width: 100%; aspect-ratio: 1920/600; overflow: hidden; }
+    @media (max-width: 768px) { .hero-slide { aspect-ratio: 16/9; } }
+    .hero-slide img { width: 100%; h-full; object-fit: cover; }
+    .swiper-button-next, .swiper-button-prev { color: #d80032 !important; background: white; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
+    .swiper-pagination-bullet-active { background: #d80032 !important; }
 </style>
-<section class="relative overflow-hidden" style="background: linear-gradient(145deg, #2b2d42 0%, #1a1b2e 50%, #0f0f1a 100%); min-height: 620px;">
-    <!-- Grid pattern -->
-    <div class="absolute inset-0 hero-grid-bg"></div>
 
-    <!-- Crimson & Indigo blobs -->
-    <div class="floating-blob1 absolute top-[-80px] left-[-80px] w-[500px] h-[500px] rounded-full opacity-25"
-         style="background: radial-gradient(circle, #ef233c 0%, transparent 70%);"></div>
-    <div class="floating-blob2 absolute bottom-[-100px] right-[-80px] w-[600px] h-[600px] rounded-full opacity-15"
-         style="background: radial-gradient(circle, #d80032 0%, transparent 70%);"></div>
-    <div class="floating-blob3 absolute top-[30%] right-[25%] w-[300px] h-[300px] rounded-full opacity-10"
-         style="background: radial-gradient(circle, #8d99ae 0%, transparent 70%);"></div>
-
-    <div class="relative z-10 container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center gap-16">
-        <!-- Left Content -->
-        <div class="flex-1 text-center md:text-left">
-            <!-- Badge -->
-            <div class="relative inline-flex items-center gap-2 mb-8">
-                <span class="hero-badge-pulse relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-[0.2em] backdrop-blur"
-                      style="background: rgba(239,35,60,0.1); border: 1px solid rgba(239,35,60,0.4); color: #ef233c;">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    Premium Kitchen Solutions — Bangladesh
-                </span>
-            </div>
-
-            <!-- Heading -->
-            <h1 class="text-5xl md:text-7xl font-black leading-[1.05] mb-8 tracking-tight text-white">
-                Dream Kitchens
-                <span class="block mt-2 hero-gradient-text">Built to Inspire</span>
-            </h1>
-
-            <p class="text-slate-400 text-lg md:text-xl mb-10 max-w-lg leading-relaxed font-medium">
-                Bangladesh's finest kitchen cabinets, sinks, hoods & accessories.<br>
-                <span class="text-red-500 font-bold">৳ 3,200 থেকে শুরু</span> — Cash on Delivery available.
-            </p>
-
-            <!-- CTAs -->
-            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-                <a href="#products" class="hero-cta-main inline-flex items-center gap-3 text-white font-black text-base px-10 py-4 rounded-2xl transition-all duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    Shop Now
-                </a>
-                <a href="#inquiry" class="inline-flex items-center gap-3 text-white font-bold text-base px-10 py-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-all duration-300 backdrop-blur">
-                    Free Consultation
-                    <svg class="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </a>
-            </div>
-
-            <!-- Stats Row -->
-            <div class="flex flex-wrap gap-6 mt-12 justify-center md:justify-start">
-                <?php
-                $stats = [
-                    ['500+', 'Products'],
-                    ['3,000+', 'Happy Customers'],
-                    ['5★', 'Rated Service'],
-                ];
-                foreach($stats as $s):
-                ?>
-                <div class="stat-card rounded-2xl px-6 py-4 flex flex-col items-center md:items-start">
-                    <span style="background: linear-gradient(135deg, #ef233c, #d80032); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem; font-weight: 900; line-height: 1;"><?php echo $s[0]; ?></span>
-                    <span class="text-xs font-bold uppercase tracking-widest mt-1" style="color: #8d99ae;"><?php echo $s[1]; ?></span>
+<section class="relative bg-gray-50">
+    <div class="swiper heroSwiper">
+        <div class="swiper-wrapper">
+            <?php if (!empty($slides)): ?>
+                <?php foreach($slides as $slide): ?>
+                <div class="swiper-slide">
+                    <div class="hero-slide">
+                        <img src="<?php echo htmlspecialchars($slide['image']); ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? ''); ?>">
+                    </div>
                 </div>
                 <?php endforeach; ?>
-            </div>
+            <?php else: ?>
+                <!-- Fallback Slide -->
+                <div class="swiper-slide">
+                    <div class="hero-slide">
+                        <img src="image/slider.png" alt="Zaman Kitchens Slider">
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
-
-        <!-- Right Visual -->
-        <div class="flex-1 hidden md:flex items-center justify-center relative">
-            <div class="relative w-[480px] h-[480px]">
-                <!-- Outer glow ring -->
-                <div class="absolute inset-0 rounded-full opacity-25" style="background: conic-gradient(from 0deg, #F97316, #EC4899, #8B5CF6, #FBBF24, #F97316); filter: blur(32px);"></div>
-                <!-- Main Image Frame -->
-                <div class="absolute inset-6 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl">
-                    <img src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=800" alt="Premium Kitchen" class="w-full h-full object-cover opacity-80" style="filter: saturate(1.3) contrast(1.1);">
-                    <div class="absolute inset-0" style="background: linear-gradient(145deg, rgba(249,115,22,0.2) 0%, rgba(168,85,247,0.2) 100%);"></div>
-                </div>
-                <!-- Floating badge top -->
-                <div class="absolute -top-4 right-12 bg-white rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-3 border border-amber-100">
-                    <span class="text-2xl">⭐</span>
-                    <div><p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Rated</p><p class="font-black text-slate-900">5.0 / 5.0</p></div>
-                </div>
-                <!-- Floating badge bottom -->
-                <div class="absolute -bottom-4 left-8 bg-white rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-3 border border-emerald-100">
-                    <span class="text-2xl">🚀</span>
-                    <div><p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Fast</p><p class="font-black text-slate-900">24hr Delivery</p></div>
-                </div>
-            </div>
-        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
-
-    <!-- Bottom Fade -->
-    <div class="absolute bottom-0 left-0 right-0 h-24" style="background: linear-gradient(to bottom, transparent, #edf2f4);"></div>
 </section>
 
 <!-- ===========================
-     CATEGORY NAV + PRODUCT GRID — VIBRANT
+     Gazi-style Circular Categories
 =========================== -->
-<style>
-    #products { position: relative; }
-    .cat-pill-item.active .cat-pill-inner {
-        background: linear-gradient(135deg, #ef233c, #d80032);
-        color: #edf2f4;
-        box-shadow: 0 15px 35px -8px rgba(239,35,60,0.5);
-        transform: translateY(-6px) scale(1.05);
-        border-color: #ef233c !important;
-    }
-    .cat-pill-item.active .cat-name {
-        color: #ef233c !important;
-        font-weight: 900;
-    }
-    .cat-pill-inner { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .product-section-bg {
-        background: linear-gradient(180deg, #edf2f4 0%, #f5f5f7 60%, #edf2f4 100%);
-    }
-    .section-heading-accent {
-        background: linear-gradient(135deg, #ef233c 0%, #d80032 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-</style>
-<section id="products" class="product-section-bg py-20">
+<section class="py-12 bg-white">
     <div class="container mx-auto px-4">
-        <div class="text-center mb-16">
-            <span class="inline-block text-[10px] font-black uppercase tracking-[0.35em] px-6 py-2 rounded-full mb-6"
-                  style="background: rgba(239,35,60,0.08); color: #d80032; border: 1px solid rgba(239,35,60,0.25);">🔥 Premium Selections</span>
-            <h2 class="text-4xl md:text-6xl font-black mb-5 tracking-tight" style="color: #2b2d42;">
-                Shop by <span class="section-heading-accent">Category</span>
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl md:text-2xl font-black text-slate-900 border-l-4 border-red-600 pl-4 uppercase tracking-tighter">
+                Explore Categories
             </h2>
-            <p class="max-w-xl mx-auto text-lg leading-relaxed" style="color: #8d99ae;">Tap any category to instantly filter our full collection.</p>
+            <a href="categories.php" class="text-xs font-black text-red-600 hover:text-red-700 uppercase tracking-widest flex items-center gap-1">
+                View All <i class="ph-bold ph-caret-right"></i>
+            </a>
         </div>
 
-        <!-- CIRCULAR CATEGORY NAV -->
-        <div class="flex md:flex-wrap items-center md:items-start justify-start md:justify-center gap-6 md:gap-12 mb-20 overflow-x-auto pb-4 scrollbar-hide flex-nowrap md:flex-wrap px-4 -mx-4">
-            <div onclick="filterCategory('all', this)" class="cat-pill-item active group cursor-pointer text-center flex-shrink-0">
-                <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center shadow-lg overflow-hidden mb-3 mx-auto"
-                     style="background: #2b2d42;">
-                    <span class="text-3xl">🏠</span>
-                </div>
-                <span class="cat-name block text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-700">All Products</span>
-            </div>
-
+        <div class="flex items-center gap-6 md:gap-10 overflow-x-auto pb-6 scrollbar-hide">
             <?php foreach($gridCats as $cat): 
-                $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : null;
+                $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : 'https://placehold.co/150x150/f1f5f9/94a3b8?text=' . urlencode($cat['name']);
             ?>
-            <div onclick="filterCategory('<?php echo $cat['slug']; ?>', this)" class="cat-pill-item group cursor-pointer text-center flex-shrink-0">
-                <div class="cat-pill-inner w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center bg-white border border-slate-100 shadow-sm group-hover:shadow-md overflow-hidden mb-3 mx-auto">
-                    <?php if($catImg): ?>
-                        <img src="<?php echo htmlspecialchars($catImg); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-115">
-                    <?php else: ?>
-                        <span class="text-3xl opacity-20">🍽️</span>
-                    <?php endif; ?>
+            <a href="category/<?php echo $cat['slug']; ?>" class="flex-shrink-0 group text-center w-24 md:w-32">
+                <div class="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white border border-slate-100 shadow-sm group-hover:shadow-md group-hover:border-red-500 transition-all duration-300 flex items-center justify-center overflow-hidden mb-3 mx-auto">
+                    <img src="<?php echo htmlspecialchars($catImg); ?>" alt="<?php echo htmlspecialchars($cat['name']); ?>" 
+                         class="w-4/5 h-4/5 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
-                <span class="cat-name block text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-red-500 transition-colors"><?php echo htmlspecialchars($cat['name']); ?></span>
-            </div>
+                <span class="block text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-700 group-hover:text-red-600 transition-colors leading-tight">
+                    <?php echo htmlspecialchars($cat['name']); ?>
+                </span>
+            </a>
             <?php endforeach; ?>
         </div>
+    </div>
+</section>
 
-        <!-- PRODUCT GRID -->
-        <?php
-        $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
-        ?>
-        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
-            <?php foreach($allProducts as $p): ?>
-            <div class="product-item transition-all duration-700 transform opacity-100 scale-100" data-category="<?php echo $p['cat_slug']; ?>">
+<!-- ===========================
+     CATEGORIZED PRODUCT ROWS (Gazi Style)
+=========================== -->
+<?php foreach($categoryRows as $slug => $row): ?>
+<section class="py-12 <?php echo $slug === 'sink' ? 'bg-gray-50' : 'bg-white'; ?>">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tighter">
+                    <?php echo htmlspecialchars($row['name']); ?>
+                </h2>
+                <div class="h-0.5 w-12 md:w-24 bg-red-600 rounded-full hidden sm:block"></div>
+            </div>
+            <a href="category/<?php echo $slug; ?>" class="text-xs font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center gap-1 transition-colors">
+                Explore More <i class="ph-bold ph-caret-right"></i>
+            </a>
+        </div>
+
+        <div id="grid-<?php echo $slug; ?>" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            <?php foreach($row['products'] as $p): ?>
+            <div class="product-item">
                 <?php include __DIR__ . '/includes/product-card.php'; ?>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
+<?php endforeach; ?>
+
+<!-- ===========================
+     QUICK FILTER SECTION (Gazi Style)
+=========================== -->
+<section class="py-16 bg-slate-900 relative overflow-hidden">
+    <!-- Decorative background -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-red-600 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 bg-red-600 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2"></div>
+    </div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tighter uppercase">All Products</h2>
+            <div class="h-1 w-20 bg-red-600 mx-auto rounded-full"></div>
+        </div>
+
+        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            <?php 
+            $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC LIMIT 8")->fetchAll();
+            foreach($allProducts as $p): 
+            ?>
+            <div class="product-item">
+                <?php include __DIR__ . '/includes/product-card.php'; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="search.php" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
+                SEE ALL PRODUCTS
+                <i class="ph-bold ph-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
 
 <script>
-    function filterCategory(slug, el) {
-        document.querySelectorAll('.cat-pill-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-
-        const items = document.querySelectorAll('.product-item');
-        items.forEach(item => {
-            if (slug === 'all' || item.getAttribute('data-category') === slug) {
-                item.style.display = 'block';
-                setTimeout(() => {
-                    item.style.opacity = '1';
-                    item.style.transform = 'translateY(0) scale(1)';
-                }, 50);
-            } else {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(20px) scale(0.95)';
-                setTimeout(() => { item.style.display = 'none'; }, 500);
-            }
-        });
-    }
-</script>
-
-<!-- Initialize Swiper -->
-<script>
+    // Initialize Swiper
     const swiper = new Swiper('.heroSwiper', {
         loop: true,
         autoplay: { delay: 5000, disableOnInteraction: false },

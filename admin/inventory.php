@@ -16,7 +16,7 @@ $total = count($products);
 $inStock = 0;
 $outOfStock = 0;
 foreach($products as $p) {
-    if($p['stock_status'] == 'In Stock') $inStock++;
+    if($p['stock_qty'] > 0) $inStock++;
     else $outOfStock++;
 }
 ?>
@@ -69,6 +69,7 @@ foreach($products as $p) {
                         <th>Product</th>
                         <th>Category</th>
                         <th>Sale Price</th>
+                        <th>Qty</th>
                         <th>Status</th>
                         <th style="text-align:right;">Quick Action</th>
                     </tr>
@@ -82,6 +83,7 @@ foreach($products as $p) {
                         </td>
                         <td><span style="font-size:11px; font-weight:600; color:#6b7280;"><?php echo htmlspecialchars($p['category_name'] ?: 'General'); ?></span></td>
                         <td style="font-weight:700;">৳ <?php echo number_format($p['price']); ?></td>
+                        <td><span style="font-weight:700; color:#4b5563;"><?php echo $p['stock_qty']; ?></span></td>
                         <td>
                             <select onchange="updateStock(this, <?php echo $p['id']; ?>)" 
                                     class="text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-lg border-none outline-none cursor-pointer <?php echo ($p['stock_status'] == 'In Stock') ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'; ?>">

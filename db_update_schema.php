@@ -22,5 +22,20 @@ try {
     echo "Added specifications<br>";
 } catch (Exception $e) {}
 
+try {
+    $pdo->exec("ALTER TABLE products ADD COLUMN purchase_price DECIMAL(10,2) DEFAULT 0 AFTER price");
+    echo "Added purchase_price<br>";
+} catch (Exception $e) {}
+
+try {
+    $pdo->exec("ALTER TABLE products ADD COLUMN stock_qty INT DEFAULT 0 AFTER purchase_price");
+    echo "Added stock_qty<br>";
+} catch (Exception $e) {}
+
+try {
+    $pdo->exec("ALTER TABLE products ADD COLUMN barcode VARCHAR(100) NULL AFTER slug");
+    echo "Added barcode<br>";
+} catch (Exception $e) {}
+
 echo "Database Update Complete!";
 ?>
