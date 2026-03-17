@@ -37,9 +37,9 @@ include_once __DIR__ . '/includes/header.php';
     <?php if (!empty($category['hero_image'])): ?>
     <img src="<?php echo htmlspecialchars($category['hero_image']); ?>" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="">
     <?php endif; ?>
-    <div class="relative z-10 container mx-auto px-4 py-16 flex items-center">
+    <div class="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center text-center">
         <div>
-            <nav class="text-gray-400 text-sm mb-2 flex items-center gap-2">
+            <nav class="text-gray-400 text-sm mb-4 flex items-center gap-2 justify-center">
                 <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-400">Home</a>
                 <span>/</span>
                 <span class="text-white font-medium"><?php echo htmlspecialchars($category['name']); ?></span>

@@ -6,8 +6,8 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
 
             <!-- Brand -->
-            <div class="col-span-2 md:col-span-1">
-                <a href="<?php echo SITE_URL; ?>" class="flex items-center gap-2 mb-4 hover:opacity-80 transition">
+            <div class="col-span-2 md:col-span-1 flex flex-col items-center text-center">
+                <a href="<?php echo SITE_URL; ?>" class="flex items-center gap-2 mb-4 hover:opacity-80 transition justify-center">
                     <div class="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center">
                         <span class="text-white font-extrabold text-sm">ZK</span>
                     </div>
@@ -15,7 +15,7 @@
                 </a>
                 <p class="text-sm text-gray-400 leading-relaxed mb-4">Bangladesh's trusted source for premium kitchen accessories and sinks since 2015.</p>
                 <!-- Social Links -->
-                <div class="flex gap-3">
+                <div class="flex gap-3 justify-center">
                     <a href="<?php echo SITE_FB; ?>" target="_blank" class="w-10 h-10 bg-white/10 hover:bg-red-600 rounded-xl flex items-center justify-center transition text-white border border-white/5" title="Facebook">
                         <i class="ph-bold ph-facebook-logo text-lg"></i>
                     </a>
@@ -29,9 +29,9 @@
             </div>
 
             <!-- Categories -->
-            <div>
+            <div class="text-center flex flex-col items-center">
                 <h4 class="text-white font-bold mb-4 text-sm tracking-wide uppercase">Categories</h4>
-                <ul class="space-y-2 text-sm">
+                <ul class="space-y-2 text-sm flex flex-col items-center">
                     <?php
                     try {
                         $footerCats = $pdo->query("SELECT name, slug FROM categories LIMIT 6")->fetchAll();
@@ -43,9 +43,9 @@
             </div>
 
             <!-- Information -->
-            <div>
+            <div class="text-center flex flex-col items-center">
                 <h4 class="text-white font-bold mb-4 text-sm tracking-wide uppercase">Information</h4>
-                <ul class="space-y-2 text-sm">
+                <ul class="space-y-2 text-sm flex flex-col items-center">
                     <li><a href="#" class="hover:text-red-500 transition">About Us</a></li>
                     <li><a href="privacy.php" class="hover:text-red-500 transition">Privacy Policy</a></li>
                     <li><a href="terms.php" class="hover:text-red-500 transition">Terms & Conditions</a></li>
@@ -54,18 +54,18 @@
             </div>
 
             <!-- Contact -->
-            <div>
+            <div class="text-center flex flex-col items-center">
                 <h4 class="text-white font-bold mb-4 text-sm tracking-wide uppercase">Contact Us</h4>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-start gap-2">
+                <ul class="space-y-3 text-sm flex flex-col items-center">
+                    <li class="flex items-start gap-2 justify-center">
                         <span class="mt-0.5">📍</span>
                         <span class="text-gray-400"><?php echo SITE_ADDRESS; ?></span>
                     </li>
-                    <li class="flex items-center gap-2">
+                    <li class="flex items-center gap-2 justify-center">
                         <span>📞</span>
                         <a href="tel:<?php echo SITE_PHONE_RAW; ?>" class="hover:text-red-500 transition"><?php echo SITE_PHONE; ?></a>
                     </li>
-                    <li class="flex items-center gap-2">
+                    <li class="flex items-center gap-2 justify-center">
                         <span>💬</span>
                         <a href="https://wa.me/<?php echo SITE_WHATSAPP; ?>" target="_blank" class="hover:text-red-500 transition">WhatsApp Chat</a>
                     </li>

@@ -83,38 +83,22 @@ try {
 =========================== -->
 <section class="py-8 bg-white border-b border-slate-50">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 justify-items-center">
             <!-- Feature 1 -->
-            <div class="flex items-center gap-4 group">
-                <img src="image/02eQFmMczupMD8eID5AjVTQjpW6uCYOSHor0V6rg.jpg" alt="COD" class="h-10 w-auto group-hover:scale-110 transition-transform">
-                <div>
-                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">ক্যাশ অন ডেলিভারিতে</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ক্রয়ের সুবিধা</p>
-                </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <img src="image/1.png" alt="Feature 1" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 2 -->
-            <div class="flex items-center gap-4 group">
-                <img src="image/04AZ86yvpyaFt2jfR5XseGIMi3QVU1LOafCFrkTH.png" alt="Free Delivery" class="h-10 w-auto group-hover:scale-110 transition-transform">
-                <div>
-                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">ফ্রি হোম ডেলিভারি</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">সমগ্র বাংলাদেশে</p>
-                </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <img src="image/2.png" alt="Feature 2" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 3 -->
-            <div class="flex items-center gap-4 group">
-                <img src="https://www.zamankitchens.com/assets/logo.png" alt="Zaman Kitchens" class="h-10 w-auto group-hover:scale-110 transition-transform">
-                <div>
-                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">EMI সুবিধা</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">২৮টি ব্যাংকের সাথে</p>
-                </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <img src="image/3.png" alt="Feature 3" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 4 -->
-            <div class="flex items-center gap-4 group">
-                <img src="image/call_icon.png" alt="Call" class="h-10 w-auto group-hover:scale-110 transition-transform">
-                <div>
-                    <h4 class="text-xs font-black text-slate-800 uppercase leading-none mb-1">কল করুন</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">01766688840</p>
-                </div>
+            <div class="flex flex-col items-center justify-center p-2">
+                <img src="image/4.png" alt="Feature 4" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
         </div>
     </div>
@@ -130,7 +114,7 @@ try {
                 Explore Categories
             </h2>
             <div class="h-1 w-12 bg-red-600 rounded-full mb-4"></div>
-            <a href="categories.php" class="text-xs font-black text-red-600 hover:text-red-700 uppercase tracking-widest flex items-center gap-1">
+            <a href="categories.php" class="text-xs font-black text-red-600 hover:text-red-700 uppercase tracking-widest flex items-center justify-center gap-1">
                 View All <i class="ph-bold ph-caret-right"></i>
             </a>
         </div>
@@ -164,7 +148,7 @@ try {
                 <?php echo htmlspecialchars($row['name']); ?>
             </h2>
             <div class="h-1 w-16 bg-red-600 rounded-full mb-4"></div>
-            <a href="category/<?php echo $slug; ?>" class="text-xs font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center gap-1 transition-colors">
+            <a href="category/<?php echo $slug; ?>" class="text-xs font-black text-slate-400 hover:text-red-600 uppercase tracking-widest flex items-center justify-center gap-1 transition-colors">
                 Explore More <i class="ph-bold ph-caret-right"></i>
             </a>
         </div>
@@ -310,15 +294,15 @@ try {
 <section class="py-12 bg-white" id="inquiry">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto bg-slate-900 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl">
-            <div class="md:w-2/5 p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-r border-white/5">
+            <div class="md:w-2/5 p-8 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-r border-white/5 flex flex-col items-center justify-center text-center">
                 <h2 class="text-2xl font-black mb-4"><span class="text-red-500">Custom</span> Design?</h2>
                 <p class="text-slate-400 text-xs mb-6 leading-relaxed">Our experts will find the perfect fit for your kitchen.</p>
-                <div class="space-y-3">
+                <div class="space-y-3 flex flex-col items-center">
                     <div class="flex items-center gap-3 text-sm font-bold">
-                        <span class="text-red-600">📞</span> +880 1700-000000
+                        <span class="text-red-600">📞</span> <?php echo SITE_PHONE; ?>
                     </div>
                     <div class="flex items-center gap-3 text-sm font-bold">
-                        <span class="text-red-600">📍</span> Uttara, Dhaka
+                        <span class="text-red-600">📍</span> <?php echo SITE_ADDRESS; ?>
                     </div>
                 </div>
             </div>
@@ -362,12 +346,12 @@ try {
             ];
             foreach($features as $f):
             ?>
-            <div class="group p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 cursor-default"
+            <div class="group p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 cursor-default flex flex-col items-center text-center"
                  style="background: <?php echo $f[3]; ?>; border: 1px solid rgba(255,255,255,0.06);">
                 <div class="text-5xl mb-5"><?php echo $f[0]; ?></div>
                 <h3 class="font-black text-lg mb-2" style="color: #edf2f4;"><?php echo $f[1]; ?></h3>
                 <p class="text-sm leading-relaxed" style="color: #8d99ae;"><?php echo $f[2]; ?></p>
-                <div class="mt-5 w-8 h-1 rounded-full transition-all duration-300 group-hover:w-16"
+                <div class="mt-5 w-8 h-1 rounded-full transition-all duration-300 group-hover:w-16 mx-auto"
                      style="background: <?php echo $f[4]; ?>;"></div>
             </div>
             <?php endforeach; ?>
@@ -710,25 +694,17 @@ try {
             <div class="md:w-1/2 h-[400px] md:h-auto overflow-hidden">
                 <img src="${p.image}" class="w-full h-full object-cover">
             </div>
-            <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+            <div class="md:w-1/2 p-8 md:p-12 flex flex-col items-center justify-center text-center">
                 <span class="text-amber-600 text-[10px] font-black uppercase tracking-widest mb-4">Limited Edition</span>
                 <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">${p.name}</h2>
                 <div class="text-4xl font-black text-amber-600 mb-8 italic">৳ ${parseInt(p.price).toLocaleString()}</div>
                 <p class="text-slate-500 mb-10 text-lg leading-relaxed">${p.description}</p>
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
                     <button onclick='addToCart(${JSON.stringify(p)})' class="flex-1 bg-slate-100 hover:bg-amber-100 text-slate-800 font-bold py-4 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 group/btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 group-hover/btn:text-amber-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
                         <span>Add to Bag</span>
                     </button>
-                    
                     <button onclick='buyNow(${JSON.stringify(p).replace(/"/g, '&quot;')}); closeQuickView();' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-sm py-4 rounded-2xl transition shadow-xl shadow-slate-200 text-center">
                         Buy Now
-                    </button>
-                    
-                    <button onclick='toggleWishlist(${JSON.stringify(p).replace(/"/g, '&quot;')})' class="w-14 h-14 rounded-2xl border border-slate-200 bg-white flex items-center justify-center text-xl hover:bg-rose-50 hover:border-rose-100 hover:text-rose-500 transition flex-shrink-0 wishlist-btn-${p.id}">
-                        ${wishlist.findIndex(item => item.id == p.id) > -1 ? '❤️' : '🤍'}
                     </button>
                 </div>
             </div>

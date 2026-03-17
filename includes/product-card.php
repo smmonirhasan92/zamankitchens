@@ -40,20 +40,20 @@ $jsData = json_encode([
     </div>
 
     <!-- Content Section -->
-    <div class="p-4 flex flex-col flex-1 border-t border-slate-50">
+    <div class="p-4 flex flex-col items-center flex-1 border-t border-slate-50 text-center">
         <h3 class="font-bold text-slate-800 text-xs md:text-sm leading-tight mb-4 line-clamp-2 group-hover:text-red-600 transition-colors min-h-[2.5rem]">
             <?php echo htmlspecialchars($p['name']); ?>
         </h3>
         
-        <div class="mt-auto flex items-center justify-between gap-2">
-            <div class="flex flex-col">
+        <div class="mt-auto w-full flex flex-col items-center gap-3">
+            <div class="flex flex-col items-center">
                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Price</span>
-                <span class="text-sm md:text-md font-black text-red-600 leading-none">৳ <?php echo number_format($p['price']); ?></span>
+                <span class="text-sm md:text-xl font-black text-red-600 leading-none">৳ <?php echo number_format($p['price']); ?></span>
             </div>
             
-            <button onclick="event.stopPropagation(); addToCart(<?php echo htmlspecialchars(json_encode($p)); ?>);"
-                class="gazi-action-btn h-8 w-8 rounded-lg bg-slate-50 border border-slate-100 text-slate-500 transition-all flex items-center justify-center">
-                <i class="ph-bold ph-shopping-cart-simple text-sm"></i>
+            <button onclick="event.stopPropagation(); addToCart(<?php echo htmlspecialchars(json_encode($p ?? [])); ?>);"
+                class="gazi-action-btn w-full py-2 rounded-lg bg-slate-50 border border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 hover:bg-red-600 hover:text-white">
+                <i class="ph-bold ph-shopping-cart-simple text-sm"></i> Add to Cart
             </button>
         </div>
     </div>

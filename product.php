@@ -51,7 +51,8 @@ include_once __DIR__ . '/includes/header.php';
 <div class="container mx-auto px-4 py-8 max-w-6xl">
 
     <!-- Breadcrumb -->
-    <nav class="text-sm text-gray-400 mb-6 flex gap-2 items-center">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-400 mb-6 flex gap-2 items-center justify-center">
         <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-600">Home</a>
         <span>/</span>
         <a href="<?php echo SITE_URL; ?>/category/<?php echo $product['cat_slug']; ?>" class="hover:text-amber-600"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></a>
@@ -87,39 +88,39 @@ include_once __DIR__ . '/includes/header.php';
         </div>
 
         <!-- Product Info -->
-        <div class="flex flex-col">
+        <div class="flex flex-col items-center text-center">
             <span class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></span>
-            <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-4 leading-tight"><?php echo htmlspecialchars($product['name']); ?></h1>
+            <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight"><?php echo htmlspecialchars($product['name']); ?></h1>
 
-            <div class="flex items-baseline gap-3 mb-2">
-                <span class="text-4xl font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
-                <span class="text-sm <?php echo ($product['stock_status'] ?? 'In Stock') === 'In Stock' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'; ?> font-bold px-3 py-1 rounded-full">
+            <div class="flex flex-col items-center gap-2 mb-6">
+                <span class="text-5xl font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
+                <span class="text-xs <?php echo ($product['stock_status'] ?? 'In Stock') === 'In Stock' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'; ?> font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-current opacity-70">
                     <?php echo htmlspecialchars($product['stock_status'] ?? 'In Stock'); ?>
                 </span>
             </div>
 
             <!-- Pharma Specific Info -->
             <?php if(($product['product_type'] ?? '') === 'medicine'): ?>
-            <div class="mb-6 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+            <div class="mb-6 p-6 bg-slate-50 border border-slate-100 rounded-[2rem] w-full">
                 <?php if(!empty($product['generic_name'])): ?>
-                <div class="mb-2">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Generic Name</span>
-                    <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['generic_name']); ?></span>
+                <div class="mb-4">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Generic Name</span>
+                    <span class="text-lg font-bold text-slate-800"><?php echo htmlspecialchars($product['generic_name']); ?></span>
                 </div>
                 <?php endif; ?>
                 
-                <div class="flex gap-6">
+                <div class="flex justify-center gap-10">
                     <?php if(!empty($product['dosage_form'])): ?>
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Dosage Form</span>
-                        <span class="text-xs font-bold text-slate-600"><?php echo htmlspecialchars($product['dosage_form']); ?></span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Dosage Form</span>
+                        <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['dosage_form']); ?></span>
                     </div>
                     <?php endif; ?>
                     
                     <?php if(!empty($product['strength'])): ?>
                     <div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Strength</span>
-                        <span class="text-xs font-bold text-slate-600"><?php echo htmlspecialchars($product['strength']); ?></span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Strength</span>
+                        <span class="text-sm font-bold text-slate-700"><?php echo htmlspecialchars($product['strength']); ?></span>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -127,21 +128,21 @@ include_once __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <!-- Key Info Badges -->
-            <div class="flex flex-wrap gap-2 mb-6">
-                <span class="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full">🚚 Fast Delivery</span>
-                <span class="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full">🛡️ Warranty Included</span>
-                <span class="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-full">💳 Cash on Delivery</span>
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <span class="bg-gray-100/80 text-gray-700 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-gray-200/50">🚚 Fast Delivery</span>
+                <span class="bg-gray-100/80 text-gray-700 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-gray-200/50">🛡️ Warranty Included</span>
+                <span class="bg-gray-100/80 text-gray-700 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full border border-gray-200/50">💳 Cash on Delivery</span>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col gap-3 mb-8">
+            <div class="flex flex-col gap-3 mb-8 w-full max-w-md">
                 <a href="checkout.php?product=<?php echo $product['id']; ?>"
-                    class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold py-4 rounded-xl text-center transition shadow-lg shadow-amber-200 text-base">
+                    class="bg-amber-600 hover:bg-amber-700 text-white font-black py-5 rounded-2xl text-center transition shadow-xl shadow-amber-200/50 text-base uppercase tracking-widest">
                     🛒 Buy Now — Cash on Delivery
                 </a>
-                <a href="https://wa.me/8801700000000?text=I+want+to+order:+<?php echo urlencode($product['name']); ?>+Price:+<?php echo $product['price']; ?>"
+                <a href="https://wa.me/<?php echo SITE_WHATSAPP; ?>?text=I+want+to+order:+<?php echo urlencode($product['name']); ?>+Price:+<?php echo $product['price']; ?>"
                     target="_blank"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-center transition flex items-center justify-center gap-2">
+                    class="bg-green-500 hover:bg-green-600 text-white font-black py-4 rounded-2xl text-center transition flex items-center justify-center gap-2 uppercase tracking-widest text-sm">
                     💬 Order via WhatsApp
                 </a>
             </div>
@@ -173,9 +174,9 @@ include_once __DIR__ . '/includes/header.php';
 
             <!-- Description -->
             <?php if ($product['description']): ?>
-            <div class="border-t pt-6">
-                <h3 class="font-bold text-gray-900 mb-3">Product Description</h3>
-                <div class="text-gray-600 text-sm leading-relaxed prose max-w-none">
+            <div class="border-t pt-8 w-full">
+                <h3 class="font-black text-slate-900 mb-4 text-center uppercase tracking-widest text-sm">Product Description</h3>
+                <div class="text-slate-600 text-sm leading-relaxed prose max-w-none text-center">
                     <?php echo nl2br(htmlspecialchars($product['description'])); ?>
                 </div>
             </div>
@@ -185,8 +186,8 @@ include_once __DIR__ . '/includes/header.php';
 
     <!-- Suggested Products -->
     <?php if (!empty($suggested)): ?>
-    <section>
-        <h2 class="text-2xl font-extrabold text-gray-900 mb-6">You May Also Like</h2>
+    <section class="border-t border-slate-100 pt-16">
+        <h2 class="text-3xl font-black text-slate-900 mb-8 text-center uppercase tracking-tighter">You May Also Like</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <?php foreach($suggested as $p): ?>
             <?php include __DIR__ . '/includes/product-card.php'; ?>
