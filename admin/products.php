@@ -97,9 +97,9 @@ try {
                             <a href="product-edit.php?id=<?php echo $p['id']; ?>" class="btn btn-ghost" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
                                 <i class="ph ph-note-pencil" style="font-size:1rem;"></i>
                             </a>
-                            <button onclick="if(confirm('Delete this product?')) window.location.href='products.php?delete=<?php echo $p['id']; ?>'" class="btn btn-danger" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
+                            <a href="products.php?delete=<?php echo $p['id']; ?>" onclick="return confirm('Delete this product?')" class="btn btn-danger" style="padding:0.4rem; width:32px; height:32px; justify-content:center;">
                                 <i class="ph ph-trash" style="font-size:1rem;"></i>
-                            </button>
+                            </a>
                         </div>
                     </td>
                 </tr>
