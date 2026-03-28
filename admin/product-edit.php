@@ -338,10 +338,20 @@ include_once __DIR__ . '/includes/header.php';
                             <label class="admin-label">Category</label>
                             <select name="category_id" class="admin-input font-bold">
                                 <option value="">Select Category</option>
-                                <?php foreach($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($cat['name']); ?>
-                                </option>
+                                <?php 
+                                // Group categories by parent
+                                $mainCats = array_filter($categories, fn($c) => is_null($c['parent_id']));
+                                foreach($mainCats as $cat): ?>
+                                    <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($cat['name']); ?>
+                                    </option>
+                                    <?php 
+                                    $subCats = array_filter($categories, fn($c) => $c['parent_id'] == $cat['id']);
+                                    foreach($subCats as $sub): ?>
+                                        <option value="<?php echo $sub['id']; ?>" <?php echo ($product['category_id'] ?? '') == $sub['id'] ? 'selected' : ''; ?>>
+                                            &nbsp;&nbsp;&nbsp;↳ <?php echo htmlspecialchars($sub['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 <?php endforeach; ?>
                             </select>
                         </div>

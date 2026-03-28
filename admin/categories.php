@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
     $name = trim($_POST['cat_name']);
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
     $cat_id = $_POST['cat_id'] ?? null;
+    $parent_id = (!empty($_POST['parent_id'])) ? $_POST['parent_id'] : null;
     $hero_image = $_POST['existing_image'] ?? null;
 
     if (!empty($_FILES['cat_image']['name'])) {
@@ -33,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
     if (!empty($name)) {
         try {
             if (!empty($cat_id)) {
-                $pdo->prepare("UPDATE categories SET name=?, slug=?, hero_image=? WHERE id=?")->execute([$name, $slug, $hero_image, $cat_id]);
+                $pdo->prepare("UPDATE categories SET name=?, slug=?, hero_image=?, parent_id=? WHERE id=?")->execute([$name, $slug, $hero_image, $parent_id, $cat_id]);
                 $msg = "Category updated successfully!";
             } else {
-                $pdo->prepare("INSERT INTO categories (name, slug, hero_image) VALUES (?, ?, ?)")->execute([$name, $slug, $hero_image]);
+                $pdo->prepare("INSERT INTO categories (name, slug, hero_image, parent_id) VALUES (?, ?, ?, ?)")->execute([$name, $slug, $hero_image, $parent_id]);
                 $msg = "Category added successfully!";
             }
             if (!empty($error)) {
@@ -54,15 +55,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
 }
 
 if (isset($_GET['delete'])) {
+    $del_id = $_GET['delete'];
     try {
-        $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$_GET['delete']]);
+        // 1. Check for sub-categories
+        $checkSub = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE parent_id = ?");
+        $checkSub->execute([$del_id]);
+        if ($checkSub->fetchColumn() > 0) {
+            header("Location: categories.php?error=" . urlencode("Cannot delete: This category has sub-categories. Please delete or move them first."));
+            exit();
+        }
+
+        // 2. Check for products
+        $checkProd = $pdo->prepare("SELECT COUNT(*) FROM products WHERE category_id = ?");
+        $checkProd->execute([$del_id]);
+        if ($checkProd->fetchColumn() > 0) {
+            header("Location: categories.php?error=" . urlencode("Cannot delete: This category contains products. Please move or delete the products first."));
+            exit();
+        }
+
+        $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$del_id]);
         header("Location: categories.php?msg=" . urlencode("Category deleted successfully!"));
     } catch (PDOException $e) {
-        if ($e->getCode() == '23000') {
-            header("Location: categories.php?error=" . urlencode("Cannot delete category: It contains linked products. Please move or delete the products first."));
-        } else {
-            header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
-        }
+        header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
     }
     exit();
 }
@@ -74,7 +88,7 @@ $categories = [];
 $msg = $_GET['msg'] ?? '';
 $error = $_GET['error'] ?? '';
 try {
-    $categories = $pdo->query("SELECT c.*, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c ORDER BY c.name ASC")->fetchAll();
+    $categories = $pdo->query("SELECT c.*, p.name as parent_name, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c LEFT JOIN categories p ON c.parent_id = p.id ORDER BY COALESCE(p.name, c.name), c.parent_id IS NOT NULL, c.name ASC")->fetchAll();
 } catch(Exception $e) {}
 ?>
 
@@ -102,6 +116,21 @@ try {
                 <div style="margin-bottom:1.25rem;">
                     <label class="admin-label">Category Name</label>
                     <input type="text" name="cat_name" required class="admin-input" placeholder="e.g. Kitchen Sinks" value="<?php echo htmlspecialchars($editCat['name'] ?? ''); ?>">
+                </div>
+
+                <div style="margin-bottom:1.25rem;">
+                    <label class="admin-label">Parent Category (Optional)</label>
+                    <select name="parent_id" class="admin-input">
+                        <option value="">-- Main Category (No Parent) --</option>
+                        <?php foreach($categories as $c): 
+                            if ($c['parent_id'] !== null) continue; // Only show main categories as potential parents
+                            if (isset($editCat) && $c['id'] == $editCat['id']) continue; // Cannot be own parent
+                        ?>
+                        <option value="<?php echo $c['id']; ?>" <?php echo (isset($editCat) && $editCat['parent_id'] == $c['id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($c['name']); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <div style="margin-bottom:1.5rem;">
@@ -141,7 +170,7 @@ try {
                     <tr>
                         <th>#</th>
                         <th>Name</th>
-                        <th>Slug</th>
+                        <th>Type / Parent</th>
                         <th>Products</th>
                         <th style="text-align:right;">Actions</th>
                     </tr>
@@ -154,28 +183,37 @@ try {
                     <tr>
                         <td style="color:#d1d5db; font-weight:700;"><?php echo $i+1; ?></td>
                         <td>
-                            <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <div style="display:flex; align-items:center; gap:0.75rem; <?php echo $c['parent_id'] ? 'padding-left:1.5rem;' : ''; ?>">
                                 <?php 
                                 $catImg = !empty($c['hero_image']) ? '../' . $c['hero_image'] : null;
                                 ?>
                                 <?php if ($catImg): ?>
                                     <img src="<?php echo htmlspecialchars($catImg); ?>" 
-                                         style="width:48px; height:48px; border-radius:50%; object-fit: cover; background:#f8fafc; border:1px solid #f1f5f9;"
+                                         style="width:<?php echo $c['parent_id'] ? '36px' : '48px'; ?>; height:<?php echo $c['parent_id'] ? '36px' : '48px'; ?>; border-radius:50%; object-fit: cover; background:#f8fafc; border:1px solid #f1f5f9;"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <?php endif; ?>
-                                <div class="thumbnail-fallback" style="display: <?php echo $catImg ? 'none' : 'flex'; ?>; width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, #f8fafc, #f1f5f9); border:1px solid #e2e8f0; align-items:center; justify-center; flex-shrink:0;">
+                                <div class="thumbnail-fallback" style="display: <?php echo $catImg ? 'none' : 'flex'; ?>; width:<?php echo $c['parent_id'] ? '36px' : '48px'; ?>; height:<?php echo $c['parent_id'] ? '36px' : '48px'; ?>; border-radius:50%; background:linear-gradient(135deg, #f8fafc, #f1f5f9); border:1px solid #e2e8f0; align-items:center; justify-center; flex-shrink:0;">
                                     <i class="ph ph-folder text-slate-400 text-lg" style="margin:auto;"></i>
                                 </div>
                                 <div style="min-width:0;">
-                                    <div style="font-weight:800; color:#111827;"><?php echo htmlspecialchars($c['name']); ?></div>
-                                    <div style="font-family:monospace; font-size:0.6875rem; color:#9ca3af; margin-top:2px;">/<?php echo $c['slug']; ?></div>
+                                    <div style="font-weight:800; color:#111827; font-size:<?php echo $c['parent_id'] ? '0.8125rem' : '0.9375rem'; ?>;"><?php echo htmlspecialchars($c['name']); ?></div>
+                                    <div style="font-family:monospace; font-size:0.625rem; color:#9ca3af; margin-top:1px;">/<?php echo $c['slug']; ?></div>
                                 </div>
                             </div>
                         </td>
                         <td>
+                            <?php if ($c['parent_id']): ?>
+                                <span style="font-size:0.6875rem; font-weight:800; color:#6b7280; background:#f3f4f6; padding:0.2rem 0.6rem; border-radius:6px; border:1px solid #e5e7eb;">
+                                    <i class="ph ph-arrow-bend-down-right"></i> <?php echo htmlspecialchars($c['parent_name']); ?>
+                                </span>
+                            <?php else: ?>
+                                <span style="font-size:0.6875rem; font-weight:800; color:#ef233c; background:rgba(239,35,60,0.05); padding:0.2rem 0.6rem; border-radius:6px; border:1px solid rgba(239,35,60,0.1);">MAIN</span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
                             <div style="display:flex; align-items:center; gap:0.5rem;">
-                                <span style="font-weight:700; color:#ef233c;"><?php echo $c['product_count']; ?></span>
-                                <span style="font-size:0.6875rem; color:#9ca3af; font-weight:600;">Items</span>
+                                <span style="font-weight:700; color:#ef233c; font-size:0.875rem;"><?php echo $c['product_count']; ?></span>
+                                <span style="font-size:0.625rem; color:#9ca3af; font-weight:700; text-transform:uppercase;">Items</span>
                             </div>
                         </td>
                         <td style="text-align:right;">
