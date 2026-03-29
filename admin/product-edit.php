@@ -340,18 +340,20 @@ include_once __DIR__ . '/includes/header.php';
                                 <option value="">Select Category</option>
                                 <?php 
                                 // Group categories by parent
-                                $mainCats = array_filter($categories, fn($c) => is_null($c['parent_id']));
-                                foreach($mainCats as $cat): ?>
-                                    <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($cat['name']); ?>
-                                    </option>
-                                    <?php 
-                                    $subCats = array_filter($categories, fn($c) => $c['parent_id'] == $cat['id']);
-                                    foreach($subCats as $sub): ?>
-                                        <option value="<?php echo $sub['id']; ?>" <?php echo ($product['category_id'] ?? '') == $sub['id'] ? 'selected' : ''; ?>>
-                                            &nbsp;&nbsp;&nbsp;↳ <?php echo htmlspecialchars($sub['name']); ?>
+                                $mainCats = array_filter($categories, fn($c) => empty($c['parent_id']));
+                                foreach($mainCats as $cat): 
+                                    $subCats = array_filter($categories, fn($c) => ($c['parent_id'] ?? 0) == $cat['id']);
+                                ?>
+                                    <optgroup label="<?php echo htmlspecialchars($cat['name']); ?>">
+                                        <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
+                                            Main: <?php echo htmlspecialchars($cat['name']); ?>
                                         </option>
-                                    <?php endforeach; ?>
+                                        <?php foreach($subCats as $sub): ?>
+                                            <option value="<?php echo $sub['id']; ?>" <?php echo ($product['category_id'] ?? '') == $sub['id'] ? 'selected' : ''; ?>>
+                                                &nbsp;&nbsp;&nbsp;↳ <?php echo htmlspecialchars($sub['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
                                 <?php endforeach; ?>
                             </select>
                         </div>
