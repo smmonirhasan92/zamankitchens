@@ -57,10 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
 if (isset($_GET['delete'])) {
     $del_id = $_GET['delete'];
     try {
-        // DB handles this via: ON DELETE SET NULL for products
-        // and recursive deletion isn't enforced if we just want to remove the parent.
-        // However, caution: sub-categories will have parent_id=NULL.
+        // 1. Dissociate products (set to NULL)
+        $pdo->prepare("UPDATE products SET category_id = NULL WHERE category_id = ?")->execute([$del_id]);
+        
+        // 2. Dissociate sub-categories (make them main categories)
+        $pdo->prepare("UPDATE categories SET parent_id = NULL WHERE parent_id = ?")->execute([$del_id]);
 
+        // 3. Now delete the category
         $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$del_id]);
         header("Location: categories.php?msg=" . urlencode("Category deleted successfully!"));
     } catch (PDOException $e) {
