@@ -410,6 +410,7 @@ include_once __DIR__ . '/includes/header.php';
     </form>
 </div>
 
+<script>
 function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
