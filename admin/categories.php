@@ -57,21 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
 if (isset($_GET['delete'])) {
     $del_id = $_GET['delete'];
     try {
-        // 1. Check for sub-categories
-        $checkSub = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE parent_id = ?");
-        $checkSub->execute([$del_id]);
-        if ($checkSub->fetchColumn() > 0) {
-            header("Location: categories.php?error=" . urlencode("Cannot delete: This category has sub-categories. Please delete or move them first."));
-            exit();
-        }
-
-        // 2. Check for products
-        $checkProd = $pdo->prepare("SELECT COUNT(*) FROM products WHERE category_id = ?");
-        $checkProd->execute([$del_id]);
-        if ($checkProd->fetchColumn() > 0) {
-            header("Location: categories.php?error=" . urlencode("Cannot delete: This category contains products. Please move or delete the products first."));
-            exit();
-        }
+        // DB handles this via: ON DELETE SET NULL for products
+        // and recursive deletion isn't enforced if we just want to remove the parent.
+        // However, caution: sub-categories will have parent_id=NULL.
 
         $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$del_id]);
         header("Location: categories.php?msg=" . urlencode("Category deleted successfully!"));

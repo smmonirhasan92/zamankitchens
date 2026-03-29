@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/db.php';
 header('Content-Type: application/json');
 
 // Only allow logged in admins
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (!isset($_SESSION['admin_id'])) {
     http_response_code(403);
     echo json_encode(['error' => 'Unauthorized']);
