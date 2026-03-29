@@ -1,5 +1,4 @@
 <?php
-ob_start();
 /**
  * Zaman Kitchens - Pro Product Management (Add/Edit)
  * Features: Variations, Meta Data, Gallery, Specs

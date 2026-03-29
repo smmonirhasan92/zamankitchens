@@ -1,4 +1,5 @@
 <?php
+ob_start();
 $adminTitle = 'Dashboard';
 include_once __DIR__ . '/includes/header.php';
 

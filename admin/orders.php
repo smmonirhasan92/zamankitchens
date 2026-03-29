@@ -1,5 +1,4 @@
 <?php
-ob_start();
 require_once __DIR__ . '/../includes/db.php';
 
 $allowed = ['Pending', 'Processing', 'Delivered', 'Cancelled'];
