@@ -48,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $meta_title = $_POST['meta_title'] ?? '';
     $meta_description = $_POST['meta_description'] ?? '';
     $barcode = trim($_POST['barcode'] ?? '');
+    if (empty($barcode)) $barcode = null;
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
     // (Pharma fields removed — not applicable for kitchen appliances)
