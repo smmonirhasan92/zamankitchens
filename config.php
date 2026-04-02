@@ -35,7 +35,7 @@ if ($isLocalEnv) {
 } else {
     // cPanel Live Server
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'zamankitchens_zamankitchens_db');
+    define('DB_NAME', 'zamankitchens_db');
     define('DB_USER', 'zamankitchens_admin');
     define('DB_PASS', 'Sir@@@admin123'); // Change this after first deploy
 }
