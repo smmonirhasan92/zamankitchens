@@ -16,9 +16,31 @@ if ($slug) {
         $category = $stmt->fetch();
 
         if ($category) {
-            $stmt = $pdo->prepare("SELECT * FROM products WHERE category_id = ? ORDER BY is_featured DESC, created_at DESC");
+            // Find sub-categories if any
+            $stmt = $pdo->prepare("SELECT * FROM categories WHERE parent_id = ?");
             $stmt->execute([$category['id']]);
+            $sub_categories = $stmt->fetchAll();
+            
+            // Collect all category IDs to fetch products from (this category + sub-categories)
+            $cat_ids = [$category['id']];
+            foreach ($sub_categories as $sub) {
+                $cat_ids[] = $sub['id'];
+            }
+            
+            // Build the query with placeholders
+            $placeholders = implode(',', array_fill(0, count($cat_ids), '?'));
+            $sql = "SELECT * FROM products WHERE category_id IN ($placeholders) ORDER BY is_featured DESC, created_at DESC";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($cat_ids);
             $products = $stmt->fetchAll();
+            
+            // Fetch parent if current is a sub-category
+            $parent_category = null;
+            if ($category['parent_id']) {
+                $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
+                $stmt->execute([$category['parent_id']]);
+                $parent_category = $stmt->fetch();
+            }
         }
     } catch(Exception $e) {}
 }
@@ -37,16 +59,29 @@ include_once __DIR__ . '/includes/header.php';
     <?php if (!empty($category['hero_image'])): ?>
     <img src="<?php echo htmlspecialchars($category['hero_image']); ?>" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="">
     <?php endif; ?>
-    <div class="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center text-center">
-        <div>
-            <nav class="text-gray-400 text-sm mb-4 flex items-center gap-2 justify-center">
-                <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-400">Home</a>
+    <div class="relative z-10 container mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
+        <nav class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-6 flex items-center gap-2 justify-center">
+            <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-400">Home</a>
+            <span>/</span>
+            <?php if ($parent_category): ?>
+                <a href="<?php echo SITE_URL; ?>/category/<?php echo $parent_category['slug']; ?>" class="hover:text-amber-400"><?php echo htmlspecialchars($parent_category['name']); ?></a>
                 <span>/</span>
-                <span class="text-white font-medium"><?php echo htmlspecialchars($category['name']); ?></span>
-            </nav>
-            <h1 class="text-4xl font-extrabold text-white mb-2"><?php echo htmlspecialchars($category['name']); ?></h1>
-            <p class="text-gray-300"><?php echo count($products); ?> products available</p>
+            <?php endif; ?>
+            <span class="text-white"><?php echo htmlspecialchars($category['name']); ?></span>
+        </nav>
+        <h1 class="text-3xl md:text-5xl font-black text-white mb-4 uppercase tracking-tighter"><?php echo htmlspecialchars($category['name']); ?></h1>
+        <p class="text-sky-100/60 font-medium tracking-wide"><?php echo count($products); ?> Products available in this category</p>
+        
+        <?php if (!empty($sub_categories)): ?>
+        <div class="flex flex-wrap justify-center gap-3 mt-8">
+            <?php foreach ($sub_categories as $sub): ?>
+                <a href="<?php echo SITE_URL; ?>/category/<?php echo $sub['slug']; ?>" 
+                   class="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white text-[10px] font-black uppercase tracking-widest px-6 py-2.5 rounded-full transition-all">
+                    <?php echo htmlspecialchars($sub['name']); ?>
+                </a>
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </div>
 </div>
 

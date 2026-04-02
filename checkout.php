@@ -185,7 +185,7 @@ include_once __DIR__ . '/includes/header.php';
                 ✅ Confirm Order — Cash on Delivery
             </button>
 
-            <p class="text-center text-xs text-gray-400">By ordering, you agree to our <a href="#" class="underline">terms</a>. Need help? <a href="https://wa.me/8801700000000" class="text-green-600 font-medium">Chat on WhatsApp</a></p>
+            <p class="text-center text-xs text-gray-400">By ordering, you agree to our <a href="terms.php" class="underline">terms</a>. Need help? <a href="https://wa.me/<?php echo SITE_WHATSAPP; ?>" class="text-green-600 font-medium">Chat on WhatsApp</a></p>
         </form>
     </div>
 </div>

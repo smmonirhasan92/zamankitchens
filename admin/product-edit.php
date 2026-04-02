@@ -50,13 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $barcode = trim($_POST['barcode'] ?? '');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
-    $product_type = 'physical';
-    $generic_id = null;
-    $dosage_form = '';
-    $strength = '';
-    $registration_number = '';
-    $expiry_date = !empty($_POST['expiry_date']) ? $_POST['expiry_date'] : null;
-    $batch_number = $_POST['batch_number'] ?? '';
+    // (Pharma fields removed — not applicable for kitchen appliances)
     
     // Process Variations
     $var_names = $_POST['var_name'] ?? [];
@@ -105,15 +99,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                // Try 'main_image' first, then fallback to 'image' if needed (for legacy schema)
-                $sql = "UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ?, product_type = ?, generic_id = ?, dosage_form = ?, strength = ?, registration_number = ?, expiry_date = ?, batch_number = ? WHERE id = ?";
+                $sql = "UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $product_type, $generic_id, $dosage_form, $strength, $registration_number, $expiry_date, $batch_number, $id]);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $id]);
                 $message = "Product updated successfully!";
             } else {
-                $sql = "INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_qty, stock_status, main_image, meta_title, meta_description, variations, specifications, is_featured, barcode, product_type, generic_id, dosage_form, strength, registration_number, expiry_date, batch_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_qty, stock_status, main_image, meta_title, meta_description, variations, specifications, is_featured, barcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $product_type, $generic_id, $dosage_form, $strength, $registration_number, $expiry_date, $batch_number]);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -331,31 +324,107 @@ include_once __DIR__ . '/includes/header.php';
                             </div>
                         </div>
 
-                        <input type="hidden" name="product_type" value="physical">
+
 
                         <div>
-                            <label class="admin-label">Category</label>
-                            <select name="category_id" class="admin-input font-bold">
-                                <option value="">Select Category</option>
-                                <?php 
-                                // Group categories by parent
-                                $mainCats = array_filter($categories, fn($c) => empty($c['parent_id']));
-                                foreach($mainCats as $cat): 
-                                    $subCats = array_filter($categories, fn($c) => ($c['parent_id'] ?? 0) == $cat['id']);
-                                ?>
-                                    <optgroup label="<?php echo htmlspecialchars($cat['name']); ?>">
-                                        <option value="<?php echo $cat['id']; ?>" <?php echo ($product['category_id'] ?? '') == $cat['id'] ? 'selected' : ''; ?>>
-                                            Main: <?php echo htmlspecialchars($cat['name']); ?>
-                                        </option>
-                                        <?php foreach($subCats as $sub): ?>
-                                            <option value="<?php echo $sub['id']; ?>" <?php echo ($product['category_id'] ?? '') == $sub['id'] ? 'selected' : ''; ?>>
-                                                &nbsp;&nbsp;&nbsp;↳ <?php echo htmlspecialchars($sub['name']); ?>
+                            <?php 
+                            // Prepare category hierarchy
+                            $mainCats = array_filter($categories, fn($c) => empty($c['parent_id']));
+                            $subCats = array_filter($categories, fn($c) => !empty($c['parent_id']));
+                            
+                            $current_main_id = null;
+                            if (!empty($product['category_id'])) {
+                                foreach($categories as $c) {
+                                    if($c['id'] == $product['category_id']) {
+                                        $current_main_id = $c['parent_id'] ?: $c['id'];
+                                        break;
+                                    }
+                                }
+                            }
+                            ?>
+                            <label class="admin-label">Product Category</label>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Main Category Selection -->
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Main Category</label>
+                                    <select id="main_category_select" onchange="updateSubCategories()" class="admin-input font-bold bg-slate-50 border-slate-200">
+                                        <option value="">Select Main Category</option>
+                                        <?php foreach($mainCats as $cat): ?>
+                                            <option value="<?php echo $cat['id']; ?>" <?php echo ($current_main_id == $cat['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($cat['name']); ?>
                                             </option>
                                         <?php endforeach; ?>
-                                    </optgroup>
-                                <?php endforeach; ?>
-                            </select>
+                                    </select>
+                                </div>
+
+                                <!-- Sub-category Selection -->
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Sub-category (Optional)</label>
+                                    <select id="sub_category_select" onchange="syncFinalCategory()" class="admin-input font-bold">
+                                        <option value="">No Sub-category</option>
+                                        <?php foreach($subCats as $sub): ?>
+                                            <option value="<?php echo $sub['id']; ?>" data-parent="<?php echo $sub['parent_id']; ?>" 
+                                                    <?php echo (($product['category_id'] ?? null) == $sub['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($sub['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- This is the actual value that will be submitted to PHP -->
+                            <input type="hidden" name="category_id" id="final_category_id" value="<?php echo $product['category_id'] ?? ''; ?>">
                         </div>
+
+                        <script>
+                        function updateSubCategories() {
+                            const mainId = document.getElementById('main_category_select').value;
+                            const subSelect = document.getElementById('sub_category_select');
+                            
+                            // Reset sub-category select
+                            subSelect.value = "";
+                            
+                            // Filter sub-categories based on data-parent attribute
+                            let hasSub = false;
+                            Array.from(subSelect.options).forEach(opt => {
+                                if (opt.value === "") {
+                                    opt.hidden = false;
+                                } else if (opt.dataset.parent == mainId) {
+                                    opt.hidden = false;
+                                    hasSub = true;
+                                } else {
+                                    opt.hidden = true;
+                                }
+                            });
+                            
+                            syncFinalCategory();
+                        }
+
+                        function syncFinalCategory() {
+                            const mainId = document.getElementById('main_category_select').value;
+                            const subId = document.getElementById('sub_category_select').value;
+                            const finalInput = document.getElementById('final_category_id');
+                            
+                            // If sub-category is selected, use it, otherwise use main category
+                            finalInput.value = subId || mainId;
+                        }
+
+                        // Initialize sub-categories on page load
+                        window.addEventListener('DOMContentLoaded', () => {
+                            if (document.getElementById('main_category_select').value) {
+                                const mainId = document.getElementById('main_category_select').value;
+                                const subSelect = document.getElementById('sub_category_select');
+                                const currentSubId = "<?php echo $product['category_id'] ?? ''; ?>";
+                                
+                                Array.from(subSelect.options).forEach(opt => {
+                                    if (opt.value !== "" && opt.dataset.parent != mainId) {
+                                        opt.hidden = true;
+                                    }
+                                });
+                            }
+                        });
+                        </script>
                         <div>
                             <label class="admin-label">Sale Price (৳)</label>
                             <input type="number" name="price" value="<?php echo $product['price'] ?? 0; ?>" class="admin-input font-black text-emerald-600 bg-emerald-50/30">
@@ -387,7 +456,7 @@ include_once __DIR__ . '/includes/header.php';
                 <div class="admin-card-body">
                     <div class="border-2 border-dashed border-slate-100 rounded-2xl p-4 text-center">
                         <?php 
-                        $previewImg = !empty($product['image']) ? '../' . $product['image'] : null;
+                        $previewImg = !empty($product['image'] ?? null) ? '../' . $product['image'] : null;
                         ?>
                         <?php if ($previewImg): ?>
                             <img id="image-preview" src="<?php echo $previewImg; ?>" class="w-full h-48 object-contain rounded-xl mb-4 bg-slate-50"

@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../includes/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: ../admin/index.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -221,9 +221,12 @@ try {
             width: 100%; padding: 0.625rem 0.875rem; border-radius: 8px;
             border: 1.5px solid #e5e7eb; font-size: 0.875rem;
             color: #111827; background: white; transition: border-color 0.2s;
-            font-family: 'Inter', sans-serif; outline: none;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif !important; 
+            outline: none; -webkit-appearance: none; appearance: none;
         }
         .admin-input:focus { border-color: #ef233c; box-shadow: 0 0 0 3px rgba(239,35,60,0.1); }
+        select.admin-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; padding-right: 2.5rem; }
+        .admin-input option { font-family: 'Inter', sans-serif !important; color: #111827; background: white; }
         .admin-label { font-size: 0.75rem; font-weight: 700; color: #374151; margin-bottom: 0.375rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
         
         /* Charts */

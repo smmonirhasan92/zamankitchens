@@ -34,19 +34,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cat_name'])) {
         try {
             if (!empty($cat_id)) {
                 $pdo->prepare("UPDATE categories SET name=?, slug=?, hero_image=?, parent_id=? WHERE id=?")->execute([$name, $slug, $hero_image, $parent_id, $cat_id]);
-                $msg = "Category updated successfully!";
+                $msg = "success_update";
             } else {
                 $pdo->prepare("INSERT INTO categories (name, slug, hero_image, parent_id) VALUES (?, ?, ?, ?)")->execute([$name, $slug, $hero_image, $parent_id]);
-                $msg = "Category added successfully!";
+                $msg = "success_add";
             }
             if (!empty($error)) {
-                header("Location: categories.php?error=" . urlencode($error));
+                header("Location: categories.php?error=upload_fail");
             } else {
-                header("Location: categories.php?msg=" . urlencode($msg));
+                header("Location: categories.php?msg=" . $msg);
             }
             exit();
         } catch(Exception $e) {
-            header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
+            $errCode = "db_error";
+            if (str_contains($e->getMessage(), '1062')) {
+                $errCode = "duplicate";
+            }
+            header("Location: categories.php?error=" . $errCode);
             exit();
         }
     }
@@ -64,9 +68,9 @@ if (isset($_GET['delete'])) {
 
         // 3. Now delete the category
         $pdo->prepare("DELETE FROM categories WHERE id=?")->execute([$del_id]);
-        header("Location: categories.php?msg=" . urlencode("Category deleted successfully!"));
+        header("Location: categories.php?msg=success_delete");
     } catch (PDOException $e) {
-        header("Location: categories.php?error=" . urlencode("Database error: " . $e->getMessage()));
+        header("Location: categories.php?error=db_error");
     }
     exit();
 }
@@ -75,16 +79,33 @@ $adminTitle = 'Categories';
 include_once __DIR__ . '/includes/header.php';
 
 $categories = [];
-$msg = $_GET['msg'] ?? '';
-$error = $_GET['error'] ?? '';
+$msgCode = $_GET['msg'] ?? '';
+$errorCode = $_GET['error'] ?? '';
+
+// Message Mapping
+$messages = [
+    'success_add' => 'বিভাগটি সফলভাবে যুক্ত হয়েছে। (Category added successfully!)',
+    'success_update' => 'বিভাগটি সফলভাবে আপডেট হয়েছে। (Category updated successfully!)',
+    'success_delete' => 'বিভাগটি সফলভাবে মুছে ফেলা হয়েছে। (Category deleted successfully!)'
+];
+
+$errors = [
+    'duplicate' => 'এই নামের একটি বিভাগ ইতিমধ্যে বিদ্যমান। অন্য একটি নাম চেষ্টা করুন। (This category name already exists. Please try another.)',
+    'upload_fail' => 'ছবি আপলোড করতে সমস্যা হয়েছে। (Image upload failed.)',
+    'db_error' => 'ডাটাবেস ত্রুটি হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন। (Database error occurred. Please try again.)'
+];
+
+$msg = $messages[$msgCode] ?? '';
+$error = $errors[$errorCode] ?? '';
+
 try {
     $categories = $pdo->query("SELECT c.*, p.name as parent_name, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c LEFT JOIN categories p ON c.parent_id = p.id ORDER BY COALESCE(p.name, c.name), c.parent_id IS NOT NULL, c.name ASC")->fetchAll();
 } catch(Exception $e) {}
 ?>
 
 <div class="max-w-7xl mx-auto">
-    <?php if($msg): ?> <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl mb-6 font-bold border border-emerald-100 flex items-center gap-3"><i class="ph ph-check-circle text-xl"></i> <?php echo htmlspecialchars($msg); ?></div> <?php endif; ?>
-    <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-4 rounded-2xl mb-6 font-bold border border-rose-100 flex items-center gap-3"><i class="ph ph-warning-circle text-xl"></i> <?php echo htmlspecialchars($error); ?></div> <?php endif; ?>
+    <?php if($msg): ?> <div class="bg-emerald-50 text-emerald-700 p-4 rounded-2xl mb-6 font-bold border border-emerald-100 flex items-center gap-3"><i class="ph ph-check-circle text-xl"></i> <?php echo $msg; ?></div> <?php endif; ?>
+    <?php if($error): ?> <div class="bg-rose-50 text-rose-700 p-4 rounded-2xl mb-6 font-bold border border-rose-100 flex items-center gap-3"><i class="ph ph-warning-circle text-xl"></i> <?php echo $error; ?></div> <?php endif; ?>
 
 <div style="display:grid; grid-template-columns: 1fr 2fr; gap:1.5rem; align-items: start;">
     <!-- Add/Edit Form -->

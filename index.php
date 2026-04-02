@@ -12,22 +12,30 @@ try {
     $slides = $pdo->query("SELECT * FROM hero_slides WHERE is_active = 1 ORDER BY order_index ASC")->fetchAll();
 } catch(Exception $e) {}
 
-// Fetch 8-12 Categories for Grid
+// Fetch 8-12 Main Categories for Circular Grid
 $gridCats = [];
 try {
-    $gridCats = $pdo->query("SELECT * FROM categories ORDER BY id ASC LIMIT 11")->fetchAll();
+    $gridCats = $pdo->query("SELECT * FROM categories WHERE parent_id IS NULL ORDER BY name ASC LIMIT 12")->fetchAll();
 } catch(Exception $e) {}
 
 // Fetch top 4-5 categories that have products to show as rows
 $categoryRows = [];
 try {
-    // Get categories that have products
-    $catsWithProducts = $pdo->query("SELECT c.* FROM categories c WHERE (SELECT COUNT(*) FROM products WHERE category_id = c.id) > 0 LIMIT 6")->fetchAll();
+    // Get main categories that have products (either directly or in sub-cats)
+    $mainCats = $pdo->query("SELECT * FROM categories WHERE parent_id IS NULL LIMIT 6")->fetchAll();
     
-    foreach ($catsWithProducts as $cat) {
-        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.hero_image AS cat_banner FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE c.id = ? ORDER BY p.created_at DESC LIMIT 4");
+    foreach ($mainCats as $cat) {
+        // Find sub-category IDs
+        $stmt = $pdo->prepare("SELECT id FROM categories WHERE parent_id = ?");
         $stmt->execute([$cat['id']]);
+        $subIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $allIds = array_merge([$cat['id']], $subIds);
+        $placeholders = implode(',', array_fill(0, count($allIds), '?'));
+
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.hero_image AS cat_banner FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.category_id IN ($placeholders) ORDER BY p.is_featured DESC, p.created_at DESC LIMIT 4");
+        $stmt->execute($allIds);
         $rows = $stmt->fetchAll();
+        
         if (!empty($rows)) {
             $categoryRows[$cat['slug']] = [
                 'name' => $cat['name'],
@@ -46,7 +54,7 @@ try {
     .heroSwiper { width: 100%; height: auto; }
     .hero-slide { position: relative; width: 100%; aspect-ratio: 1920/600; overflow: hidden; }
     @media (max-width: 768px) { .hero-slide { aspect-ratio: 16/9; } }
-    .hero-slide img { width: 100%; h-full; object-fit: cover; }
+    .hero-slide img { width: 100%; height: 100%; object-fit: cover; }
     .swiper-button-next, .swiper-button-prev { color: #d80032 !important; background: white; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
     .swiper-pagination-bullet-active { background: #d80032 !important; }
@@ -206,7 +214,7 @@ try {
         </div>
 
         <div class="text-center mt-12">
-            <a href="search.php" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
+            <a href="shop" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
                 SEE ALL PRODUCTS
                 <i class="ph-bold ph-arrow-right"></i>
             </a>

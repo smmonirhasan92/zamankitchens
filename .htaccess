@@ -1,17 +1,65 @@
 Options -Indexes
 RewriteEngine On
-RewriteBase /
+# RewriteBase /zamankitchen/  <-- COMMENT THIS OUT ON LIVE SITE IF IT IS IN THE ROOT
 
-# Prevent direct access to includes folder
+# ============================================================
+# SECURITY: Block direct access to sensitive debug/fix files
+# ============================================================
+RewriteRule ^(test_debug|inspect|inspect_products|fix_admin|fix_db|fix_git|fix_orders_status|force_sync|repair_system|run_updates|reset_admin|db_fix_columns|db_update_schema|setup_db|pro_deploy|deploy|oce_bridge|foundation_setup|composer_fix)\.php$ - [F,L]
+
+# Block includes folder direct access
 RewriteRule ^includes/ - [F,L]
+RewriteRule ^oce_temp/ - [F,L]
+RewriteRule ^legacy/ - [F,L]
 
+# Block sensitive file types
+<FilesMatch "\.(sql|env|log|yml|json|lock|md|gitignore|gitattributes|editorconfig)$">
+    Require all denied
+</FilesMatch>
+
+# Allow specific JSON files (package.json not needed publicly anyway)
+# Allow composer.json read by Composer only — blocked for browser
+
+# ============================================================
+# CLEAN URL ROUTES
+# ============================================================
 # Skip real files and directories
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Clean URL Routes
-RewriteRule ^category/([^/]+)/?$ category.php?slug=$1 [QSA,L]
-RewriteRule ^product/([^/]+)/?$ product.php?slug=$1 [QSA,L]
-RewriteRule ^search/?$ search.php [QSA,L]
-RewriteRule ^admin/?$ admin/index.php [L]
-RewriteRule ^order-success/?$ order-success.php [QSA,L]
+# Core Routes
+RewriteRule ^category/([^/]+)/?$   category.php?slug=$1  [QSA,L]
+RewriteRule ^product/([^/]+)/?$    product.php?slug=$1   [QSA,L]
+RewriteRule ^shop/?$               shop.php               [QSA,L]
+RewriteRule ^search/?$             shop.php               [QSA,L]
+RewriteRule ^cart/?$               cart.php               [QSA,L]
+RewriteRule ^checkout/?$           checkout.php           [QSA,L]
+RewriteRule ^wishlist/?$           wishlist.php           [QSA,L]
+RewriteRule ^order-success/?$      order-success.php      [QSA,L]
+RewriteRule ^login/?$              login.php              [QSA,L]
+RewriteRule ^register/?$           register.php           [QSA,L]
+RewriteRule ^profile/?$            profile.php            [QSA,L]
+RewriteRule ^privacy/?$            privacy.php            [QSA,L]
+RewriteRule ^terms/?$              terms.php              [QSA,L]
+RewriteRule ^admin/?$              admin/index.php        [L]
+
+# ============================================================
+# PERFORMANCE HEADERS
+# ============================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-font-woff "access plus 1 year"
+</IfModule>
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain text/xml application/json
+</IfModule>

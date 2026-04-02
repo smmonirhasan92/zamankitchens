@@ -47,7 +47,7 @@ try {
 // Top products by order count
 $topProducts = [];
 try {
-    $topProducts = $pdo->query("SELECT p.name, p.image, COUNT(oi.id) as order_count, SUM(oi.price * oi.quantity) as revenue FROM order_items oi JOIN products p ON oi.product_id=p.id GROUP BY oi.product_id ORDER BY order_count DESC LIMIT 5")->fetchAll();
+    $topProducts = $pdo->query("SELECT p.name, p.main_image as image, COUNT(oi.id) as order_count, SUM(oi.price * oi.quantity) as revenue FROM order_items oi JOIN products p ON oi.product_id=p.id GROUP BY oi.product_id ORDER BY order_count DESC LIMIT 5")->fetchAll();
 } catch(Exception $e) {}
 ?>
 

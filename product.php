@@ -13,13 +13,21 @@ $slug = $_GET['slug'] ?? basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PAT
 
 if ($slug) {
     try {
-        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug FROM products p 
+        $stmt = $pdo->prepare("SELECT p.*, c.name AS cat_name, c.slug AS cat_slug, c.parent_id FROM products p 
                                LEFT JOIN categories c ON p.category_id = c.id 
                                WHERE p.slug = ?");
         $stmt->execute([$slug]);
         $product = $stmt->fetch();
 
         if ($product) {
+            // Fetch Parent Category if this is a sub-category
+            $parent_cat = null;
+            if (!empty($product['parent_id'])) {
+                $stmt = $pdo->prepare("SELECT name, slug FROM categories WHERE id = ?");
+                $stmt->execute([$product['parent_id']]);
+                $parent_cat = $stmt->fetch();
+            }
+
             // Suggested products (same category)
             $stmt = $pdo->prepare("SELECT * FROM products WHERE category_id = ? AND id != ? ORDER BY RAND() LIMIT 4");
             $stmt->execute([$product['category_id'], $product['id']]);
@@ -50,13 +58,16 @@ include_once __DIR__ . '/includes/header.php';
 <div class="container mx-auto px-4 py-8 max-w-6xl">
 
     <!-- Breadcrumb -->
-    <!-- Breadcrumb -->
-    <nav class="text-sm text-gray-400 mb-6 flex gap-2 items-center justify-center">
-        <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-600">Home</a>
+    <nav class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8 flex gap-2 items-center justify-center">
+        <a href="<?php echo SITE_URL; ?>" class="hover:text-red-600 transition">Home</a>
         <span>/</span>
-        <a href="<?php echo SITE_URL; ?>/category/<?php echo $product['cat_slug']; ?>" class="hover:text-amber-600"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></a>
+        <?php if ($parent_cat): ?>
+            <a href="<?php echo SITE_URL; ?>/category/<?php echo $parent_cat['slug']; ?>" class="hover:text-red-600 transition"><?php echo htmlspecialchars($parent_cat['name']); ?></a>
+            <span>/</span>
+        <?php endif; ?>
+        <a href="<?php echo SITE_URL; ?>/category/<?php echo $product['cat_slug']; ?>" class="hover:text-red-600 transition"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></a>
         <span>/</span>
-        <span class="text-gray-800 font-medium"><?php echo htmlspecialchars($product['name']); ?></span>
+        <span class="text-slate-900"><?php echo htmlspecialchars($product['name']); ?></span>
     </nav>
 
     <!-- Product Layout -->

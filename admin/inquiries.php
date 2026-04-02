@@ -1,4 +1,10 @@
 <?php
+require_once __DIR__ . '/../includes/db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $adminTitle = 'Inquiries';
 include_once __DIR__ . '/includes/header.php';
 

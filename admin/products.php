@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Handle Product Deletion
 if (isset($_GET['delete'])) {
     $pdo->prepare("DELETE FROM products WHERE id = ?")->execute([$_GET['delete']]);
@@ -13,8 +17,23 @@ include_once __DIR__ . '/includes/header.php';
 
 $products = [];
 try {
-    $products = $pdo->query("SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC")->fetchAll();
-} catch(Exception $e) {}
+    // Simplified query for maximum compatibility
+    $products = $pdo->query("SELECT * FROM products ORDER BY created_at DESC")->fetchAll();
+    
+    // Supplement category names manually to avoid JOIN issues if schema is inconsistent
+    foreach($products as &$p) {
+        $p['category_name'] = 'General';
+        if(!empty($p['category_id'])) {
+            $cStmt = $pdo->prepare("SELECT name FROM categories WHERE id = ?");
+            $cStmt->execute([$p['category_id']]);
+            $cName = $cStmt->fetchColumn();
+            if($cName) $p['category_name'] = $cName;
+        }
+        $p['display_image'] = !empty($p['main_image']) ? $p['main_image'] : ($p['image'] ?? null);
+    }
+} catch(Exception $e) {
+    $error = "Query Error: " . $e->getMessage();
+}
 ?>
 
 <div class="admin-card">
@@ -42,9 +61,7 @@ try {
                 <tr><td colspan="6" style="text-align:center; padding:3rem; color:#9ca3af;">No products found.</td></tr>
                 <?php endif; ?>
                 <?php foreach($products as $i => $p): 
-                    $img = !empty($p['image']) ? '../' . $p['image'] : (!empty($p['main_image']) ? '../' . $p['main_image'] : null);
-    // Remove duplicate '../' if already present
-    if ($img) $img = str_replace('../..', '..', $img);
+                    $img = !empty($p['display_image']) ? '../' . $p['display_image'] : null;
                 ?>
                 <tr>
                     <td style="color:#d1d5db; font-weight:800;"><?php echo $i+1; ?></td>

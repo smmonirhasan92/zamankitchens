@@ -4,6 +4,10 @@
  */
 require_once __DIR__ . '/../includes/db.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['admin_id'])) {
@@ -19,7 +23,8 @@ if (!$barcode) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT id, name, price, stock_status, image, barcode FROM products WHERE barcode = ?");
+    // Standardize: Look for main_image, fallback to image
+    $stmt = $pdo->prepare("SELECT id, name, price, stock_status, COALESCE(main_image, image) as image, barcode FROM products WHERE barcode = ?");
     $stmt->execute([$barcode]);
     $product = $stmt->fetch();
 
