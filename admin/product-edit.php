@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slug = trim($_POST['slug'] ?? '') ?: strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
     $category_id = $_POST['category_id'] ?? null;
     $price = $_POST['price'] ?? 0;
+    $old_price = $_POST['old_price'] ?? 0;
     $purchase_price = $_POST['purchase_price'] ?? 0;
     $stock_qty = (int)($_POST['stock_qty'] ?? 0);
     $stock_status = $_POST['stock_status'] ?? 'In Stock';
@@ -100,14 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($name) {
         try {
             if ($id) {
-                $sql = "UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ? WHERE id = ?";
+                $sql = "UPDATE products SET category_id = ?, name = ?, slug = ?, description = ?, price = ?, old_price = ?, purchase_price = ?, stock_qty = ?, stock_status = ?, main_image = ?, meta_title = ?, meta_description = ?, variations = ?, specifications = ?, is_featured = ?, barcode = ? WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $id]);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $old_price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode, $id]);
                 $message = "Product updated successfully!";
             } else {
-                $sql = "INSERT INTO products (category_id, name, slug, description, price, purchase_price, stock_qty, stock_status, main_image, meta_title, meta_description, variations, specifications, is_featured, barcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO products (category_id, name, slug, description, price, old_price, purchase_price, stock_qty, stock_status, main_image, meta_title, meta_description, variations, specifications, is_featured, barcode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $pdo->prepare($sql);
-                $stmt->execute([$category_id, $name, $slug, $description, $price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode]);
+                $stmt->execute([$category_id, $name, $slug, $description, $price, $old_price, $purchase_price, $stock_qty, $stock_status, $main_image, $meta_title, $meta_description, json_encode($variations), json_encode($specifications), $is_featured, $barcode]);
                 $id = $pdo->lastInsertId();
                 $message = "Product added successfully!";
             }
@@ -429,6 +430,11 @@ include_once __DIR__ . '/includes/header.php';
                         <div>
                             <label class="admin-label">Sale Price (৳)</label>
                             <input type="number" name="price" value="<?php echo $product['price'] ?? 0; ?>" class="admin-input font-black text-emerald-600 bg-emerald-50/30">
+                        </div>
+                        <div>
+                            <label class="admin-label">Original Price / MRP (৳)</label>
+                            <input type="number" step="0.01" name="old_price" value="<?php echo $product['old_price'] ?? 0; ?>" class="admin-input font-bold text-rose-500 bg-rose-50/20" placeholder="e.g. 200">
+                            <p class="text-[10px] text-slate-400 mt-1 italic">* Leave at 0 if no discount</p>
                         </div>
                         <div>
                             <label class="admin-label">Purchase Cost (৳)</label>

@@ -101,8 +101,46 @@
     </a>
 </div>
 
+<!-- Mobile Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-[100] flex items-center justify-around py-3 px-2 md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <a href="<?php echo SITE_URL; ?>" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-600 transition-colors">
+        <i class="ph ph-house text-xl"></i>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
+    </a>
+    <a href="#" onclick="document.getElementById('mobile-cats-trigger')?.click(); return false;" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-600 transition-colors">
+        <i class="ph ph-squares-four text-xl"></i>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Categories</span>
+    </a>
+    <a href="#" onclick="openCart(); return false;" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-600 transition-colors relative">
+        <i class="ph ph-shopping-cart text-xl"></i>
+        <span class="cart-count absolute -top-1 -right-1 bg-red-600 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-black">0</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">My Cart</span>
+    </a>
+    <a href="admin/" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-600 transition-colors">
+        <i class="ph ph-user text-xl"></i>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Account</span>
+    </a>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        footer { padding-bottom: 5rem !important; }
+        .fixed.bottom-6.right-6 { bottom: 6rem !important; }
+    }
+</style>
+
 <!-- Scripts -->
 <script>
+    function buyNow(item) {
+        // Add to cart and immediately redirect to checkout
+        if (typeof addToCart === 'function') {
+            addToCart(item);
+            setTimeout(() => {
+                window.location.href = 'checkout.php'; // Change to your checkout page URL
+            }, 500);
+        }
+    }
+
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', e => {

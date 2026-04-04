@@ -5,20 +5,28 @@
 $imgSrc = !empty($p['main_image']) ? $p['main_image'] : (!empty($p['image']) ? $p['image'] : '');
 $isOutOfStock = isset($p['stock_status']) && $p['stock_status'] === 'Out of Stock';
 ?>
-<?php
 $jsData = json_encode([
     'id'          => $p['id'],
     'name'        => $p['name'],
     'price'       => $p['price'],
+    'old_price'   => $p['old_price'] ?? 0,
     'image'       => $imgSrc,
     'description' => $p['description'] ?? 'Premium quality kitchen appliance.'
 ], JSON_HEX_APOS);
+
+$oldPrice = (float)($p['old_price'] ?? 0);
+$currentPrice = (float)$p['price'];
+$discountPercent = 0;
+if ($oldPrice > $currentPrice) {
+    $discountPercent = round((($oldPrice - $currentPrice) / $oldPrice) * 100);
+}
 ?>
-<style>
 .gazi-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .gazi-card:hover { border-color: rgba(216, 0, 50, 0.4); transform: translateY(-4px); }
-.gazi-card:hover .gazi-img { transform: scale(1.04); }
+.gazi-card:hover .gazi-img { transform: scale(1.08); }
 .gazi-img { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.btn-buy { background: #3f51b5; } /* Gazi style indigo/blue */
+.btn-cart { background: #f1f5f9; color: #475569; }
 </style>
 
 <div onclick='<?php echo $isOutOfStock ? "" : "openQuickView($jsData)"; ?>' 
@@ -32,6 +40,15 @@ $jsData = json_encode([
             <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
                 <i class="ph-bold ph-image text-3xl"></i>
             </div>
+        <?php endif; ?>
+
+        <!-- Discount Badge -->
+        <?php if ($discountPercent > 0): ?>
+        <div class="absolute top-2 left-2 z-20">
+            <span class="bg-red-600 text-white text-[10px] md:text-[11px] font-black px-2 py-1 rounded shadow-lg flex items-center gap-1">
+                -<?php echo $discountPercent; ?>%
+            </span>
+        </div>
         <?php endif; ?>
 
         <!-- Out of Stock Badge -->
@@ -57,8 +74,11 @@ $jsData = json_encode([
         </h3>
 
         <div class="mt-auto w-full flex flex-col items-center">
-            <div class="mb-4">
-                <span class="text-[14px] md:text-[18px] font-black text-red-600 tracking-tight">৳ <?php echo number_format($p['price']); ?></span>
+            <div class="flex flex-col items-center mb-4">
+                <?php if ($discountPercent > 0): ?>
+                    <span class="text-[10px] md:text-[12px] text-slate-400 line-through font-bold">৳ <?php echo number_format($oldPrice); ?></span>
+                <?php endif; ?>
+                <span class="text-[15px] md:text-[20px] font-black text-red-600 tracking-tight leading-none">৳ <?php echo number_format($currentPrice); ?></span>
             </div>
 
             <?php if ($isOutOfStock): ?>
@@ -67,10 +87,16 @@ $jsData = json_encode([
                 <i class="ph-bold ph-x-circle text-xs"></i> <span>Out of Stock</span>
             </button>
             <?php else: ?>
-            <button onclick="event.stopPropagation(); addToCart(<?php echo htmlspecialchars(json_encode(['id'=>$p['id'],'name'=>$p['name'],'price'=>$p['price'],'image'=>$imgSrc,'description'=>$p['description']??''])); ?>);"
-                class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 hover:bg-red-600 shadow-lg shadow-slate-900/10 hover:shadow-red-600/20 active:scale-95">
-                <i class="ph-bold ph-shopping-bag text-xs"></i> <span>Add to Bag</span>
-            </button>
+            <div class="grid grid-cols-2 gap-2 w-full">
+                <button onclick="event.stopPropagation(); buyNow(<?php echo htmlspecialchars($jsData); ?>);"
+                    class="btn-buy text-white font-bold text-[9px] md:text-[11px] py-3 rounded-lg uppercase tracking-tight transition-all active:scale-95 shadow-md">
+                    Buy Now
+                </button>
+                <button onclick="event.stopPropagation(); addToCart(<?php echo htmlspecialchars($jsData); ?>);"
+                    class="btn-cart font-bold text-[9px] md:text-[11px] py-3 rounded-lg uppercase tracking-tight transition-all active:scale-95 border border-slate-200 shadow-sm">
+                    Add to cart
+                </button>
+            </div>
             <?php endif; ?>
         </div>
     </div>

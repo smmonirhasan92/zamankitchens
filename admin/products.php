@@ -90,7 +90,14 @@ try {
                         </div>
                     </td>
                     <td><span style="font-size:0.75rem; font-weight:700; color:#4b5563; background:#f3f4f6; padding:0.25rem 0.625rem; border-radius:20px;"><?php echo htmlspecialchars($p['category_name'] ?: 'Uncategorized'); ?></span></td>
-                    <td style="font-weight:800; color:#111827;">৳ <?php echo number_format($p['price']); ?></td>
+                    <td style="font-weight:800; color:#111827;">
+                        <div class="flex flex-col">
+                            <?php if (($p['old_price'] ?? 0) > $p['price']): ?>
+                                <span class="text-[10px] text-slate-400 line-through">৳ <?php echo number_format($p['old_price']); ?></span>
+                            <?php endif; ?>
+                            <span class="text-emerald-600">৳ <?php echo number_format($p['price']); ?></span>
+                        </div>
+                    </td>
                     <td>
                         <?php if(!empty($p['barcode'])): ?>
                             <div style="font-family:'Courier New', monospace; font-size:10px; font-weight:700; background:#f9fafb; border:1px solid #e5e7eb; padding:2px 6px; border-radius:4px; display:inline-block; letter-spacing:1px;"><?php echo htmlspecialchars($p['barcode']); ?></div>
