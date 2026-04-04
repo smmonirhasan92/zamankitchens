@@ -31,6 +31,7 @@ try {
         }
         $p['display_image'] = !empty($p['main_image']) ? $p['main_image'] : ($p['image'] ?? null);
     }
+    unset($p);
 } catch(Exception $e) {
     $error = "Query Error: " . $e->getMessage();
 }
