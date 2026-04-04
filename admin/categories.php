@@ -99,7 +99,7 @@ $msg = $messages[$msgCode] ?? '';
 $error = $errors[$errorCode] ?? '';
 
 try {
-    $categories = $pdo->query("SELECT c.*, p.name as parent_name, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c LEFT JOIN categories p ON c.parent_id = p.id ORDER BY COALESCE(p.name, c.name), c.parent_id IS NOT NULL, c.name ASC")->fetchAll();
+    $categories = $pdo->query("SELECT c.*, p.name as parent_name, (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count FROM categories c LEFT JOIN categories p ON c.parent_id = p.id ORDER BY c.order_index ASC, COALESCE(p.name, c.name), c.parent_id IS NOT NULL, c.name ASC")->fetchAll();
 } catch(Exception $e) {}
 ?>
 
@@ -179,20 +179,22 @@ try {
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th style="width: 50px;"></th>
                         <th>Name</th>
                         <th>Type / Parent</th>
                         <th>Products</th>
                         <th style="text-align:right;">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="sortable-categories">
                     <?php if (empty($categories)): ?>
                     <tr><td colspan="5" style="text-align:center; padding:3rem; color:#9ca3af;">No categories yet.</td></tr>
                     <?php endif; ?>
                     <?php foreach($categories as $i => $c): ?>
-                    <tr>
-                        <td style="color:#d1d5db; font-weight:700;"><?php echo $i+1; ?></td>
+                    <tr data-id="<?php echo $c['id']; ?>">
+                        <td class="drag-handle cursor-move text-slate-400 hover:text-slate-800 transition text-center text-xl">
+                            <i class="ph ph-dots-six-vertical"></i>
+                        </td>
                         <td>
                             <div style="display:flex; align-items:center; gap:0.75rem; <?php echo $c['parent_id'] ? 'padding-left:1.5rem;' : ''; ?>">
                                 <?php 
@@ -243,5 +245,31 @@ try {
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const el = document.getElementById('sortable-categories');
+    if (el) {
+        new Sortable(el, {
+            animation: 150,
+            ghostClass: 'bg-slate-50',
+            handle: '.drag-handle',
+            onEnd: function () {
+                let orderData = [];
+                document.querySelectorAll('#sortable-categories tr[data-id]').forEach((row, index) => {
+                    orderData.push({ id: row.getAttribute('data-id'), order_index: index });
+                });
+                
+                fetch('../api/update_category_order.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                }).catch(err => console.error(err));
+            }
+        });
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

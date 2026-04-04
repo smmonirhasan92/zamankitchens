@@ -198,7 +198,7 @@ try {
 <section class="py-12 bg-slate-50 relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
         <div class="text-center mb-8">
-            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">All Products</h2>
+            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Recently Added</h2>
             <div class="h-1.5 w-16 bg-red-600 mx-auto rounded-full"></div>
         </div>
 

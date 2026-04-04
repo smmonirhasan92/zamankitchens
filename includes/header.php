@@ -33,6 +33,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="<?php echo SITE_URL; ?>/">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' | ' . SITE_NAME : SITE_NAME . ' - Premium Kitchen Accessories & Sinks'; ?></title>
     <meta name="description" content="<?php echo isset($pageDesc) ? $pageDesc : "Bangladesh's best kitchen accessories, sinks, hoods, and cabinets. Shop online with fast delivery."; ?>">
 
