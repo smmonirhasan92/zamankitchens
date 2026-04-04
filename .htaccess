@@ -1,6 +1,6 @@
 Options -Indexes
 RewriteEngine On
-# RewriteBase /zamankitchen/  <-- COMMENT THIS OUT ON LIVE SITE IF IT IS IN THE ROOT
+RewriteBase /zamankitchen/
 
 # ============================================================
 # SECURITY: Block direct access to sensitive debug/fix files

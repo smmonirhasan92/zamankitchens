@@ -58,15 +58,15 @@ include_once __DIR__ . '/includes/header.php';
 <div class="container mx-auto px-4 py-8 max-w-6xl">
 
     <!-- Breadcrumb -->
-    <nav class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8 flex gap-2 items-center justify-center">
+    <nav class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-8 flex flex-wrap gap-2 items-center md:justify-center">
         <a href="<?php echo SITE_URL; ?>" class="hover:text-red-600 transition">Home</a>
-        <span>/</span>
+        <i class="ph ph-caret-right text-[8px] opacity-30 mt-0.5"></i>
         <?php if ($parent_cat): ?>
             <a href="<?php echo SITE_URL; ?>/category/<?php echo $parent_cat['slug']; ?>" class="hover:text-red-600 transition"><?php echo htmlspecialchars($parent_cat['name']); ?></a>
-            <span>/</span>
+            <i class="ph ph-caret-right text-[8px] opacity-30 mt-0.5"></i>
         <?php endif; ?>
         <a href="<?php echo SITE_URL; ?>/category/<?php echo $product['cat_slug']; ?>" class="hover:text-red-600 transition"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></a>
-        <span>/</span>
+        <i class="ph ph-caret-right text-[8px] opacity-30 mt-0.5"></i>
         <span class="text-slate-900"><?php echo htmlspecialchars($product['name']); ?></span>
     </nav>
 
@@ -88,8 +88,8 @@ include_once __DIR__ . '/includes/header.php';
             <div class="flex gap-2 overflow-x-auto">
                 <?php foreach($gallery as $i => $img): ?>
                 <img src="<?php echo htmlspecialchars($img); ?>"
-                    class="w-16 h-16 rounded-xl object-cover cursor-pointer border-2 <?php echo $i === 0 ? 'border-amber-500' : 'border-transparent hover:border-amber-300'; ?> flex-shrink-0 transition"
-                    onclick="document.getElementById('mainImg').src=this.src; document.querySelectorAll('[onclick]').forEach(e=>e.classList.replace('border-amber-500','border-transparent')); this.classList.replace('border-transparent','border-amber-500');"
+                    class="w-16 h-16 rounded-xl object-cover cursor-pointer border-2 <?php echo $i === 0 ? 'border-red-600' : 'border-transparent hover:border-red-300'; ?> flex-shrink-0 transition"
+                    onclick="document.getElementById('mainImg').src=this.src; document.querySelectorAll('.flex.gap-2.overflow-x-auto img').forEach(e=>e.classList.replace('border-red-600','border-transparent')); this.classList.replace('border-transparent','border-red-600');"
                     onerror="this.style.display='none'"
                     alt="">
                 <?php endforeach; ?>
@@ -99,11 +99,11 @@ include_once __DIR__ . '/includes/header.php';
 
         <!-- Product Info -->
         <div class="flex flex-col items-center text-center">
-            <span class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></span>
+            <span class="text-xs font-bold text-red-600 uppercase tracking-widest mb-2"><?php echo htmlspecialchars($product['cat_name'] ?? ''); ?></span>
             <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight"><?php echo htmlspecialchars($product['name']); ?></h1>
 
             <div class="flex flex-col items-center gap-2 mb-6">
-                <span class="text-5xl font-extrabold text-amber-600">৳ <?php echo number_format($product['price']); ?></span>
+                <span class="text-5xl font-extrabold text-red-600">৳ <?php echo number_format($product['price']); ?></span>
                 <span class="text-xs <?php echo ($product['stock_status'] ?? 'In Stock') === 'In Stock' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'; ?> font-black uppercase tracking-widest px-4 py-1.5 rounded-full border border-current opacity-70">
                     <?php echo htmlspecialchars($product['stock_status'] ?? 'In Stock'); ?>
                 </span>
@@ -120,7 +120,7 @@ include_once __DIR__ . '/includes/header.php';
             <!-- Action Buttons -->
             <div class="flex flex-col gap-3 mb-8 w-full max-w-md">
                 <a href="checkout.php?product=<?php echo $product['id']; ?>"
-                    class="bg-amber-600 hover:bg-amber-700 text-white font-black py-5 rounded-2xl text-center transition shadow-xl shadow-amber-200/50 text-base uppercase tracking-widest">
+                    class="bg-red-600 hover:bg-red-700 text-white font-black py-5 rounded-2xl text-center transition shadow-xl shadow-red-200/50 text-base uppercase tracking-widest">
                     🛒 Buy Now — Cash on Delivery
                 </a>
                 <a href="https://wa.me/<?php echo SITE_WHATSAPP; ?>?text=I+want+to+order:+<?php echo urlencode($product['name']); ?>+Price:+<?php echo $product['price']; ?>"
@@ -132,16 +132,16 @@ include_once __DIR__ . '/includes/header.php';
 
             <!-- Wholesale / Bulk Pricing -->
             <?php if (!empty($priceRules)): ?>
-            <div class="mb-8 bg-pink-50 border border-pink-100 rounded-2xl p-6">
-                <h3 class="text-sm font-bold text-pink-700 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span class="w-1.5 h-4 bg-pink-500 rounded-full"></span>
+            <div class="mb-8 bg-red-50/50 border border-red-100 rounded-2xl p-6">
+                <h3 class="text-sm font-bold text-red-700 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span class="w-1.5 h-4 bg-red-500 rounded-full"></span>
                     Wholesale / Bulk Pricing
                 </h3>
                 <div class="grid grid-cols-2 gap-3">
                     <?php foreach($priceRules as $rule): ?>
-                    <div class="bg-white p-3 rounded-xl border border-pink-100 flex justify-between items-center">
+                    <div class="bg-white p-3 rounded-xl border border-red-100 flex justify-between items-center">
                         <span class="text-xs font-bold text-gray-500"><?php echo $rule['min_qty']; ?>+ Units</span>
-                        <span class="text-sm font-extrabold text-pink-600">
+                        <span class="text-sm font-extrabold text-red-600">
                             <?php if($rule['discount_type'] === 'fixed'): ?>
                                 ৳ <?php echo number_format($rule['value']); ?> / unit
                             <?php else: ?>
@@ -151,7 +151,7 @@ include_once __DIR__ . '/includes/header.php';
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <p class="text-[10px] text-pink-400 mt-3 font-medium italic">* Discount applied automatically based on quantity.</p>
+                <p class="text-[10px] text-red-400 mt-3 font-medium italic">* Discount applied automatically based on quantity.</p>
             </div>
             <?php endif; ?>
 

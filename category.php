@@ -60,12 +60,12 @@ include_once __DIR__ . '/includes/header.php';
     <img src="<?php echo htmlspecialchars($category['hero_image']); ?>" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="">
     <?php endif; ?>
     <div class="relative z-10 container mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
-        <nav class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-6 flex items-center gap-2 justify-center">
-            <a href="<?php echo SITE_URL; ?>" class="hover:text-amber-400">Home</a>
-            <span>/</span>
+        <nav class="text-white/60 text-[10px] font-black uppercase tracking-widest mb-6 flex items-center gap-2 justify-center">
+            <a href="<?php echo SITE_URL; ?>" class="hover:text-red-500 transition">Home</a>
+            <i class="ph ph-caret-right text-[8px] opacity-40"></i>
             <?php if ($parent_category): ?>
-                <a href="<?php echo SITE_URL; ?>/category/<?php echo $parent_category['slug']; ?>" class="hover:text-amber-400"><?php echo htmlspecialchars($parent_category['name']); ?></a>
-                <span>/</span>
+                <a href="<?php echo SITE_URL; ?>/category/<?php echo $parent_category['slug']; ?>" class="hover:text-red-500 transition"><?php echo htmlspecialchars($parent_category['name']); ?></a>
+                <i class="ph ph-caret-right text-[8px] opacity-40"></i>
             <?php endif; ?>
             <span class="text-white"><?php echo htmlspecialchars($category['name']); ?></span>
         </nav>
@@ -94,7 +94,7 @@ include_once __DIR__ . '/includes/header.php';
             <div class="text-6xl mb-4">📦</div>
             <h2 class="text-xl font-bold text-gray-800 mb-2">No Products Yet</h2>
             <p class="text-gray-500">We're stocking up this category. Check back soon!</p>
-            <a href="<?php echo SITE_URL; ?>" class="mt-6 inline-block bg-amber-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-amber-700 transition">Back to Home</a>
+            <a href="<?php echo SITE_URL; ?>" class="mt-6 inline-block bg-red-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-red-700 transition">Back to Home</a>
         </div>
         <?php else: ?>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

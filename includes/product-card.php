@@ -5,6 +5,7 @@
 $imgSrc = !empty($p['main_image']) ? $p['main_image'] : (!empty($p['image']) ? $p['image'] : '');
 $isOutOfStock = isset($p['stock_status']) && $p['stock_status'] === 'Out of Stock';
 ?>
+<?php
 $jsData = json_encode([
     'id'          => $p['id'],
     'name'        => $p['name'],
@@ -21,12 +22,15 @@ if ($oldPrice > $currentPrice) {
     $discountPercent = round((($oldPrice - $currentPrice) / $oldPrice) * 100);
 }
 ?>
+
+<style>
 .gazi-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .gazi-card:hover { border-color: rgba(216, 0, 50, 0.4); transform: translateY(-4px); }
 .gazi-card:hover .gazi-img { transform: scale(1.08); }
 .gazi-img { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-.btn-buy { background: #3f51b5; } /* Gazi style indigo/blue */
-.btn-cart { background: #f1f5f9; color: #475569; }
+.btn-buy { background: #d80032; } /* Unifying to Red theme */
+.btn-cart { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+</style>
 </style>
 
 <div onclick='<?php echo $isOutOfStock ? "" : "openQuickView($jsData)"; ?>' 

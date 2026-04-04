@@ -48,7 +48,7 @@ try {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
@@ -137,14 +137,25 @@ try {
         <div class="flex items-center h-20 gap-4">
 
             <!-- Mobile Menu Toggle -->
-            <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')" class="md:hidden p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
+            <button onclick="document.getElementById('mobileMenu').classList.remove('hidden')" class="md:hidden p-2 rounded-lg hover:bg-gray-50 border border-gray-100">
                 <i class="ph-bold ph-list text-xl"></i>
             </button>
 
             <!-- Logo -->
-            <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center">
-                <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-12 md:h-16 w-auto object-contain" onerror="this.onerror=null; this.src='https://placehold.co/200x80/d80032/ffffff?text=Zaman+Kitchens';">
+            <a href="<?php echo SITE_URL; ?>" class="flex-shrink-0 flex items-center gap-2 group whitespace-nowrap">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-red-600 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                    <span class="text-white font-extrabold text-[10px] md:text-sm">ZK</span>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="font-extrabold text-slate-900 text-xs md:text-lg uppercase tracking-tighter">Zaman</span>
+                    <span class="font-bold text-red-600 text-[8px] md:text-[10px] uppercase tracking-[0.2em] -mt-0.5">Kitchens</span>
+                </div>
             </a>
+
+            <!-- Mobile Search Toggle -->
+            <button onclick="toggleMobileSearch()" class="md:hidden p-2 rounded-lg hover:bg-gray-50 border border-gray-100 ml-auto">
+                <i class="ph-bold ph-magnifying-glass text-xl"></i>
+            </button>
 
             <!-- Search Bar (Gazi Style - Slimmer & Modern) -->
             <form action="<?php echo SITE_URL; ?>/search" method="GET" class="flex-1 max-w-xl px-4 hidden md:block">
@@ -158,11 +169,11 @@ try {
             </form>
 
             <!-- Quick Actions (Gazi Style Icons + Labels) -->
-            <div class="flex items-center gap-5 ml-auto">
+            <div class="flex items-center gap-4 md:gap-5 <?php echo isset($hideQuickActionsOnMobile) && $hideQuickActionsOnMobile ? 'hidden md:flex' : 'flex'; ?>">
                 <!-- Compare -->
-                <a href="<?php echo SITE_URL; ?>/compare.php" class="flex flex-col items-center group relative">
+                <a href="<?php echo SITE_URL; ?>/compare.php" class="flex flex-col items-center group relative hidden sm:flex">
                     <div class="relative mb-1">
-                        <img src="<?php echo SITE_URL; ?>/image/compare_icon.png" alt="Compare" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <img src="<?php echo SITE_URL; ?>/image/compare_icon.png" alt="Compare" class="h-5 md:h-6 w-auto group-hover:scale-110 transition-transform">
                         <span id="compare-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
                     </div>
                     <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">Compare</span>
@@ -171,7 +182,7 @@ try {
                 <!-- Wishlist -->
                 <a href="<?php echo SITE_URL; ?>/wishlist.php" class="flex flex-col items-center group relative border-l border-slate-100 pl-4">
                     <div class="relative mb-1">
-                        <img src="<?php echo SITE_URL; ?>/image/wish_list_icon.png" alt="Wishlist" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <img src="<?php echo SITE_URL; ?>/image/wish_list_icon.png" alt="Wishlist" class="h-5 md:h-6 w-auto group-hover:scale-110 transition-transform">
                         <span id="wishlist-count-header" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
                     </div>
                     <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">Wishlist</span>
@@ -180,7 +191,7 @@ try {
                 <!-- My Cart -->
                 <a href="<?php echo SITE_URL; ?>/cart.php" class="flex flex-col items-center group relative border-l border-slate-100 pl-4">
                     <div class="relative mb-1">
-                        <img src="<?php echo SITE_URL; ?>/image/cart_icon.png" alt="Cart" class="h-6 w-auto group-hover:scale-110 transition-transform">
+                        <img src="<?php echo SITE_URL; ?>/image/cart_icon.png" alt="Cart" class="h-5 md:h-6 w-auto group-hover:scale-110 transition-transform">
                         <span id="cart-count-header" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
                     </div>
                     <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">My Cart</span>
@@ -188,6 +199,30 @@ try {
             </div>
         </div>
     </div>
+
+    <!-- Collapsible Mobile Search Bar -->
+    <div id="mobileSearch" class="hidden md:hidden bg-white border-t border-gray-100 p-4 sticky top-20 z-40 shadow-lg">
+        <form action="<?php echo SITE_URL; ?>/search" method="GET" class="relative">
+            <input type="text" id="mob-search-input" name="q" placeholder="Search for products..."
+                class="w-full pl-5 pr-12 py-3 text-sm bg-gray-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-600 focus:bg-white transition-all shadow-inner">
+            <button type="submit" class="absolute right-1 top-1 bottom-1 w-10 h-auto bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all flex items-center justify-center">
+                <i class="ph-bold ph-magnifying-glass text-lg"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMobileSearch() {
+            const searchBar = document.getElementById('mobileSearch');
+            const input = document.getElementById('mob-search-input');
+            const isHidden = searchBar.classList.contains('hidden');
+            
+            searchBar.classList.toggle('hidden');
+            if (isHidden) {
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+    </script>
 
     <div class="bg-gray-50 border-t border-gray-100 hidden md:block">
         <div class="container mx-auto px-4">
