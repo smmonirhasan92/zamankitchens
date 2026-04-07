@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle File Upload
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/../assets/uploads/slides/';
+        $upload_dir = __DIR__ . '/../../assets/uploads/slides/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
         
         $file_ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);

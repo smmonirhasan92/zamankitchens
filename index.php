@@ -67,7 +67,10 @@ try {
                 <?php foreach($slides as $slide): ?>
                 <div class="swiper-slide">
                     <div class="hero-slide">
-                        <img src="<?php echo htmlspecialchars($slide['image_path']); ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? ''); ?>">
+                        <?php 
+                            $slideImg = (strpos($slide['image_path'], 'http') === 0) ? $slide['image_path'] : SITE_URL . '/' . ltrim($slide['image_path'], '/');
+                        ?>
+                        <img src="<?php echo htmlspecialchars($slideImg); ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? ''); ?>">
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -75,7 +78,7 @@ try {
                 <!-- Fallback Slide -->
                 <div class="swiper-slide">
                     <div class="hero-slide">
-                        <img src="image/slider.png" alt="Zaman Kitchens Slider">
+                        <img src="<?php echo SITE_URL; ?>/image/slider.png" alt="Zaman Kitchens Slider">
                     </div>
                 </div>
             <?php endif; ?>
@@ -95,19 +98,19 @@ try {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 justify-items-center">
             <!-- Feature 1 -->
             <div class="flex flex-col items-center justify-center p-2">
-                <img src="image/1.png" alt="Feature 1" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
+                <img src="<?php echo SITE_URL; ?>/image/1.png" alt="Feature 1" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 2 -->
             <div class="flex flex-col items-center justify-center p-2">
-                <img src="image/2.png" alt="Feature 2" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
+                <img src="<?php echo SITE_URL; ?>/image/2.png" alt="Feature 2" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 3 -->
             <div class="flex flex-col items-center justify-center p-2">
-                <img src="image/3.png" alt="Feature 3" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
+                <img src="<?php echo SITE_URL; ?>/image/3.png" alt="Feature 3" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
             <!-- Feature 4 -->
             <div class="flex flex-col items-center justify-center p-2">
-                <img src="image/4.png" alt="Feature 4" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
+                <img src="<?php echo SITE_URL; ?>/image/4.png" alt="Feature 4" class="max-h-16 w-auto hover:scale-105 transition-transform duration-300">
             </div>
         </div>
     </div>
@@ -127,7 +130,11 @@ try {
 
         <div class="flex items-center justify-center gap-6 md:gap-10 overflow-x-auto pb-6 scrollbar-hide">
             <?php foreach($gridCats as $cat): 
-                $catImg = !empty($cat['hero_image']) ? $cat['hero_image'] : 'https://placehold.co/150x150/f1f5f9/94a3b8?text=' . urlencode($cat['name']);
+                if (!empty($cat['hero_image'])) {
+                    $catImg = (strpos($cat['hero_image'], 'http') === 0) ? $cat['hero_image'] : SITE_URL . '/' . ltrim($cat['hero_image'], '/');
+                } else {
+                    $catImg = 'https://placehold.co/150x150/f1f5f9/94a3b8?text=' . urlencode($cat['name']);
+                }
             ?>
             <a href="category/<?php echo $cat['slug']; ?>" class="flex-shrink-0 group text-center w-24 md:w-32">
                 <div class="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white border border-slate-100 shadow-sm group-hover:shadow-md group-hover:border-red-500 transition-all duration-300 flex items-center justify-center overflow-hidden mb-3 mx-auto">
@@ -180,16 +187,16 @@ try {
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
-                <img src="image/beMuLKFPhoWqTU4T0eM9Tz5jplszOBA01y8OinWO.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+                <img src="<?php echo SITE_URL; ?>/image/beMuLKFPhoWqTU4T0eM9Tz5jplszOBA01y8OinWO.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
             </div>
             <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
-                <img src="image/hEG14FkfLraHd7zzM8sUgEcTTWgjNwaDeBq63ENr.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+                <img src="<?php echo SITE_URL; ?>/image/hEG14FkfLraHd7zzM8sUgEcTTWgjNwaDeBq63ENr.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
             </div>
             <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
-                <img src="image/lkQZqSkZKmUHgIW7UTqhDcxZEMGVgBIPvphNpejU.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+                <img src="<?php echo SITE_URL; ?>/image/lkQZqSkZKmUHgIW7UTqhDcxZEMGVgBIPvphNpejU.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
             </div>
             <div class="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
-                <img src="image/niwd6fySuspYlJWj4bylyLkEl6ft4P1ddbPQgavu.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
+                <img src="<?php echo SITE_URL; ?>/image/niwd6fySuspYlJWj4bylyLkEl6ft4P1ddbPQgavu.png" class="w-full h-auto group-hover:scale-105 transition-transform duration-700">
             </div>
         </div>
     </div>
@@ -649,6 +656,11 @@ try {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         
+        let pImage = p.image;
+        if (pImage && !pImage.startsWith('http')) {
+            pImage = '<?php echo SITE_URL; ?>/' + pImage.replace(/^\/+/, '');
+        }
+
         let actionButtons = `
                 <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mt-8">
                     <button onclick='addToCart(${JSON.stringify(p)})' class="flex-1 bg-slate-100 hover:bg-amber-100 text-slate-800 font-bold py-4 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 group/btn">
@@ -671,7 +683,7 @@ try {
         content.innerHTML = `
             <button onclick="closeQuickView()" class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/50 backdrop-blur-md flex items-center justify-center hover:bg-white transition text-xl">✕</button>
             <div class="md:w-1/2 h-[400px] md:h-auto overflow-hidden">
-                <img src="${p.image}" class="w-full h-full object-cover">
+                <img src="${pImage}" class="w-full h-full object-cover">
             </div>
             <div class="md:w-1/2 p-8 md:p-12 flex flex-col items-center justify-center text-center relative">
                 ${p.is_out_of_stock ? '<span class="absolute top-8 left-8 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">Stock Out</span>' : '<span class="absolute top-8 left-8 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">In Stock</span>'}

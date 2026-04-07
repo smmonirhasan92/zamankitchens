@@ -39,8 +39,10 @@ if ($oldPrice > $currentPrice) {
     
     <!-- Image Section -->
     <div class="relative overflow-hidden bg-white p-3 aspect-[4/3] flex items-center justify-center">
-        <?php if (!empty($imgSrc)): ?>
-            <img loading="lazy" src="<?php echo htmlspecialchars($imgSrc); ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="gazi-img w-full h-full object-contain">
+        <?php if (!empty($imgSrc)): 
+            $finalImg = (strpos($imgSrc, 'http') === 0) ? $imgSrc : SITE_URL . '/' . ltrim($imgSrc, '/');
+        ?>
+            <img loading="lazy" src="<?php echo htmlspecialchars($finalImg); ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="gazi-img w-full h-full object-contain">
         <?php else: ?>
             <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200">
                 <i class="ph-bold ph-image text-3xl"></i>
