@@ -249,9 +249,9 @@ try {
                     </button>
                     <!-- Mega Menu Dropdown -->
                     <div class="mega-menu text-left">
-                        <div class="grid grid-cols-4 gap-8">
+                        <div class="columns-2 md:columns-3 lg:columns-4 gap-8">
                             <?php foreach($main_categories as $cat): ?>
-                            <div class="category-block flex flex-col">
+                            <div class="category-block flex flex-col break-inside-avoid mb-8">
                                 <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="block font-black text-slate-800 uppercase tracking-widest text-xs mb-4 hover:text-red-600 transition border-b border-slate-100 pb-2">
                                     <?php echo htmlspecialchars($cat['name']); ?>
                                 </a>
