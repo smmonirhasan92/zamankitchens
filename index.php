@@ -52,8 +52,8 @@ try {
 =========================== -->
 <style>
     .heroSwiper { width: 100%; height: auto; }
-    .hero-slide { position: relative; width: 100%; aspect-ratio: 1920/600; overflow: hidden; }
-    @media (max-width: 768px) { .hero-slide { aspect-ratio: 16/9; } }
+    .hero-slide { position: relative; width: 100%; height: 480px; overflow: hidden; }
+    @media (max-width: 768px) { .hero-slide { height: 300px; } }
     .hero-slide img { width: 100%; height: 100%; object-fit: cover; }
     .swiper-button-next, .swiper-button-prev { color: #d80032 !important; background: white; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px !important; font-weight: bold; }
@@ -159,12 +159,15 @@ try {
             </a>
         </div>
 
-        <div id="grid-<?php echo $slug; ?>" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            <?php foreach($row['products'] as $p): ?>
-            <div class="product-item">
-                <?php include __DIR__ . '/includes/product-card.php'; ?>
+        <div class="swiper productSwiper pb-8">
+            <div class="swiper-wrapper">
+                <?php foreach($row['products'] as $p): ?>
+                <div class="swiper-slide">
+                    <?php include __DIR__ . '/includes/product-card.php'; ?>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
+            <div class="swiper-pagination"></div>
         </div>
     </div>
 </section>
@@ -214,7 +217,7 @@ try {
         </div>
 
         <div class="text-center mt-12">
-            <a href="shop" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
+            <a href="<?php echo SITE_URL; ?>/shop" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
                 SEE ALL PRODUCTS
                 <i class="ph-bold ph-arrow-right"></i>
             </a>
@@ -231,6 +234,17 @@ try {
         navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         effect: 'fade',
         fadeEffect: { crossFade: true }
+    });
+
+    const productSwiper = new Swiper('.productSwiper', {
+        slidesPerView: 2,
+        spaceBetween: 16,
+        pagination: { el: '.swiper-pagination', clickable: true },
+        breakpoints: {
+            640: { slidesPerView: 2, spaceBetween: 20 },
+            768: { slidesPerView: 3, spaceBetween: 24 },
+            1024: { slidesPerView: 4, spaceBetween: 32 }
+        }
     });
 </script>
 
@@ -635,24 +649,36 @@ try {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         
-        content.innerHTML = `
-            <button onclick="closeQuickView()" class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/50 backdrop-blur-md flex items-center justify-center hover:bg-white transition text-xl">✕</button>
-            <div class="md:w-1/2 h-[400px] md:h-auto overflow-hidden">
-                <img src="${p.image}" class="w-full h-full object-cover">
-            </div>
-            <div class="md:w-1/2 p-8 md:p-12 flex flex-col items-center justify-center text-center">
-                <span class="text-amber-600 text-[10px] font-black uppercase tracking-widest mb-4">Limited Edition</span>
-                <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight">${p.name}</h2>
-                <div class="text-4xl font-black text-amber-600 mb-8 italic">৳ ${parseInt(p.price).toLocaleString()}</div>
-                <p class="text-slate-500 mb-10 text-lg leading-relaxed">${p.description}</p>
-                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+        let actionButtons = `
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mt-8">
                     <button onclick='addToCart(${JSON.stringify(p)})' class="flex-1 bg-slate-100 hover:bg-amber-100 text-slate-800 font-bold py-4 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 group/btn">
                         <span>Add to Bag</span>
                     </button>
                     <button onclick='buyNow(${JSON.stringify(p).replace(/"/g, '&quot;')}); closeQuickView();' class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-sm py-4 rounded-2xl transition shadow-xl shadow-slate-200 text-center">
                         Buy Now
                     </button>
-                </div>
+                </div>`;
+                
+        if (p.is_out_of_stock) {
+            actionButtons = `
+                <div class="flex flex-col gap-3 w-full max-w-sm mt-8">
+                    <button disabled class="w-full bg-slate-200 text-slate-500 font-black uppercase tracking-widest text-sm py-4 rounded-2xl cursor-not-allowed">
+                        Stock Out
+                    </button>
+                </div>`;
+        }
+
+        content.innerHTML = `
+            <button onclick="closeQuickView()" class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/50 backdrop-blur-md flex items-center justify-center hover:bg-white transition text-xl">✕</button>
+            <div class="md:w-1/2 h-[400px] md:h-auto overflow-hidden">
+                <img src="${p.image}" class="w-full h-full object-cover">
+            </div>
+            <div class="md:w-1/2 p-8 md:p-12 flex flex-col items-center justify-center text-center relative">
+                ${p.is_out_of_stock ? '<span class="absolute top-8 left-8 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">Stock Out</span>' : '<span class="absolute top-8 left-8 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">In Stock</span>'}
+                <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight mt-6">${p.name}</h2>
+                <div class="text-4xl font-black text-red-600 mb-8 italic">৳ ${parseInt(p.price).toLocaleString()}</div>
+                <p class="text-slate-500 mb-2 text-lg leading-relaxed flex-1">${p.description}</p>
+                ${actionButtons}
             </div>
         `;
 

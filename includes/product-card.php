@@ -12,6 +12,7 @@ $jsData = json_encode([
     'price'       => $p['price'],
     'old_price'   => $p['old_price'] ?? 0,
     'image'       => $imgSrc,
+    'is_out_of_stock' => $isOutOfStock,
     'description' => $p['description'] ?? 'Premium quality kitchen appliance.'
 ], JSON_HEX_APOS);
 
@@ -33,8 +34,8 @@ if ($oldPrice > $currentPrice) {
 </style>
 </style>
 
-<div onclick='<?php echo $isOutOfStock ? "" : "openQuickView($jsData)"; ?>' 
-     class="gazi-card <?php echo $isOutOfStock ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'; ?> bg-white rounded-2xl overflow-hidden border border-slate-100 flex flex-col h-full group relative shadow-sm hover:shadow-xl hover:shadow-red-500/5">
+<div onclick='openQuickView(<?php echo $jsData; ?>)' 
+     class="gazi-card cursor-pointer bg-white rounded-2xl overflow-hidden border border-slate-100 flex flex-col h-full group relative shadow-sm hover:shadow-xl hover:shadow-red-500/5">
     
     <!-- Image Section -->
     <div class="relative overflow-hidden bg-white p-3 aspect-[4/3] flex items-center justify-center">
@@ -58,7 +59,7 @@ if ($oldPrice > $currentPrice) {
         <!-- Out of Stock Badge -->
         <?php if ($isOutOfStock): ?>
         <div class="absolute inset-0 bg-slate-900/40 flex items-center justify-center">
-            <span class="bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">Sold Out</span>
+            <span class="bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">Stock Out</span>
         </div>
         <?php endif; ?>
 
@@ -80,7 +81,7 @@ if ($oldPrice > $currentPrice) {
         <div class="mt-auto w-full flex flex-col items-center">
             <div class="flex flex-col items-center mb-4">
                 <?php if ($discountPercent > 0): ?>
-                    <span class="text-[10px] md:text-[12px] text-slate-400 line-through font-bold">৳ <?php echo number_format($oldPrice); ?></span>
+                    <span class="text-[12px] md:text-[14px] text-slate-800 line-through font-extrabold">৳ <?php echo number_format($oldPrice); ?></span>
                 <?php endif; ?>
                 <span class="text-[15px] md:text-[20px] font-black text-red-600 tracking-tight leading-none">৳ <?php echo number_format($currentPrice); ?></span>
             </div>
@@ -88,7 +89,7 @@ if ($oldPrice > $currentPrice) {
             <?php if ($isOutOfStock): ?>
             <button disabled
                 class="w-full py-2.5 rounded-xl bg-slate-300 text-slate-500 font-bold text-[10px] uppercase tracking-widest cursor-not-allowed flex items-center justify-center gap-2">
-                <i class="ph-bold ph-x-circle text-xs"></i> <span>Out of Stock</span>
+                <i class="ph-bold ph-x-circle text-xs"></i> <span>Stock Out</span>
             </button>
             <?php else: ?>
             <div class="grid grid-cols-2 gap-2 w-full">

@@ -99,22 +99,22 @@ include_once __DIR__ . '/includes/header.php';
                 <input type="hidden" name="id" value="<?php echo $editSlide['id'] ?? ''; ?>">
                 <input type="hidden" name="existing_image" value="<?php echo $editSlide['image_path'] ?? ''; ?>">
                 
-                <div>
+                <div class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Slide Title</label>
                     <input type="text" name="title" value="<?php echo htmlspecialchars($editSlide['title'] ?? ''); ?>"
                         placeholder="e.g. Dream Kitchen Sinks"
                         class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
                 </div>
 
-                <div>
+                <div class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Subtitle/Description</label>
                     <textarea name="subtitle" rows="2"
                         placeholder="e.g. Modern designs for your dream kitchen."
                         class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm resize-none"><?php echo htmlspecialchars($editSlide['subtitle'] ?? ''); ?></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="hidden">
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Button Text</label>
                         <input type="text" name="button_text" value="<?php echo htmlspecialchars($editSlide['button_text'] ?? 'Shop Now'); ?>"
                             class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
@@ -126,7 +126,7 @@ include_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <div>
+                <div class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Button Link</label>
                     <input type="text" name="button_link" value="<?php echo htmlspecialchars($editSlide['button_link'] ?? '#'); ?>"
                         class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-amber-400 focus:bg-white transition text-sm">
