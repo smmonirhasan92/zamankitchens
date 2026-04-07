@@ -74,6 +74,17 @@ try {
             letter-spacing: 0.05em; transition: all 0.2s;
         }
         .dropdown-link:hover { background: #f8fafc; color: #ef233c; padding-left: 1.5rem; }
+
+        /* Mega Menu Styles */
+        .mega-menu {
+            position: absolute; top: 100%; left: 50%; width: 900px; max-width: 90vw;
+            background: white; border: 1px solid #f1f5f9; border-radius: 1.5rem; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08); opacity: 0; 
+            visibility: hidden; transform: translate(-50%, 10px); transition: all 0.3s ease; 
+            z-index: 100; padding: 2.5rem; cursor: auto;
+        }
+        .nav-item:hover .mega-menu { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+
         /* WhatsApp button pulse */
         @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
         .wa-pulse::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: #25d366; animation: pulse-ring 1.5s infinite; z-index: -1; }
@@ -171,13 +182,13 @@ try {
             <!-- Quick Actions (Gazi Style Icons + Labels) -->
             <div class="flex items-center gap-4 md:gap-5 <?php echo isset($hideQuickActionsOnMobile) && $hideQuickActionsOnMobile ? 'hidden md:flex' : 'flex'; ?>">
                 <!-- Compare -->
-                <a href="<?php echo SITE_URL; ?>/compare.php" class="flex flex-col items-center group relative hidden sm:flex">
+                <button onclick="openCompareModal()" class="flex flex-col items-center group relative hidden sm:flex">
                     <div class="relative mb-1">
                         <img src="<?php echo SITE_URL; ?>/image/compare_icon.png" alt="Compare" class="h-5 md:h-6 w-auto group-hover:scale-110 transition-transform">
                         <span id="compare-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">0</span>
                     </div>
                     <span class="text-[9px] font-black text-slate-800 uppercase tracking-tighter group-hover:text-red-600 transition-colors">Compare</span>
-                </a>
+                </button>
 
                 <!-- Wishlist -->
                 <a href="<?php echo SITE_URL; ?>/wishlist.php" class="flex flex-col items-center group relative border-l border-slate-100 pl-4">
@@ -230,23 +241,35 @@ try {
                 <a href="<?php echo SITE_URL; ?>" class="hover:text-red-600 transition">Home</a>
                 <a href="<?php echo SITE_URL; ?>/shop" class="hover:text-red-600 transition">Shop</a>
                 
-                <!-- Categories Dropdown (Smart Grouping) -->
+                <!-- Mega Menu (Categories) -->
                 <div class="nav-item group">
                     <button class="flex items-center gap-1 hover:text-red-600 transition py-1">
                         Categories
                         <i class="ph ph-caret-down text-[10px]"></i>
                     </button>
-                    <div class="dropdown-menu !min-w-[280px] p-2 grid grid-cols-1 gap-1">
-                        <?php foreach($main_categories as $cat): ?>
-                        <div class="relative group/sub">
-                            <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="dropdown-link flex items-center justify-between !py-2.5 rounded-lg hover:bg-gray-50">
-                                <?php echo htmlspecialchars($cat['name']); ?>
+                    <!-- Mega Menu Dropdown -->
+                    <div class="mega-menu text-left">
+                        <div class="grid grid-cols-4 gap-8">
+                            <?php foreach($main_categories as $cat): ?>
+                            <div class="category-block flex flex-col">
+                                <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="block font-black text-slate-800 uppercase tracking-widest text-xs mb-4 hover:text-red-600 transition border-b border-slate-100 pb-2">
+                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                </a>
                                 <?php if(!empty($cat['children'])): ?>
-                                    <i class="ph ph-caret-right text-[8px] opacity-40"></i>
+                                <ul class="space-y-3">
+                                    <?php foreach($cat['children'] as $child): ?>
+                                    <li>
+                                        <a href="<?php echo SITE_URL; ?>/category/<?php echo $child['slug']; ?>" class="text-[11px] font-bold text-slate-500 hover:text-red-600 transition flex items-center gap-2 group/link">
+                                            <span class="w-1 h-1 rounded-full bg-slate-300 group-hover/link:bg-red-600 transition-colors"></span> 
+                                            <span class="group-hover/link:translate-x-1 transition-transform"><?php echo htmlspecialchars($child['name']); ?></span>
+                                        </a>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
                                 <?php endif; ?>
-                            </a>
+                            </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php endforeach; ?>
                     </div>
                 </div>
                 
@@ -259,7 +282,15 @@ try {
     <!-- Mobile Menu Container -->
     <div id="mobileMenu" class="hidden md:hidden fixed inset-0 z-[60] bg-white overflow-y-auto">
         <div class="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
-            <img src="<?php echo SITE_URL; ?>/assets/logo.png" alt="Zaman Kitchens" class="h-10 w-auto object-contain">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center shadow-lg">
+                    <span class="text-white font-extrabold text-[10px]">ZK</span>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="font-extrabold text-slate-900 text-xs uppercase tracking-tighter">Zaman</span>
+                    <span class="font-bold text-red-600 text-[8px] uppercase tracking-[0.2em] -mt-0.5">Kitchens</span>
+                </div>
+            </div>
             <button onclick="document.getElementById('mobileMenu').classList.add('hidden')" class="p-2">
                 <i class="ph-bold ph-x text-2xl"></i>
             </button>

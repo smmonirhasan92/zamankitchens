@@ -1,6 +1,6 @@
-Options -Indexes
+Options -Indexes -MultiViews
 RewriteEngine On
-# RewriteBase /zamankitchen/
+RewriteBase /
 
 # ============================================================
 # SECURITY: Block direct access to sensitive debug/fix files
