@@ -110,42 +110,40 @@ include_once __DIR__ . '/includes/header.php';
                 <form method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="id" value="<?php echo $editSlide['id'] ?? ''; ?>">
                     <input type="hidden" name="existing_image" value="<?php echo $editSlide['image_path'] ?? ''; ?>">
-                    
-                    <div>
-                        <label class="admin-label">Slide Heading</label>
-                        <input type="text" name="title" value="<?php echo htmlspecialchars($editSlide['title'] ?? ''); ?>"
-                            placeholder="e.g. Dream Kitchen Solutions" class="admin-input">
-                    </div>
+                    <!-- Text fields hidden: only image upload is required -->
+                    <input type="hidden" name="title" value="<?php echo htmlspecialchars($editSlide['title'] ?? ''); ?>">
+                    <input type="hidden" name="subtitle" value="<?php echo htmlspecialchars($editSlide['subtitle'] ?? ''); ?>">
+                    <input type="hidden" name="button_text" value="<?php echo htmlspecialchars($editSlide['button_text'] ?? 'Shop Now'); ?>">
+                    <input type="hidden" name="button_link" value="<?php echo htmlspecialchars($editSlide['button_link'] ?? '#'); ?>">
 
+                    <!-- Slide Image Upload -->
                     <div>
-                        <label class="admin-label">Description / Sub-text</label>
-                        <textarea name="subtitle" rows="3" placeholder="Tell a quick story..." class="admin-input"><?php echo htmlspecialchars($editSlide['subtitle'] ?? ''); ?></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="admin-label">Button Text</label>
-                            <input type="text" name="button_text" value="<?php echo htmlspecialchars($editSlide['button_text'] ?? 'Shop Now'); ?>" class="admin-input">
+                        <label class="admin-label">📸 Slide Image <span class="text-red-500 ml-1">*</span></label>
+                        <?php if(!empty($editSlide['image_path'])): ?>
+                        <div class="relative group mt-2 mb-4">
+                            <img src="../<?php echo htmlspecialchars($editSlide['image_path']); ?>" 
+                                 class="w-full h-40 rounded-xl object-cover border-2 border-slate-100 group-hover:border-indigo-300 transition duration-500 shadow-sm">
+                            <div class="absolute inset-0 rounded-xl bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <span class="text-white text-xs font-black bg-black/50 px-4 py-2 rounded-full">Change Image</span>
+                            </div>
                         </div>
-                        <div>
-                            <label class="admin-label">Sort Order</label>
-                            <input type="number" name="order_index" value="<?php echo $editSlide['order_index'] ?? 0; ?>" class="admin-input">
+                        <?php else: ?>
+                        <div class="mt-2 mb-3 border-2 border-dashed border-slate-200 rounded-xl h-32 flex items-center justify-center text-slate-400">
+                            <div class="text-center">
+                                <i class="ph ph-image text-3xl mb-1"></i>
+                                <p class="text-[10px] font-bold uppercase tracking-wider">No image yet</p>
+                            </div>
                         </div>
+                        <?php endif; ?>
+                        <input type="file" name="image" accept="image/*" 
+                               class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer transition">
+                        <p class="text-[10px] text-slate-400 mt-2 font-medium">Recommended: 1920×480px, JPG/PNG/WebP</p>
                     </div>
 
+                    <!-- Sort Order -->
                     <div>
-                        <label class="admin-label">Redirect Link</label>
-                        <input type="text" name="button_link" value="<?php echo htmlspecialchars($editSlide['button_link'] ?? '#'); ?>" class="admin-input">
-                    </div>
-
-                    <div>
-                        <label class="admin-label">Slide Artwork</label>
-                        <div class="relative group mt-1">
-                            <?php if(!empty($editSlide['image_path'])): ?>
-                                <img src="../<?php echo $editSlide['image_path']; ?>" class="w-full h-32 rounded-xl object-cover border border-slate-100 mb-3 grayscale group-hover:grayscale-0 transition duration-500">
-                            <?php endif; ?>
-                            <input type="file" name="image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
-                        </div>
+                        <label class="admin-label">Sort Order</label>
+                        <input type="number" name="order_index" value="<?php echo $editSlide['order_index'] ?? 0; ?>" class="admin-input" min="0">
                     </div>
 
                     <div class="flex items-center gap-2 py-2">
@@ -155,8 +153,8 @@ include_once __DIR__ . '/includes/header.php';
 
                     <div class="pt-2 flex gap-3">
                         <button type="submit" class="flex-1 btn btn-primary py-3 justify-center text-sm">
-                            <i class="ph ph-magic-wand"></i>
-                            <?php echo $editSlide ? 'Update Artwork' : 'Launch Slide'; ?>
+                            <i class="ph ph-image"></i>
+                            <?php echo $editSlide ? 'Update Image' : 'Upload Slide'; ?>
                         </button>
                         <?php if($editSlide): ?>
                             <a href="slides.php" class="btn btn-ghost py-3 px-4">✕</a>

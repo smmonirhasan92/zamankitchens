@@ -45,7 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $purchase_price = $_POST['purchase_price'] ?? 0;
     $stock_qty = (int)($_POST['stock_qty'] ?? 0);
     $stock_status = $_POST['stock_status'] ?? 'In Stock';
-    $description = $_POST['description'] ?? '';
+    $description = trim($_POST['description'] ?? '');
+    // Ensure clean UTF-8 encoding (supports Bengali, special chars)
+    if (function_exists('mb_convert_encoding')) {
+        $description = mb_convert_encoding($description, 'UTF-8', 'UTF-8');
+        $name = mb_convert_encoding($name, 'UTF-8', 'UTF-8');
+    };
     $meta_title = $_POST['meta_title'] ?? '';
     $meta_description = $_POST['meta_description'] ?? '';
     $barcode = trim($_POST['barcode'] ?? '');
@@ -173,8 +178,11 @@ include_once __DIR__ . '/includes/header.php';
                             class="admin-input text-lg font-bold" placeholder="e.g. Premium Stainless Sink">
                     </div>
                     <div>
-                        <label class="admin-label">Description</label>
-                        <textarea name="description" rows="8" class="admin-input" placeholder="Give a detailed description..."><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
+                        <label class="admin-label">Description <span class="text-[10px] text-emerald-600 font-bold ml-2">(বাংলা / English supported ✓)</span></label>
+                        <textarea name="description" rows="8" class="admin-input" 
+                                  placeholder="পণ্যের বিস্তারিত বিবরণ লিখুন... (বাংলা ও English উভয়ই চলবে)" 
+                                  accept-charset="UTF-8"><?php echo htmlspecialchars($product['description'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        <p class="text-[10px] text-slate-400 mt-1">✅ বাংলা টেক্সট, স্পেশাল ক্যারেক্টার ও কপি-পেস্ট টেক্সট — সব ধরনের content সাপোর্টেড।</p>
                     </div>
                 </div>
             </div>

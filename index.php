@@ -203,27 +203,36 @@ try {
 </section>
 
 <!-- ===========================
-     QUICK FILTER SECTION (Gazi Style - Clean)
+     EXPLORE MORE SECTION (Swiper Carousel)
 =========================== -->
 <section class="py-12 bg-slate-50 relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
-        <div class="text-center mb-8">
-            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Recently Added</h2>
-            <div class="h-1.5 w-16 bg-red-600 mx-auto rounded-full"></div>
+        <div class="flex flex-col items-center text-center mb-8">
+            <h2 class="text-xl md:text-3xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Explore More</h2>
+            <div class="h-1.5 w-16 bg-red-600 mx-auto rounded-full mb-3"></div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recently Added Products</p>
         </div>
 
-        <div id="product-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            <?php 
-            $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC LIMIT 8")->fetchAll();
-            foreach($allProducts as $p): 
-            ?>
-            <div class="product-item">
-                <?php include __DIR__ . '/includes/product-card.php'; ?>
+        <!-- Swiper Carousel -->
+        <div class="swiper exploreSwiper pb-10">
+            <div class="swiper-wrapper">
+                <?php 
+                $allProducts = $pdo->query("SELECT p.*, c.slug AS cat_slug FROM products p JOIN categories c ON p.category_id = c.id ORDER BY p.created_at DESC LIMIT 12")->fetchAll();
+                foreach($allProducts as $p): 
+                ?>
+                <div class="swiper-slide h-auto">
+                    <?php include __DIR__ . '/includes/product-card.php'; ?>
+                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
+            <!-- Navigation -->
+            <div class="swiper-button-next explore-next"></div>
+            <div class="swiper-button-prev explore-prev"></div>
+            <!-- Pagination -->
+            <div class="swiper-pagination explore-pagination"></div>
         </div>
 
-        <div class="text-center mt-12">
+        <div class="text-center mt-4">
             <a href="<?php echo SITE_URL; ?>/shop" class="inline-flex items-center gap-3 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-4 rounded-full transition-all shadow-xl hover:-translate-y-1">
                 SEE ALL PRODUCTS
                 <i class="ph-bold ph-arrow-right"></i>
@@ -233,7 +242,7 @@ try {
 </section>
 
 <script>
-    // Initialize Swiper
+    // Initialize Hero Swiper
     const swiper = new Swiper('.heroSwiper', {
         loop: true,
         autoplay: { delay: 5000, disableOnInteraction: false },
@@ -243,14 +252,33 @@ try {
         fadeEffect: { crossFade: true }
     });
 
-    const productSwiper = new Swiper('.productSwiper', {
+    // Category Product Rows Swiper
+    const productSwipers = document.querySelectorAll('.productSwiper');
+    productSwipers.forEach(el => {
+        new Swiper(el, {
+            slidesPerView: 2,
+            spaceBetween: 16,
+            pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+            breakpoints: {
+                640: { slidesPerView: 2, spaceBetween: 20 },
+                768: { slidesPerView: 3, spaceBetween: 24 },
+                1024: { slidesPerView: 4, spaceBetween: 32 }
+            }
+        });
+    });
+
+    // Explore More Swiper
+    const exploreSwiper = new Swiper('.exploreSwiper', {
         slidesPerView: 2,
         spaceBetween: 16,
-        pagination: { el: '.swiper-pagination', clickable: true },
+        loop: false,
+        pagination: { el: '.explore-pagination', clickable: true },
+        navigation: { nextEl: '.explore-next', prevEl: '.explore-prev' },
         breakpoints: {
-            640: { slidesPerView: 2, spaceBetween: 20 },
-            768: { slidesPerView: 3, spaceBetween: 24 },
-            1024: { slidesPerView: 4, spaceBetween: 32 }
+            480:  { slidesPerView: 2, spaceBetween: 16 },
+            640:  { slidesPerView: 2, spaceBetween: 20 },
+            768:  { slidesPerView: 3, spaceBetween: 24 },
+            1024: { slidesPerView: 4, spaceBetween: 28 }
         }
     });
 </script>
@@ -347,9 +375,9 @@ try {
 <!-- ===========================
      QUICK VIEW MODAL (Glassmorphism)
 =========================== -->
-<div id="quick-view-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 md:p-10">
+<div id="quick-view-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-2 md:p-10">
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeQuickView()"></div>
-    <div id="qv-content" class="relative bg-white/90 backdrop-blur-xl w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row transition-all duration-500 transform scale-90 opacity-0 border border-white/20">
+    <div id="qv-content" class="relative bg-white/95 backdrop-blur-xl w-full max-w-4xl max-h-[92vh] rounded-[2rem] shadow-2xl overflow-y-auto flex flex-col md:flex-row transition-all duration-500 transform scale-90 opacity-0 border border-white/20">
         <!-- Content will be injected via JS -->
     </div>
 </div>
@@ -673,23 +701,29 @@ try {
                 
         if (p.is_out_of_stock) {
             actionButtons = `
-                <div class="flex flex-col gap-3 w-full max-w-sm mt-8">
+                <div class="flex flex-col gap-3 w-full max-w-sm mt-4">
                     <button disabled class="w-full bg-slate-200 text-slate-500 font-black uppercase tracking-widest text-sm py-4 rounded-2xl cursor-not-allowed">
-                        Stock Out
+                        ❌ Stock Out
                     </button>
+                    <p class="text-[10px] text-slate-400 font-medium">This item is currently unavailable</p>
                 </div>`;
         }
 
         content.innerHTML = `
-            <button onclick="closeQuickView()" class="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/50 backdrop-blur-md flex items-center justify-center hover:bg-white transition text-xl">✕</button>
-            <div class="md:w-1/2 h-[400px] md:h-auto overflow-hidden">
+            <button onclick="closeQuickView()" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/70 backdrop-blur-md flex items-center justify-center hover:bg-white transition text-lg shadow-md">✕</button>
+            <div class="md:w-1/2 h-56 md:h-auto overflow-hidden flex-shrink-0">
                 <img src="${pImage}" class="w-full h-full object-cover">
             </div>
-            <div class="md:w-1/2 p-8 md:p-12 flex flex-col items-center justify-center text-center relative">
-                ${p.is_out_of_stock ? '<span class="absolute top-8 left-8 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">Stock Out</span>' : '<span class="absolute top-8 left-8 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">In Stock</span>'}
-                <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-6 leading-tight mt-6">${p.name}</h2>
-                <div class="text-4xl font-black text-red-600 mb-8 italic">৳ ${parseInt(p.price).toLocaleString()}</div>
-                <p class="text-slate-500 mb-2 text-lg leading-relaxed flex-1">${p.description}</p>
+            <div class="md:w-1/2 p-6 md:p-10 flex flex-col items-center justify-start text-center relative overflow-y-auto">
+                ${p.is_out_of_stock ? '<span class="inline-block bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3">Stock Out</span>' : '<span class="inline-block bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-3">In Stock</span>'}
+                <h2 class="text-2xl md:text-4xl font-black text-slate-900 mb-4 leading-tight">${p.name}</h2>
+                <div class="flex items-center justify-center gap-3 mb-5">
+                    ${p.old_price > 0 ? `<span class="text-base md:text-lg font-black text-slate-900 line-through opacity-60">&#2547; ${parseInt(p.old_price).toLocaleString()}</span>` : ''}
+                    <span class="text-2xl md:text-4xl font-black text-red-600 italic">&#2547; ${parseInt(p.price).toLocaleString()}</span>
+                </div>
+                <div class="w-full max-h-40 md:max-h-56 overflow-y-auto text-left bg-slate-50 rounded-xl p-4 mb-2 scrollbar-hide">
+                    <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">${p.description || 'Premium quality kitchen appliance.'}</p>
+                </div>
                 ${actionButtons}
             </div>
         `;

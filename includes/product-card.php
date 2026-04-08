@@ -83,7 +83,7 @@ if ($oldPrice > $currentPrice) {
         <div class="mt-auto w-full flex flex-col items-center">
             <div class="flex flex-col items-center mb-4">
                 <?php if ($discountPercent > 0): ?>
-                    <span class="text-[12px] md:text-[14px] text-slate-800 line-through font-extrabold">৳ <?php echo number_format($oldPrice); ?></span>
+                    <span class="text-[14px] md:text-[17px] text-slate-900 line-through font-black opacity-70">৳ <?php echo number_format($oldPrice); ?></span>
                 <?php endif; ?>
                 <span class="text-[15px] md:text-[20px] font-black text-red-600 tracking-tight leading-none">৳ <?php echo number_format($currentPrice); ?></span>
             </div>

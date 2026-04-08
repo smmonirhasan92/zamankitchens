@@ -12,7 +12,7 @@ require_once __DIR__ . '/db.php';
 $all_categories = [];
 $main_categories = [];
 try {
-    $all_categories = $pdo->query("SELECT id, name, slug, parent_id FROM categories ORDER BY name ASC")->fetchAll();
+    $all_categories = $pdo->query("SELECT id, name, slug, parent_id, hero_image FROM categories ORDER BY name ASC")->fetchAll();
     
     // Group into Parent -> Children
     foreach ($all_categories as $cat) {
@@ -250,10 +250,24 @@ try {
                     <!-- Mega Menu Dropdown -->
                     <div class="mega-menu text-left">
                         <div class="columns-2 md:columns-3 lg:columns-4 gap-8">
-                            <?php foreach($main_categories as $cat): ?>
+                        <?php foreach($main_categories as $cat):
+                            $catThumb = '';
+                            if (!empty($cat['hero_image'])) {
+                                $catThumb = (strpos($cat['hero_image'], 'http') === 0) ? $cat['hero_image'] : SITE_URL . '/' . ltrim($cat['hero_image'], '/');
+                            }
+                        ?>
                             <div class="category-block flex flex-col break-inside-avoid mb-8">
-                                <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="block font-black text-slate-800 uppercase tracking-widest text-xs mb-4 hover:text-red-600 transition border-b border-slate-100 pb-2">
-                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                <a href="<?php echo SITE_URL; ?>/category/<?php echo $cat['slug']; ?>" class="flex items-center gap-2 font-black text-slate-800 uppercase tracking-widest text-xs mb-4 hover:text-red-600 transition border-b border-slate-100 pb-2 group/cat">
+                                    <?php if ($catThumb): ?>
+                                    <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-100 shadow-sm flex-shrink-0 bg-slate-50">
+                                        <img src="<?php echo htmlspecialchars($catThumb); ?>" alt="<?php echo htmlspecialchars($cat['name']); ?>" class="w-full h-full object-cover group-hover/cat:scale-110 transition-transform duration-300">
+                                    </div>
+                                    <?php else: ?>
+                                    <div class="w-8 h-8 rounded-full bg-red-50 border border-red-100 flex items-center justify-center flex-shrink-0">
+                                        <span class="text-red-600 text-[10px] font-black"><?php echo strtoupper(substr($cat['name'], 0, 1)); ?></span>
+                                    </div>
+                                    <?php endif; ?>
+                                    <span><?php echo htmlspecialchars($cat['name']); ?></span>
                                 </a>
                                 <?php if(!empty($cat['children'])): ?>
                                 <ul class="space-y-3">
